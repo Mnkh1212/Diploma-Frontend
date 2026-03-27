@@ -18,6 +18,9 @@ import StatisticsScreen from "../screens/StatisticsScreen";
 import AIChatScreen from "../screens/AIChatScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import AddTransactionScreen from "../screens/AddTransactionScreen";
+import ProfileScreen from "../screens/ProfileScreen";
+import AccountsScreen from "../screens/AccountsScreen";
+import ScheduledPaymentsScreen from "../screens/ScheduledPaymentsScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -132,6 +135,9 @@ export default function AppNavigator(): React.JSX.Element {
           <Stack.Screen name="Transactions" component={TransactionsScreen} />
           <Stack.Screen name="Expenses" component={ExpensesScreen} />
           <Stack.Screen name="Budget" component={BudgetScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="Accounts" component={AccountsScreen} />
+          <Stack.Screen name="ScheduledPayments" component={ScheduledPaymentsScreen} />
           <Stack.Screen
             name="AddTransaction"
             component={AddTransactionScreen}

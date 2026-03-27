@@ -3,12 +3,16 @@ import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../types";
 
 interface SettingsItem {
   icon: string;
   label: string;
   sublabel: string;
   color: string;
+  onPress: () => void;
 }
 
 interface SettingsSection {
@@ -17,6 +21,7 @@ interface SettingsSection {
 
 export default function SettingsScreen() {
   const { user, logout } = useAuth();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleLogout = (): void => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
@@ -24,6 +29,8 @@ export default function SettingsScreen() {
       { text: "Logout", style: "destructive", onPress: logout },
     ]);
   };
+
+  const comingSoon = () => Alert.alert("Coming Soon", "This feature is under development");
 
   const sections: SettingsSection[] = [
     {
@@ -33,12 +40,14 @@ export default function SettingsScreen() {
           label: "Profile",
           sublabel: "Login credentials",
           color: "#448AFF",
+          onPress: () => navigation.navigate("Profile"),
         },
         {
           icon: "image-outline",
           label: "Appearance",
           sublabel: "Widgets, Themes",
           color: "#7C4DFF",
+          onPress: comingSoon,
         },
       ],
     },
@@ -49,24 +58,28 @@ export default function SettingsScreen() {
           label: "General",
           sublabel: "Currency, clear data",
           color: "#FF6B35",
+          onPress: () => navigation.navigate("Profile"),
         },
         {
           icon: "card-outline",
           label: "Account settings",
           sublabel: "Connected accounts",
           color: "#4ECDC4",
+          onPress: () => navigation.navigate("Accounts"),
         },
         {
           icon: "document-outline",
           label: "Data",
           sublabel: "Export, import data",
           color: "#FFD600",
+          onPress: comingSoon,
         },
         {
           icon: "lock-closed-outline",
           label: "Privacy",
           sublabel: "Password, privacy preferences",
           color: "#00C853",
+          onPress: comingSoon,
         },
       ],
     },
@@ -79,7 +92,10 @@ export default function SettingsScreen() {
         <Text className="text-white font-bold text-xl mb-6">Settings</Text>
 
         {/* User Card */}
-        <View className="bg-dark-card rounded-2xl p-5 flex-row items-center mb-6">
+        <TouchableOpacity
+          className="bg-dark-card rounded-2xl p-5 flex-row items-center mb-6"
+          onPress={() => navigation.navigate("Profile")}
+        >
           <View className="w-14 h-14 rounded-full bg-accent-purple items-center justify-center mr-4">
             <Text className="text-white font-bold text-2xl">
               {user?.name?.charAt(0) || "U"}
@@ -92,7 +108,7 @@ export default function SettingsScreen() {
             <Text className="text-gray-400 text-sm">{user?.email}</Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#666" />
-        </View>
+        </TouchableOpacity>
 
         {/* Settings Sections */}
         {sections.map((section, sIndex) => (
@@ -103,6 +119,7 @@ export default function SettingsScreen() {
                 className={`flex-row items-center p-4 ${
                   iIndex < section.items.length - 1 ? "border-b border-dark-border" : ""
                 }`}
+                onPress={item.onPress}
               >
                 <View
                   className="w-10 h-10 rounded-xl items-center justify-center mr-3"
@@ -124,14 +141,14 @@ export default function SettingsScreen() {
 
         {/* Quick Actions */}
         <View className="bg-dark-card rounded-2xl mb-4 overflow-hidden">
-          <TouchableOpacity className="flex-row items-center p-4 border-b border-dark-border">
+          <TouchableOpacity className="flex-row items-center p-4 border-b border-dark-border" onPress={comingSoon}>
             <View className="w-10 h-10 rounded-xl bg-accent-blue/20 items-center justify-center mr-3">
               <Ionicons name="help-circle-outline" size={20} color="#448AFF" />
             </View>
             <Text className="text-white font-medium text-sm flex-1">Help & Support</Text>
             <Ionicons name="chevron-forward" size={18} color="#666" />
           </TouchableOpacity>
-          <TouchableOpacity className="flex-row items-center p-4 border-b border-dark-border">
+          <TouchableOpacity className="flex-row items-center p-4 border-b border-dark-border" onPress={comingSoon}>
             <View className="w-10 h-10 rounded-xl bg-accent-yellow/20 items-center justify-center mr-3">
               <Ionicons name="star-outline" size={20} color="#FFD600" />
             </View>

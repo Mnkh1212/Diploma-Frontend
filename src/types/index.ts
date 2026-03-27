@@ -177,6 +177,9 @@ export type RootStackParamList = {
   Expenses: undefined;
   Budget: undefined;
   AddTransaction: undefined;
+  Profile: undefined;
+  Accounts: undefined;
+  ScheduledPayments: undefined;
 };
 
 export type BottomTabParamList = {

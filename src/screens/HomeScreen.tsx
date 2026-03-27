@@ -25,6 +25,7 @@ interface QuickAction {
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
   color: string;
+  onPress: () => void;
 }
 
 export default function HomeScreen({ navigation }: Props) {
@@ -81,7 +82,7 @@ export default function HomeScreen({ navigation }: Props) {
               </Text>
             </View>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
             <Ionicons name="notifications-outline" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -104,7 +105,7 @@ export default function HomeScreen({ navigation }: Props) {
                   ? `Your spending reduced by ${Math.abs(dashboard?.savings_percent || 0).toFixed(0)}% from last month.`
                   : `Your spending increased by ${Math.abs(dashboard?.savings_percent || 0).toFixed(0)}% from last month.`}
               </Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate("Expenses")}>
                 <Text className="text-accent-green text-sm mt-2">View Details</Text>
               </TouchableOpacity>
             </View>
@@ -140,13 +141,13 @@ export default function HomeScreen({ navigation }: Props) {
         {/* Quick Actions */}
         <View className="flex-row justify-between mb-6">
           {([
-            { icon: "swap-horizontal", label: "Transfer", color: "#448AFF" },
-            { icon: "card-outline", label: "Cards", color: "#FF6B35" },
-            { icon: "trending-up", label: "Invest", color: "#00C853" },
-            { icon: "repeat", label: "Recurring", color: "#7C4DFF" },
-            { icon: "add-circle-outline", label: "More", color: "#FFD600" },
+            { icon: "swap-horizontal", label: "Transfer", color: "#448AFF", onPress: () => navigation.navigate("AddTransaction") },
+            { icon: "card-outline", label: "Cards", color: "#FF6B35", onPress: () => navigation.navigate("Accounts") },
+            { icon: "trending-up", label: "Invest", color: "#00C853", onPress: () => navigation.navigate("Analytics") },
+            { icon: "repeat", label: "Recurring", color: "#7C4DFF", onPress: () => navigation.navigate("ScheduledPayments") },
+            { icon: "add-circle-outline", label: "More", color: "#FFD600", onPress: () => navigation.navigate("Expenses") },
           ] as QuickAction[]).map((action, index) => (
-            <TouchableOpacity key={index} className="items-center">
+            <TouchableOpacity key={index} className="items-center" onPress={action.onPress}>
               <View
                 className="w-12 h-12 rounded-full items-center justify-center mb-1"
                 style={{ backgroundColor: action.color + "20" }}
