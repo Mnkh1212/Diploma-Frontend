@@ -12,20 +12,24 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { getTransactions, deleteTransaction } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList, Transaction, PaginatedResponse } from "../types";
 
-export default function TransactionsScreen({ navigation }) {
-  const [transactions, setTransactions] = useState([]);
-  const [activeTab, setActiveTab] = useState("All");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
+type TransactionsScreenProps = NativeStackScreenProps<RootStackParamList, "Transactions">;
 
-  const tabs = ["All", "Spending", "Income"];
+export default function TransactionsScreen({ navigation }: TransactionsScreenProps) {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [activeTab, setActiveTab] = useState<string>("All");
+  const [search, setSearch] = useState<string>("");
+  const [page, setPage] = useState<number>(1);
+  const [total, setTotal] = useState<number>(0);
 
-  const fetchTransactions = async (reset = false) => {
+  const tabs: string[] = ["All", "Spending", "Income"];
+
+  const fetchTransactions = async (reset: boolean = false): Promise<void> => {
     const currentPage = reset ? 1 : page;
     try {
-      const params = { page: currentPage, limit: 20 };
+      const params: Record<string, string | number> = { page: currentPage, limit: 20 };
       if (activeTab === "Spending") params.type = "expense";
       if (activeTab === "Income") params.type = "income";
       if (search) params.search = search;
@@ -49,7 +53,7 @@ export default function TransactionsScreen({ navigation }) {
     }, [activeTab, search])
   );
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: number): void => {
     Alert.alert("Delete", "Are you sure?", [
       { text: "Cancel" },
       {
@@ -67,11 +71,11 @@ export default function TransactionsScreen({ navigation }) {
     ]);
   };
 
-  const formatCurrency = (amount) =>
+  const formatCurrency = (amount: number): string =>
     `$${(amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 
-  const groupByDate = (txList) => {
-    const groups = {};
+  const groupByDate = (txList: Transaction[]): Record<string, Transaction[]> => {
+    const groups: Record<string, Transaction[]> = {};
     (txList || []).forEach((tx) => {
       const date = new Date(tx.date).toLocaleDateString("en-US", {
         day: "numeric",
@@ -151,7 +155,7 @@ export default function TransactionsScreen({ navigation }) {
                   }}
                 >
                   <Ionicons
-                    name={tx.category?.icon || "cash-outline"}
+                    name={(tx.category?.icon || "cash-outline") as any}
                     size={18}
                     color={tx.category?.color || "#666"}
                   />

@@ -19,16 +19,25 @@ import {
   deleteAIChat,
 } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
+import { AIChat, AIMessage, AIChatRequest } from "../types";
+
+interface OptimisticMessage {
+  id: number;
+  role: "user" | "assistant";
+  content: string;
+  chat_id?: number;
+  created_at?: string;
+}
 
 export default function AIChatScreen() {
-  const [chats, setChats] = useState([]);
-  const [activeChat, setActiveChat] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showChatList, setShowChatList] = useState(true);
+  const [chats, setChats] = useState<AIChat[]>([]);
+  const [activeChat, setActiveChat] = useState<AIChat | null>(null);
+  const [messages, setMessages] = useState<(AIMessage | OptimisticMessage)[]>([]);
+  const [input, setInput] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showChatList, setShowChatList] = useState<boolean>(true);
 
-  const fetchChats = async () => {
+  const fetchChats = async (): Promise<void> => {
     try {
       const { data } = await getAIChats();
       setChats(data || []);
@@ -46,7 +55,7 @@ export default function AIChatScreen() {
     }, [])
   );
 
-  const openChat = async (chatId) => {
+  const openChat = async (chatId: number): Promise<void> => {
     try {
       const { data } = await getAIChat(chatId);
       setActiveChat(data);
@@ -57,33 +66,33 @@ export default function AIChatScreen() {
     }
   };
 
-  const handleNewChat = async () => {
+  const handleNewChat = async (): Promise<void> => {
     setActiveChat(null);
     setMessages([]);
     setShowChatList(false);
   };
 
-  const handleSend = async () => {
+  const handleSend = async (): Promise<void> => {
     if (!input.trim()) return;
 
-    const userMessage = input.trim();
+    const userMessage: string = input.trim();
     setInput("");
     setLoading(true);
 
     // Optimistic update
     setMessages((prev) => [
       ...prev,
-      { role: "user", content: userMessage, id: Date.now() },
+      { role: "user", content: userMessage, id: Date.now() } as OptimisticMessage,
     ]);
 
     try {
-      const payload = { message: userMessage };
+      const payload: AIChatRequest = { message: userMessage };
       if (activeChat?.id) payload.chat_id = activeChat.id;
 
       const { data } = await sendAIMessage(payload);
 
       if (!activeChat?.id && data.chat_id) {
-        setActiveChat({ id: data.chat_id });
+        setActiveChat({ id: data.chat_id } as AIChat);
       }
 
       setMessages((prev) => [...prev, data.message]);
@@ -94,7 +103,7 @@ export default function AIChatScreen() {
           role: "assistant",
           content: "Sorry, I encountered an error. Please try again.",
           id: Date.now() + 1,
-        },
+        } as OptimisticMessage,
       ]);
     } finally {
       setLoading(false);

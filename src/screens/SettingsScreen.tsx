@@ -4,17 +4,28 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 
+interface SettingsItem {
+  icon: string;
+  label: string;
+  sublabel: string;
+  color: string;
+}
+
+interface SettingsSection {
+  items: SettingsItem[];
+}
+
 export default function SettingsScreen() {
   const { user, logout } = useAuth();
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
       { text: "Cancel" },
       { text: "Logout", style: "destructive", onPress: logout },
     ]);
   };
 
-  const sections = [
+  const sections: SettingsSection[] = [
     {
       items: [
         {
@@ -97,7 +108,7 @@ export default function SettingsScreen() {
                   className="w-10 h-10 rounded-xl items-center justify-center mr-3"
                   style={{ backgroundColor: item.color + "20" }}
                 >
-                  <Ionicons name={item.icon} size={20} color={item.color} />
+                  <Ionicons name={item.icon as any} size={20} color={item.color} />
                 </View>
                 <View className="flex-1">
                   <Text className="text-white font-medium text-sm">

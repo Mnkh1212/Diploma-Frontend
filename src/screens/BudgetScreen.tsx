@@ -9,11 +9,12 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { getBudgets } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
+import { BudgetListResponse } from "../types";
 
 export default function BudgetScreen() {
-  const [budgetData, setBudgetData] = useState(null);
+  const [budgetData, setBudgetData] = useState<BudgetListResponse | null>(null);
 
-  const fetchBudgets = async () => {
+  const fetchBudgets = async (): Promise<void> => {
     try {
       const { data } = await getBudgets();
       setBudgetData(data);
@@ -28,11 +29,11 @@ export default function BudgetScreen() {
     }, [])
   );
 
-  const totalBudget = budgetData?.total_budget || 0;
-  const totalSpent = budgetData?.total_spent || 0;
-  const progress = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+  const totalBudget: number = budgetData?.total_budget || 0;
+  const totalSpent: number = budgetData?.total_spent || 0;
+  const progress: number = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
-  const formatCurrency = (amount) =>
+  const formatCurrency = (amount: number): string =>
     `$${(amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 
   return (
@@ -132,7 +133,7 @@ export default function BudgetScreen() {
         {/* Category Budgets */}
         <Text className="text-white font-bold text-base mb-4">Category Budgets</Text>
         {(budgetData?.budgets || []).map((budget, index) => {
-          const budgetProgress =
+          const budgetProgress: number =
             budget.amount > 0 ? (budget.spent / budget.amount) * 100 : 0;
           return (
             <View key={index} className="bg-dark-card rounded-xl p-4 mb-2">

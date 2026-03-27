@@ -4,15 +4,16 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { getStatistics, getScheduledPayments } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
+import { StatisticsResponse, ScheduledPayment } from "../types";
 
 export default function StatisticsScreen() {
-  const [stats, setStats] = useState(null);
-  const [payments, setPayments] = useState([]);
-  const [period, setPeriod] = useState("monthly");
+  const [stats, setStats] = useState<StatisticsResponse | null>(null);
+  const [payments, setPayments] = useState<ScheduledPayment[]>([]);
+  const [period, setPeriod] = useState<string>("monthly");
 
-  const periods = ["Daily", "Weekly", "Monthly", "Yearly"];
+  const periods: string[] = ["Daily", "Weekly", "Monthly", "Yearly"];
 
-  const fetchData = async () => {
+  const fetchData = async (): Promise<void> => {
     try {
       const [statsRes, paymentsRes] = await Promise.all([
         getStatistics(period),
@@ -31,10 +32,10 @@ export default function StatisticsScreen() {
     }, [period])
   );
 
-  const formatCurrency = (amount) =>
+  const formatCurrency = (amount: number | undefined): string =>
     `$${(amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 
-  const maxValue = Math.max(
+  const maxValue: number = Math.max(
     ...((stats?.periods || []).flatMap((p) => [p.income, p.expenses])),
     1
   );
@@ -59,7 +60,7 @@ export default function StatisticsScreen() {
                 }}
               >
                 <Ionicons
-                  name={payment.category?.icon || "card-outline"}
+                  name={(payment.category?.icon || "card-outline") as any}
                   size={14}
                   color={payment.category?.color || "#666"}
                 />

@@ -8,29 +8,37 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useAuth } from "../context/AuthContext";
+import { RootStackParamList } from "../types";
 
-export default function RegisterScreen({ navigation }) {
-  const { register } = useAuth();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
-  const handleRegister = async () => {
-    if (!name || !email || !password) {
+interface ApiError {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+}
+
+export default function LoginScreen({ navigation }: Props) {
+  const { login } = useAuth();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleLogin = async (): Promise<void> => {
+    if (!email || !password) {
       Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
-    if (password.length < 6) {
-      Alert.alert("Error", "Password must be at least 6 characters");
       return;
     }
     setLoading(true);
     try {
-      await register(name, email, password);
+      await login(email, password);
     } catch (error) {
-      Alert.alert("Error", error.response?.data?.error || "Registration failed");
+      const err = error as ApiError;
+      Alert.alert("Error", err.response?.data?.error || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -40,21 +48,10 @@ export default function RegisterScreen({ navigation }) {
     <View className="flex-1 bg-dark-bg px-6 justify-center">
       <StatusBar style="light" />
 
-      <Text className="text-white text-3xl font-bold mb-2">Create Account</Text>
+      <Text className="text-white text-3xl font-bold mb-2">Welcome Back</Text>
       <Text className="text-gray-400 text-base mb-10">
-        Start tracking your finances
+        Sign in to continue
       </Text>
-
-      <View className="mb-4">
-        <Text className="text-gray-400 text-sm mb-2">Full Name</Text>
-        <TextInput
-          className="bg-dark-card text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-          placeholder="Enter your name"
-          placeholderTextColor="#666"
-          value={name}
-          onChangeText={setName}
-        />
-      </View>
 
       <View className="mb-4">
         <Text className="text-gray-400 text-sm mb-2">Email</Text>
@@ -73,7 +70,7 @@ export default function RegisterScreen({ navigation }) {
         <Text className="text-gray-400 text-sm mb-2">Password</Text>
         <TextInput
           className="bg-dark-card text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-          placeholder="Minimum 6 characters"
+          placeholder="Enter your password"
           placeholderTextColor="#666"
           value={password}
           onChangeText={setPassword}
@@ -83,23 +80,23 @@ export default function RegisterScreen({ navigation }) {
 
       <TouchableOpacity
         className="bg-accent-green py-4 rounded-2xl items-center mb-6"
-        onPress={handleRegister}
+        onPress={handleLogin}
         disabled={loading}
       >
         {loading ? (
           <ActivityIndicator color="#0D0D0D" />
         ) : (
-          <Text className="text-dark-bg font-bold text-lg">Create Account</Text>
+          <Text className="text-dark-bg font-bold text-lg">Sign In</Text>
         )}
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => navigation.navigate("Login")}
+        onPress={() => navigation.navigate("Register")}
         className="items-center"
       >
         <Text className="text-gray-400">
-          Already have an account?{" "}
-          <Text className="text-accent-green font-bold">Sign In</Text>
+          Don't have an account?{" "}
+          <Text className="text-accent-green font-bold">Sign Up</Text>
         </Text>
       </TouchableOpacity>
     </View>

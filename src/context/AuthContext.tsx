@@ -1,12 +1,23 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { login as loginApi, register as registerApi, getProfile } from "../services/api";
+import { User } from "../types";
 
-const AuthContext = createContext({});
+interface AuthContextType {
+  user: User | null;
+  token: string | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+}
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,27 +32,25 @@ export const AuthProvider = ({ children }) => {
         const { data } = await getProfile();
         setUser(data);
       }
-    } catch (error) {
+    } catch {
       await AsyncStorage.removeItem("token");
     } finally {
       setLoading(false);
     }
   };
 
-  const login = async (email, password) => {
+  const login = async (email: string, password: string) => {
     const { data } = await loginApi({ email, password });
     await AsyncStorage.setItem("token", data.token);
     setToken(data.token);
     setUser(data.user);
-    return data;
   };
 
-  const registerUser = async (name, email, password) => {
+  const register = async (name: string, email: string, password: string) => {
     const { data } = await registerApi({ name, email, password });
     await AsyncStorage.setItem("token", data.token);
     setToken(data.token);
     setUser(data.user);
-    return data;
   };
 
   const logout = async () => {
@@ -52,7 +61,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, loading, login, register: registerUser, logout, setUser }}
+      value={{ user, token, loading, login, register, logout, setUser }}
     >
       {children}
     </AuthContext.Provider>

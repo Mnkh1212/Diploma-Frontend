@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -11,13 +11,28 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { getDashboard } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { BottomTabParamList, RootStackParamList, DashboardResponse } from "../types";
 
-export default function HomeScreen({ navigation }) {
+type Props = CompositeScreenProps<
+  BottomTabScreenProps<BottomTabParamList, "Home">,
+  NativeStackScreenProps<RootStackParamList>
+>;
+
+interface QuickAction {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  color: string;
+}
+
+export default function HomeScreen({ navigation }: Props) {
   const { user } = useAuth();
-  const [dashboard, setDashboard] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
+  const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
-  const fetchDashboard = async () => {
+  const fetchDashboard = async (): Promise<void> => {
     try {
       const { data } = await getDashboard();
       setDashboard(data);
@@ -32,13 +47,13 @@ export default function HomeScreen({ navigation }) {
     }, [])
   );
 
-  const onRefresh = async () => {
+  const onRefresh = async (): Promise<void> => {
     setRefreshing(true);
     await fetchDashboard();
     setRefreshing(false);
   };
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = (amount: number | undefined): string => {
     return `$${(amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
   };
 
@@ -82,10 +97,10 @@ export default function HomeScreen({ navigation }) {
           <View className="flex-row items-center bg-dark-card rounded-2xl p-4 mb-6">
             <View className="flex-1">
               <Text className="text-white font-bold text-base mb-1">
-                {dashboard?.savings_percent > 0 ? "Well done!" : "Heads up!"}
+                {dashboard?.savings_percent && dashboard.savings_percent > 0 ? "Well done!" : "Heads up!"}
               </Text>
               <Text className="text-gray-400 text-sm">
-                {dashboard?.savings_percent > 0
+                {dashboard?.savings_percent && dashboard.savings_percent > 0
                   ? `Your spending reduced by ${Math.abs(dashboard?.savings_percent || 0).toFixed(0)}% from last month.`
                   : `Your spending increased by ${Math.abs(dashboard?.savings_percent || 0).toFixed(0)}% from last month.`}
               </Text>
@@ -110,7 +125,7 @@ export default function HomeScreen({ navigation }) {
               style={{ width: 120 }}
             >
               <Ionicons
-                name={account.icon || "wallet-outline"}
+                name={(account.icon as keyof typeof Ionicons.glyphMap) || "wallet-outline"}
                 size={20}
                 color={account.color || "#4ECDC4"}
               />
@@ -124,13 +139,13 @@ export default function HomeScreen({ navigation }) {
 
         {/* Quick Actions */}
         <View className="flex-row justify-between mb-6">
-          {[
+          {([
             { icon: "swap-horizontal", label: "Transfer", color: "#448AFF" },
             { icon: "card-outline", label: "Cards", color: "#FF6B35" },
             { icon: "trending-up", label: "Invest", color: "#00C853" },
             { icon: "repeat", label: "Recurring", color: "#7C4DFF" },
             { icon: "add-circle-outline", label: "More", color: "#FFD600" },
-          ].map((action, index) => (
+          ] as QuickAction[]).map((action, index) => (
             <TouchableOpacity key={index} className="items-center">
               <View
                 className="w-12 h-12 rounded-full items-center justify-center mb-1"
@@ -163,7 +178,7 @@ export default function HomeScreen({ navigation }) {
               }}
             >
               <Ionicons
-                name={tx.category?.icon || "cash-outline"}
+                name={(tx.category?.icon as keyof typeof Ionicons.glyphMap) || "cash-outline"}
                 size={18}
                 color={tx.category?.color || "#666"}
               />

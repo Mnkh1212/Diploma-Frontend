@@ -4,8 +4,17 @@ import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import { getExpensesSummary } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList, ExpensesSummary, CategoryExpense } from "../types";
 
-const DonutSegment = ({ categories, total }) => {
+type ExpensesScreenProps = NativeStackScreenProps<RootStackParamList, "Expenses">;
+
+interface DonutSegmentProps {
+  categories: CategoryExpense[] | undefined;
+  total: number | undefined;
+}
+
+const DonutSegment = ({ categories, total }: DonutSegmentProps) => {
   // Simple visual representation of expense breakdown
   return (
     <View className="items-center justify-center my-6">
@@ -32,13 +41,13 @@ const DonutSegment = ({ categories, total }) => {
   );
 };
 
-export default function ExpensesScreen({ navigation }) {
-  const [summary, setSummary] = useState(null);
-  const [period, setPeriod] = useState("monthly");
+export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
+  const [summary, setSummary] = useState<ExpensesSummary | null>(null);
+  const [period, setPeriod] = useState<string>("monthly");
 
-  const periods = ["Daily", "Weekly", "Monthly", "Yearly"];
+  const periods: string[] = ["Daily", "Weekly", "Monthly", "Yearly"];
 
-  const fetchData = async () => {
+  const fetchData = async (): Promise<void> => {
     try {
       const { data } = await getExpensesSummary(period);
       setSummary(data);
@@ -53,7 +62,7 @@ export default function ExpensesScreen({ navigation }) {
     }, [period])
   );
 
-  const formatCurrency = (amount) =>
+  const formatCurrency = (amount: number): string =>
     `$${(amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 
   return (
@@ -114,7 +123,7 @@ export default function ExpensesScreen({ navigation }) {
               style={{ backgroundColor: (cat.color || "#666") + "20" }}
             >
               <Ionicons
-                name={cat.icon || "cash-outline"}
+                name={(cat.icon || "cash-outline") as any}
                 size={18}
                 color={cat.color || "#666"}
               />

@@ -1,8 +1,12 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../types";
 
-export default function OnboardingScreen({ navigation }) {
+type Props = NativeStackScreenProps<RootStackParamList, "Onboarding">;
+
+export default function OnboardingScreen({ navigation }: Props) {
   return (
     <View className="flex-1 bg-dark-bg items-center justify-center px-8">
       <StatusBar style="light" />

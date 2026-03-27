@@ -1,9 +1,10 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createBottomTabNavigator, BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
 import { View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
+import { RootStackParamList, BottomTabParamList } from "../types";
 
 // Screens
 import OnboardingScreen from "../screens/OnboardingScreen";
@@ -18,10 +19,10 @@ import AIChatScreen from "../screens/AIChatScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import AddTransactionScreen from "../screens/AddTransactionScreen";
 
-const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-function CustomTabButton({ children, onPress }) {
+function CustomTabButton({ children, onPress }: BottomTabBarButtonProps) {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -59,7 +60,7 @@ function BottomTabs() {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <Ionicons name="home-outline" size={22} color={color} />
           ),
         }}
@@ -68,7 +69,7 @@ function BottomTabs() {
         name="Analytics"
         component={StatisticsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <Ionicons name="stats-chart-outline" size={22} color={color} />
           ),
         }}
@@ -88,7 +89,7 @@ function BottomTabs() {
         name="AI Chat"
         component={AIChatScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <Ionicons name="chatbubble-outline" size={22} color={color} />
           ),
         }}
@@ -97,7 +98,7 @@ function BottomTabs() {
         name="Settings"
         component={SettingsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }: { color: string }) => (
             <Ionicons name="settings-outline" size={22} color={color} />
           ),
         }}
@@ -106,7 +107,7 @@ function BottomTabs() {
   );
 }
 
-export default function AppNavigator() {
+export default function AppNavigator(): React.JSX.Element {
   const { token, loading } = useAuth();
 
   if (loading) {

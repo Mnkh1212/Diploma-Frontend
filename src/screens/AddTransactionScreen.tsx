@@ -10,23 +10,27 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createTransaction, getCategories, getAccounts } from "../services/api";
+import { RootStackParamList, Category, Account } from "../types";
 
-export default function AddTransactionScreen({ navigation }) {
-  const [type, setType] = useState("expense");
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
-  const [categories, setCategories] = useState([]);
-  const [accounts, setAccounts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedAccount, setSelectedAccount] = useState(null);
-  const [loading, setLoading] = useState(false);
+export default function AddTransactionScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [type, setType] = useState<"income" | "expense">("expense");
+  const [amount, setAmount] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     fetchData();
   }, [type]);
 
-  const fetchData = async () => {
+  const fetchData = async (): Promise<void> => {
     try {
       const [catRes, accRes] = await Promise.all([
         getCategories(type),
@@ -42,7 +46,7 @@ export default function AddTransactionScreen({ navigation }) {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     if (!amount || !selectedCategory || !selectedAccount) {
       Alert.alert("Error", "Please fill in all required fields");
       return;
@@ -80,7 +84,7 @@ export default function AddTransactionScreen({ navigation }) {
 
         {/* Type Toggle */}
         <View className="flex-row bg-dark-card rounded-xl p-1 mb-6">
-          {["expense", "income"].map((t) => (
+          {(["expense", "income"] as const).map((t) => (
             <TouchableOpacity
               key={t}
               className={`flex-1 py-3 rounded-lg items-center ${
@@ -169,7 +173,7 @@ export default function AddTransactionScreen({ navigation }) {
               onPress={() => setSelectedCategory(cat)}
             >
               <Ionicons
-                name={cat.icon || "cash-outline"}
+                name={(cat.icon as keyof typeof Ionicons.glyphMap) || "cash-outline"}
                 size={16}
                 color={cat.color || "#666"}
               />
