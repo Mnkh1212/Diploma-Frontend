@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }: Props) {
 
   const handleLogin = async (): Promise<void> => {
     if (!email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert("Алдаа", "Бүх талбарыг бөглөнө үү");
       return;
     }
     setLoading(true);
@@ -38,7 +38,7 @@ export default function LoginScreen({ navigation }: Props) {
       await login(email, password);
     } catch (error) {
       const err = error as ApiError;
-      Alert.alert("Error", err.response?.data?.error || "Login failed");
+      Alert.alert("Алдаа", err.response?.data?.error || "Нэвтрэх амжилтгүй боллоо");
     } finally {
       setLoading(false);
     }
@@ -48,16 +48,16 @@ export default function LoginScreen({ navigation }: Props) {
     <View className="flex-1 bg-dark-bg px-6 justify-center">
       <StatusBar style="light" />
 
-      <Text className="text-white text-3xl font-bold mb-2">Welcome Back</Text>
+      <Text className="text-white text-3xl font-bold mb-2">Тавтай морил</Text>
       <Text className="text-gray-400 text-base mb-10">
-        Sign in to continue
+        Үргэлжлүүлэхийн тулд нэвтэрнэ үү
       </Text>
 
       <View className="mb-4">
-        <Text className="text-gray-400 text-sm mb-2">Email</Text>
+        <Text className="text-gray-400 text-sm mb-2">Имэйл</Text>
         <TextInput
           className="bg-dark-card text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-          placeholder="Enter your email"
+          placeholder="Имэйл хаягаа оруулна уу"
           placeholderTextColor="#666"
           value={email}
           onChangeText={setEmail}
@@ -67,10 +67,10 @@ export default function LoginScreen({ navigation }: Props) {
       </View>
 
       <View className="mb-8">
-        <Text className="text-gray-400 text-sm mb-2">Password</Text>
+        <Text className="text-gray-400 text-sm mb-2">Нууц үг</Text>
         <TextInput
           className="bg-dark-card text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-          placeholder="Enter your password"
+          placeholder="Нууц үгээ оруулна уу"
           placeholderTextColor="#666"
           value={password}
           onChangeText={setPassword}
@@ -86,7 +86,7 @@ export default function LoginScreen({ navigation }: Props) {
         {loading ? (
           <ActivityIndicator color="#0D0D0D" />
         ) : (
-          <Text className="text-dark-bg font-bold text-lg">Sign In</Text>
+          <Text className="text-dark-bg font-bold text-lg">Нэвтрэх</Text>
         )}
       </TouchableOpacity>
 
@@ -95,8 +95,8 @@ export default function LoginScreen({ navigation }: Props) {
         className="items-center"
       >
         <Text className="text-gray-400">
-          Don't have an account?{" "}
-          <Text className="text-accent-green font-bold">Sign Up</Text>
+          Бүртгэл байхгүй юу?{" "}
+          <Text className="text-accent-green font-bold">Бүртгүүлэх</Text>
         </Text>
       </TouchableOpacity>
     </View>

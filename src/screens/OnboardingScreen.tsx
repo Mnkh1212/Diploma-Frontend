@@ -29,22 +29,22 @@ export default function OnboardingScreen({ navigation }: Props) {
       </View>
 
       <Text className="text-white text-2xl font-bold text-center mb-3">
-        Streamline Your Finances
+        Санхүүгээ хялбараар удирд
       </Text>
       <Text className="text-gray-400 text-center text-base mb-12 leading-6">
-        Link your bank accounts, credit cards, and more for seamless tracking.
-        Get real-time updates and stay in control of your money.
+        Банкны данс, кредит карт болон бусад дансаа холбож, санхүүгээ
+        хялбархан хянаарай. Бодит цагийн мэдээлэл аваарай.
       </Text>
 
       <TouchableOpacity
         className="w-full bg-accent-green py-4 rounded-2xl items-center mb-4"
         onPress={() => navigation.navigate("Register")}
       >
-        <Text className="text-dark-bg font-bold text-lg">Get Started</Text>
+        <Text className="text-dark-bg font-bold text-lg">Эхлэх</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-        <Text className="text-gray-400 text-base">Skip</Text>
+        <Text className="text-gray-400 text-base">Алгасах</Text>
       </TouchableOpacity>
     </View>
   );

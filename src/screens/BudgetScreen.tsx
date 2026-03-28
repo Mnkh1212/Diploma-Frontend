@@ -34,18 +34,18 @@ export default function BudgetScreen() {
   const progress: number = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
   const formatCurrency = (amount: number): string =>
-    `$${(amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+    `${(amount || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮`;
 
   return (
     <View className="flex-1 bg-dark-bg">
       <StatusBar style="light" />
       <ScrollView className="flex-1 px-5 pt-14">
-        <Text className="text-white font-bold text-xl mb-6">Monthly Budget</Text>
+        <Text className="text-white font-bold text-xl mb-6">Сарын төсөв</Text>
 
         {/* Budget Progress */}
         <View className="bg-dark-card rounded-2xl p-5 mb-6">
           <View className="flex-row justify-between mb-2">
-            <Text className="text-gray-400 text-sm">Spent</Text>
+            <Text className="text-gray-400 text-sm">Зарцуулсан</Text>
             <Text className="text-gray-400 text-sm">
               {formatCurrency(totalSpent)} / {formatCurrency(totalBudget)}
             </Text>
@@ -71,16 +71,16 @@ export default function BudgetScreen() {
               progress > 90 ? "text-accent-red" : "text-accent-green"
             }`}
           >
-            {progress.toFixed(0)}% used
+            {progress.toFixed(0)}% ашигласан
           </Text>
         </View>
 
         {/* Monthly Budget Chart Placeholder */}
         <View className="bg-dark-card rounded-2xl p-5 mb-6">
-          <Text className="text-white font-bold text-base mb-4">Monthly Budget</Text>
+          <Text className="text-white font-bold text-base mb-4">Сарын төсөв</Text>
           {/* Simple bar representation */}
           <View className="flex-row items-end justify-between h-40">
-            {["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"].map((month, i) => (
+            {["10-р", "11-р", "12-р", "1-р", "2-р", "3-р"].map((month, i) => (
               <View key={i} className="items-center flex-1">
                 <View className="w-6 rounded-t-md bg-accent-green/30 mb-1"
                   style={{ height: 30 + Math.random() * 80 }}
@@ -99,7 +99,7 @@ export default function BudgetScreen() {
         {/* Last 6 periods */}
         <View className="bg-dark-card rounded-2xl p-5 mb-6">
           <Text className="text-white font-bold text-base mb-4">
-            Last 6 periods
+            Сүүлийн 6 үе
           </Text>
           <View className="flex-row items-end justify-between h-32">
             {[60, 80, 45, 90, 70, 55].map((h, i) => (
@@ -117,21 +117,21 @@ export default function BudgetScreen() {
           <View className="flex-row mt-3 gap-4">
             <View className="flex-row items-center">
               <View className="w-3 h-3 rounded-full bg-accent-green mr-1" />
-              <Text className="text-gray-400 text-xs">Risk</Text>
+              <Text className="text-gray-400 text-xs">Эрсдэл</Text>
             </View>
             <View className="flex-row items-center">
               <View className="w-3 h-3 rounded-full bg-accent-orange mr-1" />
-              <Text className="text-gray-400 text-xs">Moderate</Text>
+              <Text className="text-gray-400 text-xs">Дунд зэрэг</Text>
             </View>
             <View className="flex-row items-center">
               <View className="w-3 h-3 rounded-full bg-accent-red mr-1" />
-              <Text className="text-gray-400 text-xs">Overspending</Text>
+              <Text className="text-gray-400 text-xs">Хэтрүүлсэн</Text>
             </View>
           </View>
         </View>
 
         {/* Category Budgets */}
-        <Text className="text-white font-bold text-base mb-4">Category Budgets</Text>
+        <Text className="text-white font-bold text-base mb-4">Ангиллын төсөв</Text>
         {(budgetData?.budgets || []).map((budget, index) => {
           const budgetProgress: number =
             budget.amount > 0 ? (budget.spent / budget.amount) * 100 : 0;
@@ -139,7 +139,7 @@ export default function BudgetScreen() {
             <View key={index} className="bg-dark-card rounded-xl p-4 mb-2">
               <View className="flex-row justify-between mb-2">
                 <Text className="text-white font-medium text-sm">
-                  {budget.category?.name || "General"}
+                  {budget.category?.name || "Ерөнхий"}
                 </Text>
                 <Text className="text-gray-400 text-sm">
                   {formatCurrency(budget.spent)} / {formatCurrency(budget.amount)}

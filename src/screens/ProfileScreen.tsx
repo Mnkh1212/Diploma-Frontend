@@ -26,17 +26,17 @@ export default function ProfileScreen({ navigation }: Props) {
 
   const handleSave = async (): Promise<void> => {
     if (!name.trim() || !email.trim()) {
-      Alert.alert("Error", "Name and email are required");
+      Alert.alert("Алдаа", "Нэр болон имэйл шаардлагатай");
       return;
     }
     setLoading(true);
     try {
       const { data } = await updateProfile({ name, email, currency });
       setUser(data);
-      Alert.alert("Success", "Profile updated successfully");
+      Alert.alert("Амжилттай", "Профайл амжилттай шинэчлэгдлээ");
       navigation.goBack();
     } catch (error) {
-      Alert.alert("Error", "Failed to update profile");
+      Alert.alert("Алдаа", "Профайл шинэчлэж чадсангүй");
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ export default function ProfileScreen({ navigation }: Props) {
           <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
             <Ionicons name="chevron-back" size={24} color="#fff" />
           </TouchableOpacity>
-          <Text className="text-white font-bold text-xl">Edit Profile</Text>
+          <Text className="text-white font-bold text-xl">Профайл засах</Text>
         </View>
 
         {/* Avatar */}
@@ -61,15 +61,15 @@ export default function ProfileScreen({ navigation }: Props) {
               {user?.name?.charAt(0) || "U"}
             </Text>
           </View>
-          <Text className="text-gray-400 text-sm">Tap to change photo</Text>
+          <Text className="text-gray-400 text-sm">Зураг солихын тулд дарна уу</Text>
         </View>
 
         {/* Name */}
         <View className="mb-4">
-          <Text className="text-gray-400 text-sm mb-2">Full Name</Text>
+          <Text className="text-gray-400 text-sm mb-2">Нэр</Text>
           <TextInput
             className="bg-dark-card text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-            placeholder="Enter your name"
+            placeholder="Нэрээ оруулна уу"
             placeholderTextColor="#666"
             value={name}
             onChangeText={setName}
@@ -78,10 +78,10 @@ export default function ProfileScreen({ navigation }: Props) {
 
         {/* Email */}
         <View className="mb-4">
-          <Text className="text-gray-400 text-sm mb-2">Email</Text>
+          <Text className="text-gray-400 text-sm mb-2">Имэйл</Text>
           <TextInput
             className="bg-dark-card text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-            placeholder="Enter your email"
+            placeholder="Имэйл хаягаа оруулна уу"
             placeholderTextColor="#666"
             value={email}
             onChangeText={setEmail}
@@ -92,7 +92,7 @@ export default function ProfileScreen({ navigation }: Props) {
 
         {/* Currency */}
         <View className="mb-4">
-          <Text className="text-gray-400 text-sm mb-2">Currency</Text>
+          <Text className="text-gray-400 text-sm mb-2">Валют</Text>
           <View className="flex-row gap-2">
             {["USD", "EUR", "MNT"].map((c) => (
               <TouchableOpacity
@@ -118,10 +118,10 @@ export default function ProfileScreen({ navigation }: Props) {
 
         {/* Member Since */}
         <View className="bg-dark-card rounded-xl p-4 mb-6">
-          <Text className="text-gray-400 text-sm">Member since</Text>
+          <Text className="text-gray-400 text-sm">Бүртгүүлсэн</Text>
           <Text className="text-white font-medium text-base mt-1">
             {user?.created_at
-              ? new Date(user.created_at).toLocaleDateString("en-US", {
+              ? new Date(user.created_at).toLocaleDateString("mn-MN", {
                   month: "long",
                   year: "numeric",
                 })
@@ -138,7 +138,7 @@ export default function ProfileScreen({ navigation }: Props) {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text className="text-dark-bg font-bold text-lg">Save Changes</Text>
+            <Text className="text-dark-bg font-bold text-lg">Хадгалах</Text>
           )}
         </TouchableOpacity>
       </ScrollView>

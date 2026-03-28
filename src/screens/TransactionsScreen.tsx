@@ -19,19 +19,19 @@ type TransactionsScreenProps = NativeStackScreenProps<RootStackParamList, "Trans
 
 export default function TransactionsScreen({ navigation }: TransactionsScreenProps) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [activeTab, setActiveTab] = useState<string>("All");
+  const [activeTab, setActiveTab] = useState<string>("Бүгд");
   const [search, setSearch] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const [total, setTotal] = useState<number>(0);
 
-  const tabs: string[] = ["All", "Spending", "Income"];
+  const tabs: string[] = ["Бүгд", "Зарлага", "Орлого"];
 
   const fetchTransactions = async (reset: boolean = false): Promise<void> => {
     const currentPage = reset ? 1 : page;
     try {
       const params: Record<string, string | number> = { page: currentPage, limit: 20 };
-      if (activeTab === "Spending") params.type = "expense";
-      if (activeTab === "Income") params.type = "income";
+      if (activeTab === "Зарлага") params.type = "expense";
+      if (activeTab === "Орлого") params.type = "income";
       if (search) params.search = search;
 
       const { data } = await getTransactions(params);
@@ -54,17 +54,17 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
   );
 
   const handleDelete = (id: number): void => {
-    Alert.alert("Delete", "Are you sure?", [
-      { text: "Cancel" },
+    Alert.alert("Устгах", "Итгэлтэй байна уу?", [
+      { text: "Цуцлах" },
       {
-        text: "Delete",
+        text: "Устгах",
         style: "destructive",
         onPress: async () => {
           try {
             await deleteTransaction(id);
             fetchTransactions(true);
           } catch (error) {
-            Alert.alert("Error", "Failed to delete");
+            Alert.alert("Алдаа", "Устгаж чадсангүй");
           }
         },
       },
@@ -72,16 +72,13 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
   };
 
   const formatCurrency = (amount: number): string =>
-    `$${(amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+    `${(amount || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮`;
 
   const groupByDate = (txList: Transaction[]): Record<string, Transaction[]> => {
     const groups: Record<string, Transaction[]> = {};
     (txList || []).forEach((tx) => {
-      const date = new Date(tx.date).toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      });
+      const d = new Date(tx.date);
+      const date = `${d.getFullYear()} оны ${d.getMonth() + 1} сарын ${d.getDate()}`;
       if (!groups[date]) groups[date] = [];
       groups[date].push(tx);
     });
@@ -100,7 +97,7 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
           <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
             <Ionicons name="chevron-back" size={24} color="#fff" />
           </TouchableOpacity>
-          <Text className="text-white font-bold text-xl">Transaction History</Text>
+          <Text className="text-white font-bold text-xl">Гүйлгээнүүд</Text>
         </View>
 
         {/* Search */}
@@ -108,7 +105,7 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
           <Ionicons name="search" size={18} color="#666" />
           <TextInput
             className="flex-1 text-white ml-2 text-sm"
-            placeholder="Super AI search"
+            placeholder="Гүйлгээ хайх"
             placeholderTextColor="#666"
             value={search}
             onChangeText={setSearch}
@@ -162,7 +159,7 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
                 </View>
                 <View className="flex-1">
                   <Text className="text-white font-medium text-sm">
-                    {tx.category?.name || "Unknown"}
+                    {tx.category?.name || "Тодорхойгүй"}
                   </Text>
                   <Text className="text-gray-500 text-xs">
                     {tx.description || tx.account?.name}
@@ -180,7 +177,7 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
                     {formatCurrency(tx.amount)}
                   </Text>
                   <Text className="text-gray-500 text-xs">
-                    {new Date(tx.date).toLocaleTimeString("en-US", {
+                    {new Date(tx.date).toLocaleTimeString("mn-MN", {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}

@@ -19,10 +19,10 @@ import { RootStackParamList, Account } from "../types";
 type Props = NativeStackScreenProps<RootStackParamList, "Accounts">;
 
 const accountTypes = [
-  { value: "bank", label: "Bank", icon: "business-outline", color: "#448AFF" },
-  { value: "cash", label: "Cash", icon: "cash-outline", color: "#00C853" },
-  { value: "credit_card", label: "Credit Card", icon: "card-outline", color: "#FF6B35" },
-  { value: "investment", label: "Investment", icon: "trending-up-outline", color: "#7C4DFF" },
+  { value: "bank", label: "Банк", icon: "business-outline", color: "#448AFF" },
+  { value: "cash", label: "Бэлэн мөнгө", icon: "cash-outline", color: "#00C853" },
+  { value: "credit_card", label: "Кредит карт", icon: "card-outline", color: "#FF6B35" },
+  { value: "investment", label: "Хөрөнгө оруулалт", icon: "trending-up-outline", color: "#7C4DFF" },
 ] as const;
 
 export default function AccountsScreen({ navigation }: Props) {
@@ -49,7 +49,7 @@ export default function AccountsScreen({ navigation }: Props) {
 
   const handleCreate = async (): Promise<void> => {
     if (!newName.trim()) {
-      Alert.alert("Error", "Account name is required");
+      Alert.alert("Алдаа", "Дансны нэр шаардлагатай");
       return;
     }
     setLoading(true);
@@ -60,24 +60,24 @@ export default function AccountsScreen({ navigation }: Props) {
       setNewType("bank");
       fetchAccounts();
     } catch (error) {
-      Alert.alert("Error", "Failed to create account");
+      Alert.alert("Алдаа", "Данс үүсгэж чадсангүй");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = (id: number, name: string): void => {
-    Alert.alert("Delete Account", `Are you sure you want to delete "${name}"?`, [
-      { text: "Cancel" },
+    Alert.alert("Данс устгах", `"${name}" дансыг устгахдаа итгэлтэй байна уу?`, [
+      { text: "Цуцлах" },
       {
-        text: "Delete",
+        text: "Устгах",
         style: "destructive",
         onPress: async () => {
           try {
             await deleteAccount(id);
             fetchAccounts();
           } catch (error) {
-            Alert.alert("Error", "Failed to delete account");
+            Alert.alert("Алдаа", "Данс устгаж чадсангүй");
           }
         },
       },
@@ -88,7 +88,7 @@ export default function AccountsScreen({ navigation }: Props) {
     accountTypes.find((t) => t.value === type) || accountTypes[0];
 
   const formatCurrency = (amount: number): string =>
-    `$${(amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+    `${(amount || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮`;
 
   return (
     <View className="flex-1 bg-dark-bg">
@@ -100,7 +100,7 @@ export default function AccountsScreen({ navigation }: Props) {
             <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
               <Ionicons name="chevron-back" size={24} color="#fff" />
             </TouchableOpacity>
-            <Text className="text-white font-bold text-xl">Accounts</Text>
+            <Text className="text-white font-bold text-xl">Данснууд</Text>
           </View>
           <TouchableOpacity
             className="bg-accent-green/20 p-2 rounded-xl"
@@ -112,12 +112,12 @@ export default function AccountsScreen({ navigation }: Props) {
 
         {/* Total Balance */}
         <View className="bg-dark-card rounded-2xl p-5 mb-6">
-          <Text className="text-gray-400 text-sm mb-1">Total Balance</Text>
+          <Text className="text-gray-400 text-sm mb-1">Нийт үлдэгдэл</Text>
           <Text className="text-white font-bold text-3xl">
             {formatCurrency(accounts.reduce((sum, a) => sum + (a.balance || 0), 0))}
           </Text>
           <Text className="text-gray-500 text-xs mt-1">
-            {accounts.length} account{accounts.length !== 1 ? "s" : ""}
+            {accounts.length} данс
           </Text>
         </View>
 
@@ -150,12 +150,12 @@ export default function AccountsScreen({ navigation }: Props) {
         {accounts.length === 0 && (
           <View className="items-center py-12">
             <Ionicons name="wallet-outline" size={48} color="#444" />
-            <Text className="text-gray-500 text-base mt-3">No accounts yet</Text>
+            <Text className="text-gray-500 text-base mt-3">Данс байхгүй байна</Text>
             <TouchableOpacity
               className="bg-accent-green/20 px-6 py-3 rounded-xl mt-4"
               onPress={() => setShowModal(true)}
             >
-              <Text className="text-accent-green font-medium">Add Account</Text>
+              <Text className="text-accent-green font-medium">Данс нэмэх</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -168,7 +168,7 @@ export default function AccountsScreen({ navigation }: Props) {
         <View className="flex-1 bg-black/60 justify-end">
           <View className="bg-dark-card rounded-t-3xl p-6">
             <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-white font-bold text-xl">New Account</Text>
+              <Text className="text-white font-bold text-xl">Шинэ данс</Text>
               <TouchableOpacity onPress={() => setShowModal(false)}>
                 <Ionicons name="close" size={24} color="#fff" />
               </TouchableOpacity>
@@ -176,10 +176,10 @@ export default function AccountsScreen({ navigation }: Props) {
 
             {/* Account Name */}
             <View className="mb-4">
-              <Text className="text-gray-400 text-sm mb-2">Account Name</Text>
+              <Text className="text-gray-400 text-sm mb-2">Дансны нэр</Text>
               <TextInput
                 className="bg-dark-surface text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-                placeholder="e.g. Main Bank Account"
+                placeholder="Жишээ нь: Үндсэн банкны данс"
                 placeholderTextColor="#666"
                 value={newName}
                 onChangeText={setNewName}
@@ -188,7 +188,7 @@ export default function AccountsScreen({ navigation }: Props) {
 
             {/* Account Type */}
             <View className="mb-6">
-              <Text className="text-gray-400 text-sm mb-2">Account Type</Text>
+              <Text className="text-gray-400 text-sm mb-2">Дансны төрөл</Text>
               <View className="flex-row flex-wrap gap-2">
                 {accountTypes.map((t) => (
                   <TouchableOpacity
@@ -222,7 +222,7 @@ export default function AccountsScreen({ navigation }: Props) {
               {loading ? (
                 <ActivityIndicator color="#0D0D0D" />
               ) : (
-                <Text className="text-dark-bg font-bold text-lg">Create Account</Text>
+                <Text className="text-dark-bg font-bold text-lg">Данс үүсгэх</Text>
               )}
             </TouchableOpacity>
 

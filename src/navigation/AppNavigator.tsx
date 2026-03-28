@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator, BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
-import { View, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { RootStackParamList, BottomTabParamList } from "../types";
@@ -25,14 +25,24 @@ import ScheduledPaymentsScreen from "../screens/ScheduledPaymentsScreen";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-function CustomTabButton({ children, onPress }: BottomTabBarButtonProps) {
+function CustomTabButton({ onPress }: BottomTabBarButtonProps) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="items-center justify-center -mt-6"
+      style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
     >
-      <View className="w-14 h-14 rounded-full bg-accent-green items-center justify-center shadow-lg">
-        {children}
+      <View
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: 28,
+          backgroundColor: "#00C853",
+          alignItems: "center",
+          justifyContent: "center",
+          marginTop: -24,
+        }}
+      >
+        <Ionicons name="add" size={28} color="#0D0D0D" />
       </View>
     </TouchableOpacity>
   );
@@ -63,6 +73,7 @@ function BottomTabs() {
         name="Home"
         component={HomeScreen}
         options={{
+          tabBarLabel: "Нүүр",
           tabBarIcon: ({ color }: { color: string }) => (
             <Ionicons name="home-outline" size={22} color={color} />
           ),
@@ -72,8 +83,9 @@ function BottomTabs() {
         name="Analytics"
         component={StatisticsScreen}
         options={{
+          tabBarLabel: "Шинжилгээ",
           tabBarIcon: ({ color }: { color: string }) => (
-            <Ionicons name="stats-chart-outline" size={22} color={color} />
+            <Ionicons name="trending-up-outline" size={22} color={color} />
           ),
         }}
       />
@@ -92,8 +104,9 @@ function BottomTabs() {
         name="AI Chat"
         component={AIChatScreen}
         options={{
+          tabBarLabel: "Зөвлөмж",
           tabBarIcon: ({ color }: { color: string }) => (
-            <Ionicons name="chatbubble-outline" size={22} color={color} />
+            <Text style={{ fontSize: 16, fontWeight: "700", color }}>Ai</Text>
           ),
         }}
       />
@@ -101,8 +114,9 @@ function BottomTabs() {
         name="Settings"
         component={SettingsScreen}
         options={{
+          tabBarLabel: "Тохиргоо",
           tabBarIcon: ({ color }: { color: string }) => (
-            <Ionicons name="settings-outline" size={22} color={color} />
+            <Ionicons name="grid-outline" size={22} color={color} />
           ),
         }}
       />

@@ -21,7 +21,7 @@ const DonutSegment = ({ categories, total }: DonutSegmentProps) => {
       <View className="w-44 h-44 rounded-full bg-dark-surface items-center justify-center border-8 border-dark-card">
         <View className="items-center">
           <Text className="text-white text-2xl font-bold">
-            ${(total || 0).toFixed(2)}
+            {(total || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮
           </Text>
         </View>
       </View>
@@ -45,7 +45,12 @@ export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
   const [summary, setSummary] = useState<ExpensesSummary | null>(null);
   const [period, setPeriod] = useState<string>("monthly");
 
-  const periods: string[] = ["Daily", "Weekly", "Monthly", "Yearly"];
+  const periods: { label: string; value: string }[] = [
+    { label: "Өдөр", value: "daily" },
+    { label: "7 хоног", value: "weekly" },
+    { label: "Сар", value: "monthly" },
+    { label: "Жил", value: "yearly" },
+  ];
 
   const fetchData = async (): Promise<void> => {
     try {
@@ -63,7 +68,7 @@ export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
   );
 
   const formatCurrency = (amount: number): string =>
-    `$${(amount || 0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+    `${(amount || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮`;
 
   return (
     <View className="flex-1 bg-dark-bg">
@@ -74,31 +79,31 @@ export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
           <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
             <Ionicons name="chevron-back" size={24} color="#fff" />
           </TouchableOpacity>
-          <Text className="text-white font-bold text-xl">Expenses</Text>
+          <Text className="text-white font-bold text-xl">Зарлага</Text>
         </View>
 
         {/* Search */}
         <View className="bg-dark-card rounded-xl flex-row items-center px-4 py-3 mb-4">
           <Ionicons name="search" size={18} color="#666" />
-          <Text className="text-gray-500 ml-2 text-sm">Super AI search</Text>
+          <Text className="text-gray-500 ml-2 text-sm">AI хайлт</Text>
         </View>
 
         {/* Period Tabs */}
         <View className="flex-row bg-dark-card rounded-xl p-1">
           {periods.map((p) => (
             <TouchableOpacity
-              key={p}
+              key={p.value}
               className={`flex-1 py-2 rounded-lg items-center ${
-                period === p.toLowerCase() ? "bg-accent-green" : ""
+                period === p.value ? "bg-accent-green" : ""
               }`}
-              onPress={() => setPeriod(p.toLowerCase())}
+              onPress={() => setPeriod(p.value)}
             >
               <Text
                 className={`font-medium text-xs ${
-                  period === p.toLowerCase() ? "text-dark-bg" : "text-gray-400"
+                  period === p.value ? "text-dark-bg" : "text-gray-400"
                 }`}
               >
-                {p}
+                {p.label}
               </Text>
             </TouchableOpacity>
           ))}

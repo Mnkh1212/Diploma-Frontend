@@ -48,7 +48,7 @@ export default function AddTransactionScreen() {
 
   const handleSubmit = async (): Promise<void> => {
     if (!amount || !selectedCategory || !selectedAccount) {
-      Alert.alert("Error", "Please fill in all required fields");
+      Alert.alert("Алдаа", "Бүх шаардлагатай талбарыг бөглөнө үү");
       return;
     }
 
@@ -64,7 +64,7 @@ export default function AddTransactionScreen() {
       });
       navigation.goBack();
     } catch (error) {
-      Alert.alert("Error", "Failed to create transaction");
+      Alert.alert("Алдаа", "Гүйлгээ үүсгэж чадсангүй");
     } finally {
       setLoading(false);
     }
@@ -78,7 +78,7 @@ export default function AddTransactionScreen() {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="close" size={24} color="#fff" />
           </TouchableOpacity>
-          <Text className="text-white font-bold text-xl">Add Transaction</Text>
+          <Text className="text-white font-bold text-xl">Гүйлгээ нэмэх</Text>
           <View className="w-6" />
         </View>
 
@@ -100,11 +100,11 @@ export default function AddTransactionScreen() {
               }}
             >
               <Text
-                className={`font-bold text-sm capitalize ${
+                className={`font-bold text-sm ${
                   type === t ? "text-white" : "text-gray-400"
                 }`}
               >
-                {t}
+                {t === "expense" ? "Зарлага" : "Орлого"}
               </Text>
             </TouchableOpacity>
           ))}
@@ -114,12 +114,12 @@ export default function AddTransactionScreen() {
       <ScrollView className="flex-1 px-5">
         {/* Amount */}
         <View className="items-center mb-8">
-          <Text className="text-gray-400 text-sm mb-2">Amount</Text>
+          <Text className="text-gray-400 text-sm mb-2">Дүн</Text>
           <View className="flex-row items-center">
-            <Text className="text-white text-4xl font-bold">$</Text>
+            <Text className="text-white text-4xl font-bold">₮</Text>
             <TextInput
               className="text-white text-4xl font-bold ml-1"
-              placeholder="0.00"
+              placeholder="0"
               placeholderTextColor="#444"
               value={amount}
               onChangeText={setAmount}
@@ -131,10 +131,10 @@ export default function AddTransactionScreen() {
 
         {/* Description */}
         <View className="mb-6">
-          <Text className="text-gray-400 text-sm mb-2">Description</Text>
+          <Text className="text-gray-400 text-sm mb-2">Тайлбар</Text>
           <TextInput
             className="bg-dark-card text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-            placeholder="What was this for?"
+            placeholder="Юунд зарцуулсан бэ?"
             placeholderTextColor="#666"
             value={description}
             onChangeText={setDescription}
@@ -142,7 +142,7 @@ export default function AddTransactionScreen() {
         </View>
 
         {/* Account Selection */}
-        <Text className="text-gray-400 text-sm mb-2">Account</Text>
+        <Text className="text-gray-400 text-sm mb-2">Данс</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
           {accounts.map((account) => (
             <TouchableOpacity
@@ -160,7 +160,7 @@ export default function AddTransactionScreen() {
         </ScrollView>
 
         {/* Category Selection */}
-        <Text className="text-gray-400 text-sm mb-2">Category</Text>
+        <Text className="text-gray-400 text-sm mb-2">Ангилал</Text>
         <View className="flex-row flex-wrap gap-2 mb-8">
           {categories.map((cat) => (
             <TouchableOpacity
@@ -194,7 +194,7 @@ export default function AddTransactionScreen() {
             <ActivityIndicator color="#fff" />
           ) : (
             <Text className="text-white font-bold text-lg">
-              Add {type === "expense" ? "Expense" : "Income"}
+              {type === "expense" ? "Зарлага" : "Орлого"} нэмэх
             </Text>
           )}
         </TouchableOpacity>

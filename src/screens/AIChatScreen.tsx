@@ -101,7 +101,7 @@ export default function AIChatScreen() {
         ...prev,
         {
           role: "assistant",
-          content: "Sorry, I encountered an error. Please try again.",
+          content: "Уучлаарай, алдаа гарлаа. Дахин оролдоно уу.",
           id: Date.now() + 1,
         } as OptimisticMessage,
       ]);
@@ -121,10 +121,10 @@ export default function AIChatScreen() {
           <View className="w-14 h-14 rounded-full bg-accent-green/20 items-center justify-center mb-3">
             <Ionicons name="sparkles" size={28} color="#00C853" />
           </View>
-          <Text className="text-white text-xl font-bold">Welcome to</Text>
-          <Text className="text-white text-xl font-bold">AI Chat</Text>
+          <Text className="text-white text-xl font-bold">Тавтай морил</Text>
+          <Text className="text-white text-xl font-bold">AI Зөвлөгч</Text>
           <Text className="text-gray-400 text-sm mt-1">
-            Start chatting with AI Chat now
+            AI зөвлөгчтэй чатлаж эхлээрэй
           </Text>
         </View>
 
@@ -133,11 +133,11 @@ export default function AIChatScreen() {
           className="bg-accent-green py-4 rounded-2xl items-center mb-6"
           onPress={handleNewChat}
         >
-          <Text className="text-dark-bg font-bold text-base">New Chat</Text>
+          <Text className="text-dark-bg font-bold text-base">Шинэ чат</Text>
         </TouchableOpacity>
 
         {/* Previous Chats */}
-        <Text className="text-gray-400 text-sm mb-3">Previous 7 days</Text>
+        <Text className="text-gray-400 text-sm mb-3">Сүүлийн 7 хоног</Text>
         <ScrollView className="flex-1">
           {chats.map((chat) => (
             <TouchableOpacity
@@ -178,7 +178,7 @@ export default function AIChatScreen() {
         </TouchableOpacity>
         <Ionicons name="sparkles" size={20} color="#00C853" />
         <Text className="text-white font-bold text-base ml-2">
-          AI Financial Advisor
+          AI Санхүүгийн зөвлөгч
         </Text>
       </View>
 
@@ -220,7 +220,7 @@ export default function AIChatScreen() {
         <View className="flex-row items-center bg-dark-card rounded-2xl px-4 py-2">
           <TextInput
             className="flex-1 text-white text-sm py-2"
-            placeholder="Ask about your finances..."
+            placeholder="Мессеж бичих..."
             placeholderTextColor="#666"
             value={input}
             onChangeText={setInput}

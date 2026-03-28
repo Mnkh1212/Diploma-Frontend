@@ -62,7 +62,7 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
 
   const handleCreate = async (): Promise<void> => {
     if (!description.trim() || !amount || !selectedCategory || !selectedAccount) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert("Алдаа", "Бүх талбарыг бөглөнө үү");
       return;
     }
     setLoading(true);
@@ -82,24 +82,24 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
       setSelectedCategory(null);
       fetchData();
     } catch (error) {
-      Alert.alert("Error", "Failed to create scheduled payment");
+      Alert.alert("Алдаа", "Төлөвлөсөн төлбөр үүсгэж чадсангүй");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = (id: number): void => {
-    Alert.alert("Delete", "Remove this scheduled payment?", [
-      { text: "Cancel" },
+    Alert.alert("Устгах", "Энэ төлөвлөсөн төлбөрийг устгах уу?", [
+      { text: "Цуцлах" },
       {
-        text: "Delete",
+        text: "Устгах",
         style: "destructive",
         onPress: async () => {
           try {
             await deleteScheduledPayment(id);
             fetchData();
           } catch (error) {
-            Alert.alert("Error", "Failed to delete");
+            Alert.alert("Алдаа", "Устгаж чадсангүй");
           }
         },
       },
@@ -118,7 +118,7 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
             <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
               <Ionicons name="chevron-back" size={24} color="#fff" />
             </TouchableOpacity>
-            <Text className="text-white font-bold text-xl">Recurring Payments</Text>
+            <Text className="text-white font-bold text-xl">Төлөвлөсөн төлбөр</Text>
           </View>
           <TouchableOpacity
             className="bg-accent-purple/20 p-2 rounded-xl"
@@ -147,13 +147,13 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
             </View>
             <View className="flex-1">
               <Text className="text-white font-medium text-sm">{payment.description}</Text>
-              <Text className="text-gray-500 text-xs capitalize">
-                {payment.frequency} - Next: {new Date(payment.next_date).toLocaleDateString()}
+              <Text className="text-gray-500 text-xs">
+                {payment.frequency === "daily" ? "Өдөр бүр" : payment.frequency === "weekly" ? "7 хоног бүр" : payment.frequency === "monthly" ? "Сар бүр" : "Жил бүр"} - Дараагийн: {new Date(payment.next_date).toLocaleDateString()}
               </Text>
             </View>
             <View className="items-end">
               <Text className="text-accent-red font-bold text-sm">
-                -${payment.amount?.toFixed(2)}
+                -{(payment.amount || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮
               </Text>
               <View
                 className={`px-2 py-0.5 rounded-full mt-1 ${
@@ -165,7 +165,7 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
                     payment.is_active ? "text-accent-green" : "text-gray-500"
                   }`}
                 >
-                  {payment.is_active ? "Active" : "Paused"}
+                  {payment.is_active ? "Идэвхтэй" : "Зогссон"}
                 </Text>
               </View>
             </View>
@@ -175,12 +175,12 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
         {payments.length === 0 && (
           <View className="items-center py-12">
             <Ionicons name="repeat-outline" size={48} color="#444" />
-            <Text className="text-gray-500 text-base mt-3">No recurring payments</Text>
+            <Text className="text-gray-500 text-base mt-3">Төлөвлөсөн төлбөр байхгүй</Text>
             <TouchableOpacity
               className="bg-accent-purple/20 px-6 py-3 rounded-xl mt-4"
               onPress={() => setShowModal(true)}
             >
-              <Text className="text-accent-purple font-medium">Add Payment</Text>
+              <Text className="text-accent-purple font-medium">Төлбөр нэмэх</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -193,7 +193,7 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
         <View className="flex-1 bg-black/60 justify-end">
           <View className="bg-dark-card rounded-t-3xl p-6">
             <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-white font-bold text-xl">New Recurring Payment</Text>
+              <Text className="text-white font-bold text-xl">Шинэ төлөвлөсөн төлбөр</Text>
               <TouchableOpacity onPress={() => setShowModal(false)}>
                 <Ionicons name="close" size={24} color="#fff" />
               </TouchableOpacity>
@@ -201,10 +201,10 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
 
             {/* Description */}
             <View className="mb-4">
-              <Text className="text-gray-400 text-sm mb-2">Description</Text>
+              <Text className="text-gray-400 text-sm mb-2">Тайлбар</Text>
               <TextInput
                 className="bg-dark-surface text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-                placeholder="e.g. Netflix subscription"
+                placeholder="Жишээ нь: Netflix захиалга"
                 placeholderTextColor="#666"
                 value={description}
                 onChangeText={setDescription}
@@ -213,10 +213,10 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
 
             {/* Amount */}
             <View className="mb-4">
-              <Text className="text-gray-400 text-sm mb-2">Amount</Text>
+              <Text className="text-gray-400 text-sm mb-2">Дүн</Text>
               <TextInput
                 className="bg-dark-surface text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-                placeholder="0.00"
+                placeholder="0"
                 placeholderTextColor="#666"
                 value={amount}
                 onChangeText={setAmount}
@@ -226,7 +226,7 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
 
             {/* Frequency */}
             <View className="mb-4">
-              <Text className="text-gray-400 text-sm mb-2">Frequency</Text>
+              <Text className="text-gray-400 text-sm mb-2">Давтамж</Text>
               <View className="flex-row gap-2">
                 {frequencies.map((f) => (
                   <TouchableOpacity
@@ -239,11 +239,11 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
                     onPress={() => setFrequency(f)}
                   >
                     <Text
-                      className={`text-xs font-medium capitalize ${
+                      className={`text-xs font-medium ${
                         frequency === f ? "text-accent-purple" : "text-gray-400"
                       }`}
                     >
-                      {f}
+                      {f === "daily" ? "Өдөр бүр" : f === "weekly" ? "7 хоног" : f === "monthly" ? "Сар бүр" : "Жил бүр"}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -252,7 +252,7 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
 
             {/* Category */}
             <View className="mb-4">
-              <Text className="text-gray-400 text-sm mb-2">Category</Text>
+              <Text className="text-gray-400 text-sm mb-2">Ангилал</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View className="flex-row gap-2">
                   {categories.map((cat) => (
@@ -282,7 +282,7 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="text-white font-bold text-lg">Create Payment</Text>
+                <Text className="text-white font-bold text-lg">Төлбөр үүсгэх</Text>
               )}
             </TouchableOpacity>
 

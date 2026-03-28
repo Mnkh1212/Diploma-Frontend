@@ -31,11 +31,11 @@ export default function RegisterScreen({ navigation }: Props) {
 
   const handleRegister = async (): Promise<void> => {
     if (!name || !email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert("Алдаа", "Бүх талбарыг бөглөнө үү");
       return;
     }
     if (password.length < 6) {
-      Alert.alert("Error", "Password must be at least 6 characters");
+      Alert.alert("Алдаа", "Нууц үг хамгийн багадаа 6 тэмдэгт байх ёстой");
       return;
     }
     setLoading(true);
@@ -43,7 +43,7 @@ export default function RegisterScreen({ navigation }: Props) {
       await register(name, email, password);
     } catch (error) {
       const err = error as ApiError;
-      Alert.alert("Error", err.response?.data?.error || "Registration failed");
+      Alert.alert("Алдаа", err.response?.data?.error || "Бүртгэл амжилтгүй боллоо");
     } finally {
       setLoading(false);
     }
@@ -53,16 +53,16 @@ export default function RegisterScreen({ navigation }: Props) {
     <View className="flex-1 bg-dark-bg px-6 justify-center">
       <StatusBar style="light" />
 
-      <Text className="text-white text-3xl font-bold mb-2">Create Account</Text>
+      <Text className="text-white text-3xl font-bold mb-2">Бүртгүүлэх</Text>
       <Text className="text-gray-400 text-base mb-10">
-        Start tracking your finances
+        Санхүүгээ хянаж эхлээрэй
       </Text>
 
       <View className="mb-4">
-        <Text className="text-gray-400 text-sm mb-2">Full Name</Text>
+        <Text className="text-gray-400 text-sm mb-2">Нэр</Text>
         <TextInput
           className="bg-dark-card text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-          placeholder="Enter your name"
+          placeholder="Нэрээ оруулна уу"
           placeholderTextColor="#666"
           value={name}
           onChangeText={setName}
@@ -70,10 +70,10 @@ export default function RegisterScreen({ navigation }: Props) {
       </View>
 
       <View className="mb-4">
-        <Text className="text-gray-400 text-sm mb-2">Email</Text>
+        <Text className="text-gray-400 text-sm mb-2">Имэйл</Text>
         <TextInput
           className="bg-dark-card text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-          placeholder="Enter your email"
+          placeholder="Имэйл хаягаа оруулна уу"
           placeholderTextColor="#666"
           value={email}
           onChangeText={setEmail}
@@ -83,10 +83,10 @@ export default function RegisterScreen({ navigation }: Props) {
       </View>
 
       <View className="mb-8">
-        <Text className="text-gray-400 text-sm mb-2">Password</Text>
+        <Text className="text-gray-400 text-sm mb-2">Нууц үг</Text>
         <TextInput
           className="bg-dark-card text-white rounded-xl px-4 py-4 text-base border border-dark-border"
-          placeholder="Minimum 6 characters"
+          placeholder="Хамгийн багадаа 6 тэмдэгт"
           placeholderTextColor="#666"
           value={password}
           onChangeText={setPassword}
@@ -102,7 +102,7 @@ export default function RegisterScreen({ navigation }: Props) {
         {loading ? (
           <ActivityIndicator color="#0D0D0D" />
         ) : (
-          <Text className="text-dark-bg font-bold text-lg">Create Account</Text>
+          <Text className="text-dark-bg font-bold text-lg">Бүртгүүлэх</Text>
         )}
       </TouchableOpacity>
 
@@ -111,8 +111,8 @@ export default function RegisterScreen({ navigation }: Props) {
         className="items-center"
       >
         <Text className="text-gray-400">
-          Already have an account?{" "}
-          <Text className="text-accent-green font-bold">Sign In</Text>
+          Бүртгэлтэй юу?{" "}
+          <Text className="text-accent-green font-bold">Нэвтрэх</Text>
         </Text>
       </TouchableOpacity>
     </View>

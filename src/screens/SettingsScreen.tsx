@@ -24,28 +24,28 @@ export default function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleLogout = (): void => {
-    Alert.alert("Logout", "Are you sure you want to logout?", [
-      { text: "Cancel" },
-      { text: "Logout", style: "destructive", onPress: logout },
+    Alert.alert("Гарах", "Та гарахдаа итгэлтэй байна уу?", [
+      { text: "Цуцлах" },
+      { text: "Гарах", style: "destructive", onPress: logout },
     ]);
   };
 
-  const comingSoon = () => Alert.alert("Coming Soon", "This feature is under development");
+  const comingSoon = () => Alert.alert("Тун удахгүй", "Энэ функц хөгжүүлэлтийн шатанд байна");
 
   const sections: SettingsSection[] = [
     {
       items: [
         {
           icon: "person-outline",
-          label: "Profile",
-          sublabel: "Login credentials",
+          label: "Профайл",
+          sublabel: "Нэвтрэх мэдээлэл",
           color: "#448AFF",
           onPress: () => navigation.navigate("Profile"),
         },
         {
           icon: "image-outline",
-          label: "Appearance",
-          sublabel: "Widgets, Themes",
+          label: "Харагдац",
+          sublabel: "Виджет, Загвар",
           color: "#7C4DFF",
           onPress: comingSoon,
         },
@@ -55,29 +55,29 @@ export default function SettingsScreen() {
       items: [
         {
           icon: "settings-outline",
-          label: "General",
-          sublabel: "Currency, clear data",
+          label: "Ерөнхий",
+          sublabel: "Валют, өгөгдөл цэвэрлэх",
           color: "#FF6B35",
           onPress: () => navigation.navigate("Profile"),
         },
         {
           icon: "card-outline",
-          label: "Account settings",
-          sublabel: "Connected accounts",
+          label: "Дансны тохиргоо",
+          sublabel: "Холбогдсон дансууд",
           color: "#4ECDC4",
           onPress: () => navigation.navigate("Accounts"),
         },
         {
           icon: "document-outline",
-          label: "Data",
-          sublabel: "Export, import data",
+          label: "Өгөгдөл",
+          sublabel: "Экспорт, импорт өгөгдөл",
           color: "#FFD600",
           onPress: comingSoon,
         },
         {
           icon: "lock-closed-outline",
-          label: "Privacy",
-          sublabel: "Password, privacy preferences",
+          label: "Нууцлал",
+          sublabel: "Нууц үг, нууцлалын тохиргоо",
           color: "#00C853",
           onPress: comingSoon,
         },
@@ -89,7 +89,7 @@ export default function SettingsScreen() {
     <View className="flex-1 bg-dark-bg">
       <StatusBar style="light" />
       <ScrollView className="flex-1 px-5 pt-14">
-        <Text className="text-white font-bold text-xl mb-6">Settings</Text>
+        <Text className="text-white font-bold text-xl mb-6">Тохиргоо</Text>
 
         {/* User Card */}
         <TouchableOpacity
@@ -98,12 +98,12 @@ export default function SettingsScreen() {
         >
           <View className="w-14 h-14 rounded-full bg-accent-purple items-center justify-center mr-4">
             <Text className="text-white font-bold text-2xl">
-              {user?.name?.charAt(0) || "U"}
+              {user?.name?.charAt(0) || "Х"}
             </Text>
           </View>
           <View className="flex-1">
             <Text className="text-white font-bold text-lg">
-              {user?.name || "User"}
+              {user?.name || "Хэрэглэгч"}
             </Text>
             <Text className="text-gray-400 text-sm">{user?.email}</Text>
           </View>
@@ -145,14 +145,14 @@ export default function SettingsScreen() {
             <View className="w-10 h-10 rounded-xl bg-accent-blue/20 items-center justify-center mr-3">
               <Ionicons name="help-circle-outline" size={20} color="#448AFF" />
             </View>
-            <Text className="text-white font-medium text-sm flex-1">Help & Support</Text>
+            <Text className="text-white font-medium text-sm flex-1">Тусламж</Text>
             <Ionicons name="chevron-forward" size={18} color="#666" />
           </TouchableOpacity>
           <TouchableOpacity className="flex-row items-center p-4 border-b border-dark-border" onPress={comingSoon}>
             <View className="w-10 h-10 rounded-xl bg-accent-yellow/20 items-center justify-center mr-3">
               <Ionicons name="star-outline" size={20} color="#FFD600" />
             </View>
-            <Text className="text-white font-medium text-sm flex-1">Rate App</Text>
+            <Text className="text-white font-medium text-sm flex-1">Апп үнэлэх</Text>
             <Ionicons name="chevron-forward" size={18} color="#666" />
           </TouchableOpacity>
         </View>
@@ -162,7 +162,7 @@ export default function SettingsScreen() {
           className="bg-accent-red/10 rounded-2xl p-4 items-center mb-8"
           onPress={handleLogout}
         >
-          <Text className="text-accent-red font-bold text-base">Logout</Text>
+          <Text className="text-accent-red font-bold text-base">Гарах</Text>
         </TouchableOpacity>
 
         <View className="h-24" />
