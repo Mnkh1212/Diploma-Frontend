@@ -5,17 +5,22 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
+  Image,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
-import Svg, { Circle } from "react-native-svg";
+import Svg, { Circle, Defs, LinearGradient, Stop, Rect } from "react-native-svg";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
+import { useCurrency } from "../context/CurrencyContext";
 import { getDashboard, getTransactions } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BottomTabParamList, RootStackParamList, DashboardResponse, Transaction } from "../types";
+
+const API_BASE = "http://192.168.1.130:8080";
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<BottomTabParamList, "Home">,
@@ -35,6 +40,8 @@ const accountIconMap: Record<string, keyof typeof Ionicons.glyphMap> = {
 };
 
 function SavingsRing({ percent, amount }: { percent: number; amount: number }) {
+  const { colors } = useTheme();
+  const { formatAmount } = useCurrency();
   const size = 100;
   const strokeWidth = 10;
   const radius = (size - strokeWidth) / 2;
@@ -49,7 +56,7 @@ function SavingsRing({ percent, amount }: { percent: number; amount: number }) {
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="#2A2A3E"
+          stroke={colors.border}
           strokeWidth={strokeWidth}
           fill="transparent"
         />
@@ -68,9 +75,9 @@ function SavingsRing({ percent, amount }: { percent: number; amount: number }) {
       </Svg>
       <View className="absolute items-center">
         <Text className="text-accent-green font-bold text-base">
-          {Math.abs(amount).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮
+          {formatAmount(Math.abs(amount))}
         </Text>
-        <Text className="text-gray-400 text-xs">Хэмнэлт</Text>
+        <Text className="text-xs" style={{ color: colors.textSecondary }}>Хэмнэлт</Text>
       </View>
     </View>
   );
@@ -78,6 +85,8 @@ function SavingsRing({ percent, amount }: { percent: number; amount: number }) {
 
 export default function HomeScreen({ navigation }: Props) {
   const { user } = useAuth();
+  const { isDark, colors, toggleTheme } = useTheme();
+  const { formatAmount } = useCurrency();
   const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
   const [recentTx, setRecentTx] = useState<Transaction[]>([]);
   const [txTab, setTxTab] = useState<string>("Бүгд");
@@ -127,9 +136,6 @@ export default function HomeScreen({ navigation }: Props) {
     }
   };
 
-  const formatCurrency = (amount: number | undefined): string => {
-    return `${(amount || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮`;
-  };
 
   const groupByDate = (txList: Transaction[]): Record<string, Transaction[]> => {
     const groups: Record<string, Transaction[]> = {};
@@ -146,8 +152,8 @@ export default function HomeScreen({ navigation }: Props) {
   const grouped = groupByDate(recentTx);
 
   return (
-    <View className="flex-1 bg-dark-bg">
-      <StatusBar style="light" />
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <StatusBar style={isDark ? "light" : "dark"} />
       <ScrollView
         className="flex-1 px-5 pt-14"
         refreshControl={
@@ -156,31 +162,95 @@ export default function HomeScreen({ navigation }: Props) {
       >
         {/* Header */}
         <View className="flex-row items-center justify-between mb-6">
-          <View className="flex-row items-center">
-            <View className="w-11 h-11 rounded-full bg-accent-purple items-center justify-center mr-3">
-              <Text className="text-white font-bold text-lg">
-                {user?.name?.charAt(0) || "U"}
-              </Text>
-            </View>
-            <Text className="text-white font-semibold text-base">
+          <TouchableOpacity className="flex-row items-center" onPress={() => navigation.navigate("Profile")}>
+            {user?.avatar && user.avatar.length > 1 ? (
+              <Image
+                source={{
+                  uri: user.avatar.startsWith("http") ? user.avatar : API_BASE + user.avatar,
+                  cache: "reload",
+                }}
+                style={{ width: 44, height: 44, borderRadius: 22, marginRight: 12 }}
+              />
+            ) : (
+              <View className="w-11 h-11 rounded-full bg-accent-purple items-center justify-center mr-3">
+                <Text className="font-bold text-lg" style={{ color: colors.text }}>
+                  {user?.name?.charAt(0) || "U"}
+                </Text>
+              </View>
+            )}
+            <Text className="font-semibold text-base" style={{ color: colors.text }}>
               {user?.name || "User"}
             </Text>
-          </View>
+          </TouchableOpacity>
           <View className="flex-row items-center">
-            <TouchableOpacity className="mr-4" onPress={() => navigation.navigate("Settings")}>
-              <Ionicons name="moon-outline" size={22} color="#fff" />
+            <TouchableOpacity className="mr-4" onPress={toggleTheme}>
+              <Ionicons name={isDark ? "moon-outline" : "sunny-outline"} size={22} color={colors.text} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
-              <Ionicons name="notifications-outline" size={22} color="#fff" />
+            <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
+              <Ionicons name="notifications-outline" size={22} color={colors.text} />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Үлдэгдэл */}
-        <Text className="text-white font-bold text-xl mb-1">Үлдэгдэл</Text>
-        <Text className="text-accent-green text-4xl font-bold mb-5">
-          {formatCurrency(dashboard?.balance)}
-        </Text>
+        {/* Үлдэгдэл Card */}
+        <View style={{
+          borderRadius: 20, overflow: "hidden", marginBottom: 20,
+        }}>
+          <Svg style={{ position: "absolute", width: "100%", height: "100%" }}>
+            <Defs>
+              <LinearGradient id="balanceGrad" x1="0" y1="0" x2="1" y2="1">
+                <Stop offset="0" stopColor="#0F2318" />
+                <Stop offset="0.5" stopColor="#121F1A" />
+                <Stop offset="1" stopColor="#1A1A2E" />
+              </LinearGradient>
+            </Defs>
+            <Rect x="0" y="0" width="100%" height="100%" fill="url(#balanceGrad)" />
+          </Svg>
+          <View style={{ padding: 18 }}>
+            <Text style={{ color: "#777", fontSize: 12, fontWeight: "500", marginBottom: 4 }}>
+              Нийт үлдэгдэл
+            </Text>
+            <Text style={{ color: "#00C853", fontSize: 28, fontWeight: "800", marginBottom: 12 }}>
+              {formatAmount(dashboard?.balance)}
+            </Text>
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <View style={{
+                flex: 1, flexDirection: "row", alignItems: "center",
+                backgroundColor: "rgba(0,200,83,0.08)", borderRadius: 10, padding: 10,
+              }}>
+                <View style={{
+                  width: 28, height: 28, borderRadius: 14,
+                  backgroundColor: "rgba(0,200,83,0.15)", alignItems: "center", justifyContent: "center", marginRight: 8,
+                }}>
+                  <Ionicons name="arrow-down" size={14} color="#00C853" />
+                </View>
+                <View>
+                  <Text style={{ color: "#777", fontSize: 10 }}>Орлого</Text>
+                  <Text style={{ color: "#00C853", fontSize: 13, fontWeight: "700" }}>
+                    {formatAmount(dashboard?.total_income)}
+                  </Text>
+                </View>
+              </View>
+              <View style={{
+                flex: 1, flexDirection: "row", alignItems: "center",
+                backgroundColor: "rgba(255,68,68,0.08)", borderRadius: 10, padding: 10,
+              }}>
+                <View style={{
+                  width: 28, height: 28, borderRadius: 14,
+                  backgroundColor: "rgba(255,68,68,0.15)", alignItems: "center", justifyContent: "center", marginRight: 8,
+                }}>
+                  <Ionicons name="arrow-up" size={14} color="#FF4444" />
+                </View>
+                <View>
+                  <Text style={{ color: "#777", fontSize: 10 }}>Зарлага</Text>
+                  <Text style={{ color: "#FF4444", fontSize: 13, fontWeight: "700" }}>
+                    {formatAmount(dashboard?.total_expenses)}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
 
         {/* Savings Card */}
         {(() => {
@@ -190,12 +260,12 @@ export default function HomeScreen({ navigation }: Props) {
           const savingsRate = income > 0 ? Math.round((monthlySaved / income) * 100) : 0;
           const isPositive = monthlySaved >= 0;
           return (
-            <View className="flex-row items-center bg-dark-card rounded-2xl p-5 mb-6">
+            <View className="flex-row items-center rounded-2xl p-5 mb-6" style={{ backgroundColor: colors.card }}>
               <View className="flex-1 mr-3">
-                <Text className="text-white font-bold text-lg mb-1">
+                <Text className="font-bold text-lg mb-1" style={{ color: colors.text }}>
                   {isPositive ? "Баяр хүргэе!" : "Анхааруулга!"}
                 </Text>
-                <Text className="text-gray-400 text-sm leading-5">
+                <Text className="text-sm leading-5" style={{ color: colors.textSecondary }}>
                   {isPositive
                     ? `Таны зарлага өмнөх сараас ${Math.abs(savingsRate)}%-иар буурсан.`
                     : `Таны зарлага өмнөх сараас ${Math.abs(savingsRate)}%-иар нэмэгдсэн.`}
@@ -217,21 +287,21 @@ export default function HomeScreen({ navigation }: Props) {
           {(dashboard?.accounts || []).map((account, index) => (
             <TouchableOpacity
               key={account.id || index}
-              className="bg-dark-card rounded-2xl p-4 mr-3"
-              style={{ width: 160 }}
+              className="rounded-2xl p-4 mr-3"
+              style={{ width: 160, backgroundColor: colors.card }}
               onPress={() => navigation.navigate("Accounts")}
             >
-              <View className="w-10 h-10 rounded-lg bg-dark-surface items-center justify-center mb-3">
+              <View className="w-10 h-10 rounded-lg items-center justify-center mb-3" style={{ backgroundColor: colors.surface }}>
                 <Ionicons
                   name={(account.icon as keyof typeof Ionicons.glyphMap) || accountIconMap[account.type] || "wallet-outline"}
                   size={20}
-                  color="#fff"
+                  color={colors.text}
                 />
               </View>
-              <Text className="text-white font-bold text-base">
-                {formatCurrency(account.balance)}
+              <Text className="font-bold text-base" style={{ color: colors.text }}>
+                {formatAmount(account.balance)}
               </Text>
-              <Text className="text-gray-500 text-xs mt-1 uppercase">
+              <Text className="text-xs mt-1 uppercase" style={{ color: colors.textSecondary }}>
                 {account.name}
               </Text>
             </TouchableOpacity>
@@ -248,10 +318,11 @@ export default function HomeScreen({ navigation }: Props) {
           ] as QuickAction[]).map((action, index) => (
             <TouchableOpacity
               key={index}
-              className="w-12 h-12 rounded-full bg-dark-card items-center justify-center"
+              className="w-12 h-12 rounded-full items-center justify-center"
+              style={{ backgroundColor: colors.card }}
               onPress={action.onPress}
             >
-              <Ionicons name={action.icon} size={22} color="#fff" />
+              <Ionicons name={action.icon} size={22} color={colors.text} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity
@@ -264,21 +335,24 @@ export default function HomeScreen({ navigation }: Props) {
 
         {/* Transaction History Header */}
         <View className="flex-row justify-between items-center mb-3">
-          <Text className="text-white font-bold text-lg">Гүйлгээний түүх</Text>
+          <Text className="font-bold text-lg" style={{ color: colors.text }}>Гүйлгээний түүх</Text>
           <TouchableOpacity onPress={() => navigation.navigate("Transactions")}>
-            <Text className="text-gray-400 text-sm">Бүгдийг харах</Text>
+            <Text className="text-sm" style={{ color: colors.textSecondary }}>Бүгдийг харах</Text>
           </TouchableOpacity>
         </View>
 
         {/* Transaction Tabs */}
-        <View className="flex-row bg-dark-card rounded-xl p-1 mb-4">
+        <View className="flex-row rounded-xl p-1 mb-4" style={{ backgroundColor: colors.card }}>
           {txTabs.map((tab) => (
             <TouchableOpacity
               key={tab}
               className={`flex-1 py-2 rounded-lg items-center ${txTab === tab ? "bg-accent-green" : ""}`}
               onPress={() => handleTxTab(tab)}
             >
-              <Text className={`font-medium text-xs ${txTab === tab ? "text-dark-bg" : "text-gray-400"}`}>
+              <Text
+                className="font-medium text-xs"
+                style={{ color: txTab === tab ? "#0D0D0D" : colors.textSecondary }}
+              >
                 {tab}
               </Text>
             </TouchableOpacity>
@@ -288,11 +362,12 @@ export default function HomeScreen({ navigation }: Props) {
         {/* Transactions grouped by date */}
         {Object.entries(grouped).map(([date, txList]) => (
           <View key={date} className="mb-3">
-            <Text className="text-gray-500 text-xs mb-2">{date}</Text>
+            <Text className="text-xs mb-2" style={{ color: colors.textMuted }}>{date}</Text>
             {txList.map((tx, index) => (
               <View
                 key={tx.id || index}
-                className="flex-row items-center bg-dark-card rounded-xl p-4 mb-2"
+                className="flex-row items-center rounded-xl p-4 mb-2"
+                style={{ backgroundColor: colors.card }}
               >
                 <View
                   className="w-10 h-10 rounded-full items-center justify-center mr-3"
@@ -307,10 +382,10 @@ export default function HomeScreen({ navigation }: Props) {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-white font-medium text-sm">
+                  <Text className="font-medium text-sm" style={{ color: colors.text }}>
                     {tx.category?.name || tx.description}
                   </Text>
-                  <Text className="text-gray-500 text-xs">
+                  <Text className="text-xs" style={{ color: colors.textSecondary }}>
                     {tx.description || tx.account?.name}
                   </Text>
                 </View>
@@ -320,7 +395,7 @@ export default function HomeScreen({ navigation }: Props) {
                   }`}
                 >
                   {tx.type === "income" ? "+" : "-"}
-                  {formatCurrency(tx.amount)}
+                  {formatAmount(tx.amount)}
                 </Text>
               </View>
             ))}
@@ -329,8 +404,8 @@ export default function HomeScreen({ navigation }: Props) {
 
         {recentTx.length === 0 && (
           <View className="items-center py-8">
-            <Ionicons name="receipt-outline" size={40} color="#333" />
-            <Text className="text-gray-600 text-sm mt-2">Гүйлгээ байхгүй байна</Text>
+            <Ionicons name="receipt-outline" size={40} color={colors.textMuted} />
+            <Text className="text-sm mt-2" style={{ color: colors.textMuted }}>Гүйлгээ байхгүй байна</Text>
           </View>
         )}
 

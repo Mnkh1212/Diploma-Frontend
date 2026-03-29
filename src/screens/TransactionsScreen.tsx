@@ -14,10 +14,14 @@ import { getTransactions, deleteTransaction } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList, Transaction, PaginatedResponse } from "../types";
+import { useTheme } from "../context/ThemeContext";
+import { useCurrency } from "../context/CurrencyContext";
 
 type TransactionsScreenProps = NativeStackScreenProps<RootStackParamList, "Transactions">;
 
 export default function TransactionsScreen({ navigation }: TransactionsScreenProps) {
+  const { isDark, colors } = useTheme();
+  const { formatAmount } = useCurrency();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [activeTab, setActiveTab] = useState<string>("Бүгд");
   const [search, setSearch] = useState<string>("");
@@ -71,9 +75,6 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
     ]);
   };
 
-  const formatCurrency = (amount: number): string =>
-    `${(amount || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮`;
-
   const groupByDate = (txList: Transaction[]): Record<string, Transaction[]> => {
     const groups: Record<string, Transaction[]> = {};
     (txList || []).forEach((tx) => {
@@ -88,32 +89,33 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
   const grouped = groupByDate(transactions);
 
   return (
-    <View className="flex-1 bg-dark-bg">
-      <StatusBar style="light" />
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <StatusBar style={isDark ? "light" : "dark"} />
 
       {/* Header */}
       <View className="px-5 pt-14 pb-4">
         <View className="flex-row items-center mb-4">
           <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
-            <Ionicons name="chevron-back" size={24} color="#fff" />
+            <Ionicons name="chevron-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text className="text-white font-bold text-xl">Гүйлгээнүүд</Text>
+          <Text className="font-bold text-xl" style={{ color: colors.text }}>Гүйлгээнүүд</Text>
         </View>
 
         {/* Search */}
-        <View className="bg-dark-card rounded-xl flex-row items-center px-4 py-3 mb-4">
-          <Ionicons name="search" size={18} color="#666" />
+        <View className="rounded-xl flex-row items-center px-4 py-3 mb-4" style={{ backgroundColor: colors.card }}>
+          <Ionicons name="search" size={18} color={colors.textMuted} />
           <TextInput
-            className="flex-1 text-white ml-2 text-sm"
+            className="flex-1 ml-2 text-sm"
+            style={{ color: colors.text }}
             placeholder="Гүйлгээ хайх"
-            placeholderTextColor="#666"
+            placeholderTextColor={colors.textMuted}
             value={search}
             onChangeText={setSearch}
           />
         </View>
 
         {/* Tabs */}
-        <View className="flex-row bg-dark-card rounded-xl p-1">
+        <View className="flex-row rounded-xl p-1" style={{ backgroundColor: colors.card }}>
           {tabs.map((tab) => (
             <TouchableOpacity
               key={tab}
@@ -124,8 +126,9 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
             >
               <Text
                 className={`font-medium text-sm ${
-                  activeTab === tab ? "text-dark-bg" : "text-gray-400"
+                  activeTab === tab ? "text-dark-bg" : ""
                 }`}
+                style={activeTab !== tab ? { color: colors.textSecondary } : undefined}
               >
                 {tab}
               </Text>
@@ -138,11 +141,12 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
       <ScrollView className="flex-1 px-5">
         {Object.entries(grouped).map(([date, txList]) => (
           <View key={date} className="mb-4">
-            <Text className="text-gray-500 text-sm mb-2">{date}</Text>
+            <Text className="text-sm mb-2" style={{ color: colors.textMuted }}>{date}</Text>
             {txList.map((tx) => (
               <TouchableOpacity
                 key={tx.id}
-                className="flex-row items-center bg-dark-card rounded-xl p-4 mb-2"
+                className="flex-row items-center rounded-xl p-4 mb-2"
+                style={{ backgroundColor: colors.card }}
                 onLongPress={() => handleDelete(tx.id)}
               >
                 <View
@@ -158,10 +162,10 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-white font-medium text-sm">
+                  <Text className="font-medium text-sm" style={{ color: colors.text }}>
                     {tx.category?.name || "Тодорхойгүй"}
                   </Text>
-                  <Text className="text-gray-500 text-xs">
+                  <Text className="text-xs" style={{ color: colors.textMuted }}>
                     {tx.description || tx.account?.name}
                   </Text>
                 </View>
@@ -174,9 +178,9 @@ export default function TransactionsScreen({ navigation }: TransactionsScreenPro
                     }`}
                   >
                     {tx.type === "income" ? "+" : "-"}
-                    {formatCurrency(tx.amount)}
+                    {formatAmount(tx.amount)}
                   </Text>
-                  <Text className="text-gray-500 text-xs">
+                  <Text className="text-xs" style={{ color: colors.textMuted }}>
                     {new Date(tx.date).toLocaleTimeString("mn-MN", {
                       hour: "2-digit",
                       minute: "2-digit",

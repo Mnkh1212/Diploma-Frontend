@@ -15,6 +15,8 @@ import { getAccounts, createAccount, deleteAccount } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList, Account } from "../types";
+import { useTheme } from "../context/ThemeContext";
+import { useCurrency } from "../context/CurrencyContext";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Accounts">;
 
@@ -26,6 +28,8 @@ const accountTypes = [
 ] as const;
 
 export default function AccountsScreen({ navigation }: Props) {
+  const { isDark, colors } = useTheme();
+  const { formatAmount } = useCurrency();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [newName, setNewName] = useState<string>("");
@@ -87,20 +91,17 @@ export default function AccountsScreen({ navigation }: Props) {
   const getTypeInfo = (type: string) =>
     accountTypes.find((t) => t.value === type) || accountTypes[0];
 
-  const formatCurrency = (amount: number): string =>
-    `${(amount || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮`;
-
   return (
-    <View className="flex-1 bg-dark-bg">
-      <StatusBar style="light" />
-      <ScrollView className="flex-1 px-5 pt-14">
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      <ScrollView className="flex-1 px-5 pt-14" keyboardDismissMode="on-drag">
         {/* Header */}
         <View className="flex-row items-center justify-between mb-6">
           <View className="flex-row items-center">
             <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
-              <Ionicons name="chevron-back" size={24} color="#fff" />
+              <Ionicons name="chevron-back" size={24} color={colors.text} />
             </TouchableOpacity>
-            <Text className="text-white font-bold text-xl">Данснууд</Text>
+            <Text className="font-bold text-xl" style={{ color: colors.text }}>Данснууд</Text>
           </View>
           <TouchableOpacity
             className="bg-accent-green/20 p-2 rounded-xl"
@@ -111,12 +112,12 @@ export default function AccountsScreen({ navigation }: Props) {
         </View>
 
         {/* Total Balance */}
-        <View className="bg-dark-card rounded-2xl p-5 mb-6">
-          <Text className="text-gray-400 text-sm mb-1">Нийт үлдэгдэл</Text>
-          <Text className="text-white font-bold text-3xl">
-            {formatCurrency(accounts.reduce((sum, a) => sum + (a.balance || 0), 0))}
+        <View className="rounded-2xl p-5 mb-6" style={{ backgroundColor: colors.card }}>
+          <Text className="text-sm mb-1" style={{ color: colors.textSecondary }}>Нийт үлдэгдэл</Text>
+          <Text className="font-bold text-3xl" style={{ color: colors.text }}>
+            {formatAmount(accounts.reduce((sum, a) => sum + (a.balance || 0), 0))}
           </Text>
-          <Text className="text-gray-500 text-xs mt-1">
+          <Text className="text-xs mt-1" style={{ color: colors.textMuted }}>
             {accounts.length} данс
           </Text>
         </View>
@@ -127,7 +128,8 @@ export default function AccountsScreen({ navigation }: Props) {
           return (
             <TouchableOpacity
               key={account.id}
-              className="flex-row items-center bg-dark-card rounded-xl p-4 mb-2"
+              className="flex-row items-center rounded-xl p-4 mb-2"
+              style={{ backgroundColor: colors.card }}
               onLongPress={() => handleDelete(account.id, account.name)}
             >
               <View
@@ -137,11 +139,11 @@ export default function AccountsScreen({ navigation }: Props) {
                 <Ionicons name={typeInfo.icon as any} size={22} color={typeInfo.color} />
               </View>
               <View className="flex-1">
-                <Text className="text-white font-medium text-base">{account.name}</Text>
-                <Text className="text-gray-500 text-xs capitalize">{account.type.replace("_", " ")}</Text>
+                <Text className="font-medium text-base" style={{ color: colors.text }}>{account.name}</Text>
+                <Text className="text-xs capitalize" style={{ color: colors.textMuted }}>{account.type.replace("_", " ")}</Text>
               </View>
-              <Text className="text-white font-bold text-base">
-                {formatCurrency(account.balance)}
+              <Text className="font-bold text-base" style={{ color: colors.text }}>
+                {formatAmount(account.balance)}
               </Text>
             </TouchableOpacity>
           );
@@ -149,8 +151,8 @@ export default function AccountsScreen({ navigation }: Props) {
 
         {accounts.length === 0 && (
           <View className="items-center py-12">
-            <Ionicons name="wallet-outline" size={48} color="#444" />
-            <Text className="text-gray-500 text-base mt-3">Данс байхгүй байна</Text>
+            <Ionicons name="wallet-outline" size={48} color={colors.textMuted} />
+            <Text className="text-base mt-3" style={{ color: colors.textMuted }}>Данс байхгүй байна</Text>
             <TouchableOpacity
               className="bg-accent-green/20 px-6 py-3 rounded-xl mt-4"
               onPress={() => setShowModal(true)}
@@ -166,21 +168,22 @@ export default function AccountsScreen({ navigation }: Props) {
       {/* Add Account Modal */}
       <Modal visible={showModal} transparent animationType="slide">
         <View className="flex-1 bg-black/60 justify-end">
-          <View className="bg-dark-card rounded-t-3xl p-6">
+          <View className="rounded-t-3xl p-6" style={{ backgroundColor: colors.card }}>
             <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-white font-bold text-xl">Шинэ данс</Text>
+              <Text className="font-bold text-xl" style={{ color: colors.text }}>Шинэ данс</Text>
               <TouchableOpacity onPress={() => setShowModal(false)}>
-                <Ionicons name="close" size={24} color="#fff" />
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
 
             {/* Account Name */}
             <View className="mb-4">
-              <Text className="text-gray-400 text-sm mb-2">Дансны нэр</Text>
+              <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Дансны нэр</Text>
               <TextInput
-                className="bg-dark-surface text-white rounded-xl px-4 py-4 text-base border border-dark-border"
+                className="rounded-xl px-4 py-4 text-base"
+                style={{ backgroundColor: colors.surface, color: colors.text, borderWidth: 1, borderColor: colors.border }}
                 placeholder="Жишээ нь: Үндсэн банкны данс"
-                placeholderTextColor="#666"
+                placeholderTextColor={colors.textMuted}
                 value={newName}
                 onChangeText={setNewName}
               />
@@ -188,7 +191,7 @@ export default function AccountsScreen({ navigation }: Props) {
 
             {/* Account Type */}
             <View className="mb-6">
-              <Text className="text-gray-400 text-sm mb-2">Дансны төрөл</Text>
+              <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Дансны төрөл</Text>
               <View className="flex-row flex-wrap gap-2">
                 {accountTypes.map((t) => (
                   <TouchableOpacity
@@ -196,15 +199,17 @@ export default function AccountsScreen({ navigation }: Props) {
                     className={`flex-row items-center px-4 py-3 rounded-xl border ${
                       newType === t.value
                         ? "border-accent-green bg-accent-green/10"
-                        : "border-dark-border bg-dark-surface"
+                        : ""
                     }`}
+                    style={newType !== t.value ? { borderColor: colors.border, backgroundColor: colors.surface } : undefined}
                     onPress={() => setNewType(t.value)}
                   >
                     <Ionicons name={t.icon as any} size={16} color={t.color} />
                     <Text
                       className={`ml-2 text-sm font-medium ${
-                        newType === t.value ? "text-accent-green" : "text-gray-400"
+                        newType === t.value ? "text-accent-green" : ""
                       }`}
+                      style={newType !== t.value ? { color: colors.textSecondary } : undefined}
                     >
                       {t.label}
                     </Text>

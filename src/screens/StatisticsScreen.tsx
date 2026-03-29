@@ -6,6 +6,8 @@ import Svg, { Path, Line, Circle as SvgCircle, Defs, LinearGradient, Stop } from
 import { getStatistics, getScheduledPayments } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import { StatisticsResponse, ScheduledPayment } from "../types";
+import { useTheme } from "../context/ThemeContext";
+import { useCurrency } from "../context/CurrencyContext";
 
 const CHART_W = Dimensions.get("window").width - 100;
 const CHART_H = 180;
@@ -46,6 +48,8 @@ function smoothPath(pts: { x: number; y: number }[]): string {
 }
 
 export default function StatisticsScreen() {
+  const { isDark, colors } = useTheme();
+  const { formatAmount } = useCurrency();
   const [stats, setStats] = useState<StatisticsResponse | null>(null);
   const [payments, setPayments] = useState<ScheduledPayment[]>([]);
   const [period, setPeriod] = useState<string>("monthly");
@@ -70,9 +74,6 @@ export default function StatisticsScreen() {
 
   useFocusEffect(useCallback(() => { fetchData(); }, [period]));
 
-  const fmt = (n: number | undefined) =>
-    `${(n || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮`;
-
   const pData = stats?.periods || [];
   const rawMax = Math.max(...pData.flatMap((p) => [p.income, p.expenses]), 1);
   const ceilMax = niceNum(rawMax);
@@ -92,20 +93,20 @@ export default function StatisticsScreen() {
   const barTicks = Array.from({ length: 6 }, (_, i) => barMax - (barMax / 5) * i);
 
   return (
-    <View className="flex-1 bg-dark-bg">
-      <StatusBar style="light" />
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <StatusBar style={isDark ? "light" : "dark"} />
       <ScrollView className="flex-1 px-5 pt-14">
-        <Text className="text-white font-bold text-xl mb-4">Шинжилгээ</Text>
+        <Text className="font-bold text-xl mb-4" style={{ color: colors.text }}>Шинжилгээ</Text>
 
         {/* Tab Switcher */}
-        <View className="flex-row bg-dark-card rounded-xl p-1 mb-5">
+        <View className="flex-row rounded-xl p-1 mb-5" style={{ backgroundColor: colors.card }}>
           {["Статистик", "Диаграм"].map((t) => (
             <TouchableOpacity
               key={t}
               className={`flex-1 py-3 rounded-lg items-center ${mainTab === t ? "bg-accent-green" : ""}`}
               onPress={() => setMainTab(t)}
             >
-              <Text className={`font-semibold text-sm ${mainTab === t ? "text-dark-bg" : "text-gray-400"}`}>
+              <Text className={`font-semibold text-sm ${mainTab === t ? "text-dark-bg" : ""}`} style={mainTab !== t ? { color: colors.textSecondary } : undefined}>
                 {t}
               </Text>
             </TouchableOpacity>
@@ -115,8 +116,8 @@ export default function StatisticsScreen() {
         {mainTab === "Статистик" ? (
           <>
             {/* Scheduled Payments */}
-            <View className="bg-dark-card rounded-2xl p-4 mb-6">
-              <Text className="text-white font-bold text-base mb-3">Төлөвлөсөн төлбөр</Text>
+            <View className="rounded-2xl p-4 mb-6" style={{ backgroundColor: colors.card }}>
+              <Text className="font-bold text-base mb-3" style={{ color: colors.text }}>Төлөвлөсөн төлбөр</Text>
               {payments.slice(0, 4).map((pay, i) => (
                 <View key={i} className="flex-row items-center mb-3">
                   <View
@@ -125,21 +126,21 @@ export default function StatisticsScreen() {
                   >
                     <Ionicons name={(pay.category?.icon || "card-outline") as any} size={14} color={pay.category?.color || "#666"} />
                   </View>
-                  <Text className="text-white text-sm flex-1">{pay.description}</Text>
-                  <Text className="text-accent-red text-sm font-bold">-{fmt(pay.amount)}</Text>
+                  <Text className="text-sm flex-1" style={{ color: colors.text }}>{pay.description}</Text>
+                  <Text className="text-accent-red text-sm font-bold">-{formatAmount(pay.amount)}</Text>
                 </View>
               ))}
             </View>
 
             {/* Period Tabs */}
-            <View className="flex-row bg-dark-card rounded-xl p-1 mb-4">
+            <View className="flex-row rounded-xl p-1 mb-4" style={{ backgroundColor: colors.card }}>
               {periods.map((p) => (
                 <TouchableOpacity
                   key={p.value}
                   className={`flex-1 py-2 rounded-lg items-center ${period === p.value ? "bg-accent-green" : ""}`}
                   onPress={() => setPeriod(p.value)}
                 >
-                  <Text className={`font-medium text-xs ${period === p.value ? "text-dark-bg" : "text-gray-400"}`}>
+                  <Text className={`font-medium text-xs ${period === p.value ? "text-dark-bg" : ""}`} style={period !== p.value ? { color: colors.textSecondary } : undefined}>
                     {p.label}
                   </Text>
                 </TouchableOpacity>
@@ -148,19 +149,19 @@ export default function StatisticsScreen() {
 
             {/* Income / Expenses */}
             <View className="flex-row gap-3 mb-6">
-              <View className="flex-1 bg-dark-card rounded-xl p-4">
-                <Text className="text-gray-400 text-xs mb-1">Орлого</Text>
-                <Text className="text-accent-green font-bold text-lg">{fmt(stats?.income)}</Text>
+              <View className="flex-1 rounded-xl p-4" style={{ backgroundColor: colors.card }}>
+                <Text className="text-xs mb-1" style={{ color: colors.textSecondary }}>Орлого</Text>
+                <Text className="text-accent-green font-bold text-lg">{formatAmount(stats?.income)}</Text>
               </View>
-              <View className="flex-1 bg-dark-card rounded-xl p-4">
-                <Text className="text-gray-400 text-xs mb-1">Зарлага</Text>
-                <Text className="text-accent-red font-bold text-lg">{fmt(stats?.expenses)}</Text>
+              <View className="flex-1 rounded-xl p-4" style={{ backgroundColor: colors.card }}>
+                <Text className="text-xs mb-1" style={{ color: colors.textSecondary }}>Зарлага</Text>
+                <Text className="text-accent-red font-bold text-lg">{formatAmount(stats?.expenses)}</Text>
               </View>
             </View>
 
             {/* Bar Chart */}
-            <View className="bg-dark-card rounded-2xl p-4 mb-6">
-              <Text className="text-white font-bold text-base mb-4">Сүүлийн 6 үе</Text>
+            <View className="rounded-2xl p-4 mb-6" style={{ backgroundColor: colors.card }}>
+              <Text className="font-bold text-base mb-4" style={{ color: colors.text }}>Сүүлийн 6 үе</Text>
               <View className="flex-row items-end justify-between" style={{ height: 150 }}>
                 {pData.map((p, i) => (
                   <View key={i} className="items-center flex-1 px-1">
@@ -168,18 +169,18 @@ export default function StatisticsScreen() {
                       <View className="w-3 rounded-t-sm bg-accent-green" style={{ height: Math.max((p.income / ceilMax) * 120, 4) }} />
                       <View className="w-3 rounded-t-sm" style={{ height: Math.max((p.expenses / ceilMax) * 120, 4), backgroundColor: "#FF6B35" }} />
                     </View>
-                    <Text className="text-gray-500 text-xs">{p.label}</Text>
+                    <Text className="text-xs" style={{ color: colors.textMuted }}>{p.label}</Text>
                   </View>
                 ))}
               </View>
               <View className="flex-row mt-3 gap-4">
                 <View className="flex-row items-center">
                   <View className="w-3 h-3 rounded-full bg-accent-green mr-1" />
-                  <Text className="text-gray-400 text-xs">Орлого</Text>
+                  <Text className="text-xs" style={{ color: colors.textSecondary }}>Орлого</Text>
                 </View>
                 <View className="flex-row items-center">
                   <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: "#FF6B35", marginRight: 4 }} />
-                  <Text className="text-gray-400 text-xs">Зарлага</Text>
+                  <Text className="text-xs" style={{ color: colors.textSecondary }}>Зарлага</Text>
                 </View>
               </View>
             </View>
@@ -188,14 +189,14 @@ export default function StatisticsScreen() {
           /* =================== DIAGRAM TAB =================== */
           <>
             {/* Period Tabs - pill style */}
-            <View className="flex-row bg-dark-card rounded-xl p-1 mb-4">
+            <View className="flex-row rounded-xl p-1 mb-4" style={{ backgroundColor: colors.card }}>
               {periods.map((p) => (
                 <TouchableOpacity
                   key={p.value}
                   className={`flex-1 py-2 rounded-lg items-center ${period === p.value ? "bg-accent-green" : ""}`}
                   onPress={() => setPeriod(p.value)}
                 >
-                  <Text className={`font-medium text-xs ${period === p.value ? "text-dark-bg" : "text-gray-400"}`}>
+                  <Text className={`font-medium text-xs ${period === p.value ? "text-dark-bg" : ""}`} style={period !== p.value ? { color: colors.textSecondary } : undefined}>
                     {p.label}
                   </Text>
                 </TouchableOpacity>
@@ -203,8 +204,8 @@ export default function StatisticsScreen() {
             </View>
 
             {/* ---- Line Chart ---- */}
-            <View className="bg-dark-card rounded-2xl p-4 mb-5">
-              <Text className="text-white text-center text-sm font-medium mb-4">
+            <View className="rounded-2xl p-4 mb-5" style={{ backgroundColor: colors.card }}>
+              <Text className="text-center text-sm font-medium mb-4" style={{ color: colors.text }}>
                 {new Date().getFullYear()} оны {new Date().getMonth() + 1} сарын {new Date().getDate()}
               </Text>
 
@@ -213,7 +214,7 @@ export default function StatisticsScreen() {
                   {/* Y-axis */}
                   <View style={{ width: 50, height: CHART_H, justifyContent: "space-between" }}>
                     {ticks.map((v, i) => (
-                      <Text key={i} style={{ fontSize: 10, color: "#888" }}>{formatAxis(v)}</Text>
+                      <Text key={i} style={{ fontSize: 10, color: colors.textMuted }}>{formatAxis(v)}</Text>
                     ))}
                   </View>
 
@@ -221,7 +222,7 @@ export default function StatisticsScreen() {
                     {/* Grid */}
                     <Svg width={CHART_W} height={CHART_H} style={{ position: "absolute" }}>
                       {ticks.map((_, i) => (
-                        <Line key={i} x1={0} y1={(CHART_H / 5) * i} x2={CHART_W} y2={(CHART_H / 5) * i} stroke="#2A2A3E" strokeWidth={0.5} />
+                        <Line key={i} x1={0} y1={(CHART_H / 5) * i} x2={CHART_W} y2={(CHART_H / 5) * i} stroke={colors.border} strokeWidth={0.5} />
                       ))}
                     </Svg>
 
@@ -263,14 +264,14 @@ export default function StatisticsScreen() {
                     {/* X-axis */}
                     <View className="flex-row justify-between mt-2">
                       {pData.map((p, i) => (
-                        <Text key={i} style={{ fontSize: 10, color: "#888" }}>{p.label}</Text>
+                        <Text key={i} style={{ fontSize: 10, color: colors.textMuted }}>{p.label}</Text>
                       ))}
                     </View>
                   </View>
                 </View>
               ) : (
                 <View className="items-center py-10">
-                  <Text className="text-gray-500 text-sm">Өгөгдөл байхгүй</Text>
+                  <Text className="text-sm" style={{ color: colors.textMuted }}>Өгөгдөл байхгүй</Text>
                 </View>
               )}
 
@@ -278,56 +279,56 @@ export default function StatisticsScreen() {
               <View className="flex-row mt-3 gap-5">
                 <View className="flex-row items-center">
                   <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: "#00C853", marginRight: 6 }} />
-                  <Text className="text-gray-400 text-xs">Орлого</Text>
+                  <Text className="text-xs" style={{ color: colors.textSecondary }}>Орлого</Text>
                 </View>
                 <View className="flex-row items-center">
                   <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: "#FF6B35", marginRight: 6 }} />
-                  <Text className="text-gray-400 text-xs">Зарлага</Text>
+                  <Text className="text-xs" style={{ color: colors.textSecondary }}>Зарлага</Text>
                 </View>
               </View>
             </View>
 
             {/* ---- Income Card ---- */}
-            <View className="bg-dark-card rounded-2xl p-4 mb-3">
+            <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: colors.card }}>
               <View className="flex-row items-center justify-between mb-3">
                 <View className="flex-row items-center">
                   <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(0,200,83,0.15)", alignItems: "center", justifyContent: "center", marginRight: 12 }}>
                     <Ionicons name="trending-up" size={18} color="#00C853" />
                   </View>
-                  <Text className="text-white font-semibold text-base">Орлого</Text>
+                  <Text className="font-semibold text-base" style={{ color: colors.text }}>Орлого</Text>
                 </View>
-                <Text className="text-white font-bold text-base">{fmt(totInc)}</Text>
+                <Text className="font-bold text-base" style={{ color: colors.text }}>{formatAmount(totInc)}</Text>
               </View>
-              <View style={{ height: 8, backgroundColor: "#2A2A3E", borderRadius: 4, overflow: "hidden" }}>
+              <View style={{ height: 8, backgroundColor: colors.border, borderRadius: 4, overflow: "hidden" }}>
                 <View style={{ height: 8, backgroundColor: "#00C853", borderRadius: 4, width: `${Math.min((totInc / totMax) * 100, 100)}%` }} />
               </View>
             </View>
 
             {/* ---- Expenses Card ---- */}
-            <View className="bg-dark-card rounded-2xl p-4 mb-5">
+            <View className="rounded-2xl p-4 mb-5" style={{ backgroundColor: colors.card }}>
               <View className="flex-row items-center justify-between mb-3">
                 <View className="flex-row items-center">
                   <View style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(255,107,53,0.15)", alignItems: "center", justifyContent: "center", marginRight: 12 }}>
                     <Ionicons name="trending-down" size={18} color="#FF6B35" />
                   </View>
-                  <Text className="text-white font-semibold text-base">Зарлага</Text>
+                  <Text className="font-semibold text-base" style={{ color: colors.text }}>Зарлага</Text>
                 </View>
-                <Text className="text-white font-bold text-base">{fmt(totExp)}</Text>
+                <Text className="font-bold text-base" style={{ color: colors.text }}>{formatAmount(totExp)}</Text>
               </View>
-              <View style={{ height: 8, backgroundColor: "#2A2A3E", borderRadius: 4, overflow: "hidden" }}>
+              <View style={{ height: 8, backgroundColor: colors.border, borderRadius: 4, overflow: "hidden" }}>
                 <View style={{ height: 8, backgroundColor: "#FF6B35", borderRadius: 4, width: `${Math.min((totExp / totMax) * 100, 100)}%` }} />
               </View>
             </View>
 
             {/* ---- Bar Chart ---- */}
-            <View className="bg-dark-card rounded-2xl p-4 mb-6">
-              <Text className="text-white font-bold text-base mb-4">Сүүлийн 6 үе</Text>
+            <View className="rounded-2xl p-4 mb-6" style={{ backgroundColor: colors.card }}>
+              <Text className="font-bold text-base mb-4" style={{ color: colors.text }}>Сүүлийн 6 үе</Text>
 
               <View style={{ flexDirection: "row", height: BAR_H + 25 }}>
                 {/* Y-axis */}
                 <View style={{ width: 50, height: BAR_H, justifyContent: "space-between" }}>
                   {barTicks.map((v, i) => (
-                    <Text key={i} style={{ fontSize: 10, color: "#888" }}>{formatAxis(v)}</Text>
+                    <Text key={i} style={{ fontSize: 10, color: colors.textMuted }}>{formatAxis(v)}</Text>
                   ))}
                 </View>
 
@@ -342,7 +343,7 @@ export default function StatisticsScreen() {
                           <View style={{ width: 10, height: iH, backgroundColor: "#00C853", borderTopLeftRadius: 3, borderTopRightRadius: 3 }} />
                           <View style={{ width: 10, height: eH, backgroundColor: "#FF6B35", borderTopLeftRadius: 3, borderTopRightRadius: 3 }} />
                         </View>
-                        <Text style={{ fontSize: 9, color: "#888" }}>{p.label}</Text>
+                        <Text style={{ fontSize: 9, color: colors.textMuted }}>{p.label}</Text>
                       </View>
                     );
                   })}
@@ -352,11 +353,11 @@ export default function StatisticsScreen() {
               <View className="flex-row mt-3 gap-5">
                 <View className="flex-row items-center">
                   <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: "#00C853", marginRight: 6 }} />
-                  <Text className="text-gray-400 text-xs">Орлого</Text>
+                  <Text className="text-xs" style={{ color: colors.textSecondary }}>Орлого</Text>
                 </View>
                 <View className="flex-row items-center">
                   <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: "#FF6B35", marginRight: 6 }} />
-                  <Text className="text-gray-400 text-xs">Зарлага</Text>
+                  <Text className="text-xs" style={{ color: colors.textSecondary }}>Зарлага</Text>
                 </View>
               </View>
             </View>

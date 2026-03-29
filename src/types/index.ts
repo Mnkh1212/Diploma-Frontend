@@ -4,6 +4,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  phone: string;
   avatar: string;
   currency: string;
   created_at: string;
@@ -178,6 +179,8 @@ export type RootStackParamList = {
   Budget: undefined;
   AddTransaction: undefined;
   Profile: undefined;
+  Privacy: undefined;
+  Notifications: undefined;
   Accounts: undefined;
   ScheduledPayments: undefined;
 };

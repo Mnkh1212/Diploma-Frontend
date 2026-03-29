@@ -6,6 +6,8 @@ import { getExpensesSummary } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList, ExpensesSummary, CategoryExpense } from "../types";
+import { useTheme } from "../context/ThemeContext";
+import { useCurrency } from "../context/CurrencyContext";
 
 type ExpensesScreenProps = NativeStackScreenProps<RootStackParamList, "Expenses">;
 
@@ -15,13 +17,15 @@ interface DonutSegmentProps {
 }
 
 const DonutSegment = ({ categories, total }: DonutSegmentProps) => {
+  const { colors } = useTheme();
+  const { formatAmount } = useCurrency();
   // Simple visual representation of expense breakdown
   return (
     <View className="items-center justify-center my-6">
-      <View className="w-44 h-44 rounded-full bg-dark-surface items-center justify-center border-8 border-dark-card">
+      <View className="w-44 h-44 rounded-full items-center justify-center" style={{ backgroundColor: colors.surface, borderWidth: 8, borderColor: colors.card }}>
         <View className="items-center">
-          <Text className="text-white text-2xl font-bold">
-            {(total || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮
+          <Text className="text-2xl font-bold" style={{ color: colors.text }}>
+            {formatAmount(total)}
           </Text>
         </View>
       </View>
@@ -33,7 +37,7 @@ const DonutSegment = ({ categories, total }: DonutSegmentProps) => {
               className="w-3 h-3 rounded-full mr-1"
               style={{ backgroundColor: cat.color }}
             />
-            <Text className="text-gray-400 text-xs">{cat.category_name}</Text>
+            <Text className="text-xs" style={{ color: colors.textSecondary }}>{cat.category_name}</Text>
           </View>
         ))}
       </View>
@@ -42,6 +46,8 @@ const DonutSegment = ({ categories, total }: DonutSegmentProps) => {
 };
 
 export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
+  const { isDark, colors } = useTheme();
+  const { formatAmount } = useCurrency();
   const [summary, setSummary] = useState<ExpensesSummary | null>(null);
   const [period, setPeriod] = useState<string>("monthly");
 
@@ -67,29 +73,26 @@ export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
     }, [period])
   );
 
-  const formatCurrency = (amount: number): string =>
-    `${(amount || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮`;
-
   return (
-    <View className="flex-1 bg-dark-bg">
-      <StatusBar style="light" />
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <StatusBar style={isDark ? "light" : "dark"} />
 
       <View className="px-5 pt-14 pb-4">
         <View className="flex-row items-center mb-4">
           <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
-            <Ionicons name="chevron-back" size={24} color="#fff" />
+            <Ionicons name="chevron-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text className="text-white font-bold text-xl">Зарлага</Text>
+          <Text className="font-bold text-xl" style={{ color: colors.text }}>Зарлага</Text>
         </View>
 
         {/* Search */}
-        <View className="bg-dark-card rounded-xl flex-row items-center px-4 py-3 mb-4">
-          <Ionicons name="search" size={18} color="#666" />
-          <Text className="text-gray-500 ml-2 text-sm">AI хайлт</Text>
+        <View className="rounded-xl flex-row items-center px-4 py-3 mb-4" style={{ backgroundColor: colors.card }}>
+          <Ionicons name="search" size={18} color={colors.textMuted} />
+          <Text className="ml-2 text-sm" style={{ color: colors.textMuted }}>AI хайлт</Text>
         </View>
 
         {/* Period Tabs */}
-        <View className="flex-row bg-dark-card rounded-xl p-1">
+        <View className="flex-row rounded-xl p-1" style={{ backgroundColor: colors.card }}>
           {periods.map((p) => (
             <TouchableOpacity
               key={p.value}
@@ -100,8 +103,9 @@ export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
             >
               <Text
                 className={`font-medium text-xs ${
-                  period === p.value ? "text-dark-bg" : "text-gray-400"
+                  period === p.value ? "text-dark-bg" : ""
                 }`}
+                style={period !== p.value ? { color: colors.textSecondary } : undefined}
               >
                 {p.label}
               </Text>
@@ -121,7 +125,8 @@ export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
         {(summary?.categories || []).map((cat, index) => (
           <View
             key={index}
-            className="flex-row items-center bg-dark-card rounded-xl p-4 mb-2"
+            className="flex-row items-center rounded-xl p-4 mb-2"
+            style={{ backgroundColor: colors.card }}
           >
             <View
               className="w-10 h-10 rounded-full items-center justify-center mr-3"
@@ -134,15 +139,15 @@ export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
               />
             </View>
             <View className="flex-1">
-              <Text className="text-white font-medium text-sm">
+              <Text className="font-medium text-sm" style={{ color: colors.text }}>
                 {cat.category_name}
               </Text>
             </View>
             <View className="items-end">
-              <Text className="text-white font-bold text-sm">
-                {formatCurrency(cat.amount)}
+              <Text className="font-bold text-sm" style={{ color: colors.text }}>
+                {formatAmount(cat.amount)}
               </Text>
-              <Text className="text-gray-500 text-xs">
+              <Text className="text-xs" style={{ color: colors.textMuted }}>
                 {cat.percentage?.toFixed(1)}% ↑
               </Text>
             </View>

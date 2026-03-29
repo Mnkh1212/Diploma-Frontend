@@ -10,8 +10,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { getBudgets } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import { BudgetListResponse } from "../types";
+import { useTheme } from "../context/ThemeContext";
+import { useCurrency } from "../context/CurrencyContext";
 
 export default function BudgetScreen() {
+  const { isDark, colors } = useTheme();
+  const { formatAmount } = useCurrency();
   const [budgetData, setBudgetData] = useState<BudgetListResponse | null>(null);
 
   const fetchBudgets = async (): Promise<void> => {
@@ -33,26 +37,23 @@ export default function BudgetScreen() {
   const totalSpent: number = budgetData?.total_spent || 0;
   const progress: number = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
-  const formatCurrency = (amount: number): string =>
-    `${(amount || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮`;
-
   return (
-    <View className="flex-1 bg-dark-bg">
-      <StatusBar style="light" />
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <StatusBar style={isDark ? "light" : "dark"} />
       <ScrollView className="flex-1 px-5 pt-14">
-        <Text className="text-white font-bold text-xl mb-6">Сарын төсөв</Text>
+        <Text className="font-bold text-xl mb-6" style={{ color: colors.text }}>Сарын төсөв</Text>
 
         {/* Budget Progress */}
-        <View className="bg-dark-card rounded-2xl p-5 mb-6">
+        <View className="rounded-2xl p-5 mb-6" style={{ backgroundColor: colors.card }}>
           <View className="flex-row justify-between mb-2">
-            <Text className="text-gray-400 text-sm">Зарцуулсан</Text>
-            <Text className="text-gray-400 text-sm">
-              {formatCurrency(totalSpent)} / {formatCurrency(totalBudget)}
+            <Text className="text-sm" style={{ color: colors.textSecondary }}>Зарцуулсан</Text>
+            <Text className="text-sm" style={{ color: colors.textSecondary }}>
+              {formatAmount(totalSpent)} / {formatAmount(totalBudget)}
             </Text>
           </View>
 
           {/* Progress Bar */}
-          <View className="h-3 bg-dark-surface rounded-full overflow-hidden mb-2">
+          <View className="h-3 rounded-full overflow-hidden mb-2" style={{ backgroundColor: colors.surface }}>
             <View
               className="h-full rounded-full"
               style={{
@@ -76,8 +77,8 @@ export default function BudgetScreen() {
         </View>
 
         {/* Monthly Budget Chart Placeholder */}
-        <View className="bg-dark-card rounded-2xl p-5 mb-6">
-          <Text className="text-white font-bold text-base mb-4">Сарын төсөв</Text>
+        <View className="rounded-2xl p-5 mb-6" style={{ backgroundColor: colors.card }}>
+          <Text className="font-bold text-base mb-4" style={{ color: colors.text }}>Сарын төсөв</Text>
           {/* Simple bar representation */}
           <View className="flex-row items-end justify-between h-40">
             {["10-р", "11-р", "12-р", "1-р", "2-р", "3-р"].map((month, i) => (
@@ -90,15 +91,15 @@ export default function BudgetScreen() {
                     style={{ height: 20 + Math.random() * 50 }}
                   />
                 </View>
-                <Text className="text-gray-500 text-xs">{month}</Text>
+                <Text className="text-xs" style={{ color: colors.textMuted }}>{month}</Text>
               </View>
             ))}
           </View>
         </View>
 
         {/* Last 6 periods */}
-        <View className="bg-dark-card rounded-2xl p-5 mb-6">
-          <Text className="text-white font-bold text-base mb-4">
+        <View className="rounded-2xl p-5 mb-6" style={{ backgroundColor: colors.card }}>
+          <Text className="font-bold text-base mb-4" style={{ color: colors.text }}>
             Сүүлийн 6 үе
           </Text>
           <View className="flex-row items-end justify-between h-32">
@@ -117,35 +118,35 @@ export default function BudgetScreen() {
           <View className="flex-row mt-3 gap-4">
             <View className="flex-row items-center">
               <View className="w-3 h-3 rounded-full bg-accent-green mr-1" />
-              <Text className="text-gray-400 text-xs">Эрсдэл</Text>
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>Эрсдэл</Text>
             </View>
             <View className="flex-row items-center">
               <View className="w-3 h-3 rounded-full bg-accent-orange mr-1" />
-              <Text className="text-gray-400 text-xs">Дунд зэрэг</Text>
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>Дунд зэрэг</Text>
             </View>
             <View className="flex-row items-center">
               <View className="w-3 h-3 rounded-full bg-accent-red mr-1" />
-              <Text className="text-gray-400 text-xs">Хэтрүүлсэн</Text>
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>Хэтрүүлсэн</Text>
             </View>
           </View>
         </View>
 
         {/* Category Budgets */}
-        <Text className="text-white font-bold text-base mb-4">Ангиллын төсөв</Text>
+        <Text className="font-bold text-base mb-4" style={{ color: colors.text }}>Ангиллын төсөв</Text>
         {(budgetData?.budgets || []).map((budget, index) => {
           const budgetProgress: number =
             budget.amount > 0 ? (budget.spent / budget.amount) * 100 : 0;
           return (
-            <View key={index} className="bg-dark-card rounded-xl p-4 mb-2">
+            <View key={index} className="rounded-xl p-4 mb-2" style={{ backgroundColor: colors.card }}>
               <View className="flex-row justify-between mb-2">
-                <Text className="text-white font-medium text-sm">
+                <Text className="font-medium text-sm" style={{ color: colors.text }}>
                   {budget.category?.name || "Ерөнхий"}
                 </Text>
-                <Text className="text-gray-400 text-sm">
-                  {formatCurrency(budget.spent)} / {formatCurrency(budget.amount)}
+                <Text className="text-sm" style={{ color: colors.textSecondary }}>
+                  {formatAmount(budget.spent)} / {formatAmount(budget.amount)}
                 </Text>
               </View>
-              <View className="h-2 bg-dark-surface rounded-full overflow-hidden">
+              <View className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: colors.surface }}>
                 <View
                   className="h-full rounded-full"
                   style={{

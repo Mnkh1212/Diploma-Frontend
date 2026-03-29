@@ -20,6 +20,7 @@ import {
 } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import { AIChat, AIMessage, AIChatRequest } from "../types";
+import { useTheme } from "../context/ThemeContext";
 
 interface OptimisticMessage {
   id: number;
@@ -30,6 +31,7 @@ interface OptimisticMessage {
 }
 
 export default function AIChatScreen() {
+  const { isDark, colors } = useTheme();
   const [chats, setChats] = useState<AIChat[]>([]);
   const [activeChat, setActiveChat] = useState<AIChat | null>(null);
   const [messages, setMessages] = useState<(AIMessage | OptimisticMessage)[]>([]);
@@ -113,17 +115,17 @@ export default function AIChatScreen() {
   // Chat List View
   if (showChatList) {
     return (
-      <View className="flex-1 bg-dark-bg px-5 pt-14">
-        <StatusBar style="light" />
+      <View style={{ flex: 1, backgroundColor: colors.bg }} className="px-5 pt-14">
+        <StatusBar style={isDark ? "light" : "dark"} />
 
         {/* Header with AI icon */}
         <View className="items-center mb-6">
           <View className="w-14 h-14 rounded-full bg-accent-green/20 items-center justify-center mb-3">
             <Ionicons name="sparkles" size={28} color="#00C853" />
           </View>
-          <Text className="text-white text-xl font-bold">Тавтай морил</Text>
-          <Text className="text-white text-xl font-bold">AI Зөвлөгч</Text>
-          <Text className="text-gray-400 text-sm mt-1">
+          <Text style={{ color: colors.text }} className="text-xl font-bold">Тавтай морил</Text>
+          <Text style={{ color: colors.text }} className="text-xl font-bold">AI Зөвлөгч</Text>
+          <Text style={{ color: colors.textSecondary }} className="text-sm mt-1">
             AI зөвлөгчтэй чатлаж эхлээрэй
           </Text>
         </View>
@@ -137,19 +139,20 @@ export default function AIChatScreen() {
         </TouchableOpacity>
 
         {/* Previous Chats */}
-        <Text className="text-gray-400 text-sm mb-3">Сүүлийн 7 хоног</Text>
+        <Text style={{ color: colors.textSecondary }} className="text-sm mb-3">Сүүлийн 7 хоног</Text>
         <ScrollView className="flex-1">
           {chats.map((chat) => (
             <TouchableOpacity
               key={chat.id}
-              className="flex-row items-center bg-dark-card rounded-xl p-4 mb-2"
+              style={{ backgroundColor: colors.card }}
+              className="flex-row items-center rounded-xl p-4 mb-2"
               onPress={() => openChat(chat.id)}
             >
-              <Ionicons name="chatbubble-outline" size={16} color="#666" />
-              <Text className="text-white text-sm ml-3 flex-1" numberOfLines={1}>
+              <Ionicons name="chatbubble-outline" size={16} color={colors.textMuted} />
+              <Text style={{ color: colors.text }} className="text-sm ml-3 flex-1" numberOfLines={1}>
                 {chat.title}
               </Text>
-              <Ionicons name="chevron-forward" size={16} color="#666" />
+              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -160,13 +163,13 @@ export default function AIChatScreen() {
   // Chat Messages View
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-dark-bg"
+      style={{ flex: 1, backgroundColor: colors.bg }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? "light" : "dark"} />
 
       {/* Chat Header */}
-      <View className="flex-row items-center px-5 pt-14 pb-3 border-b border-dark-border">
+      <View style={{ borderColor: colors.border }} className="flex-row items-center px-5 pt-14 pb-3 border-b">
         <TouchableOpacity
           onPress={() => {
             setShowChatList(true);
@@ -174,31 +177,33 @@ export default function AIChatScreen() {
           }}
           className="mr-3"
         >
-          <Ionicons name="chevron-back" size={24} color="#fff" />
+          <Ionicons name="chevron-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Ionicons name="sparkles" size={20} color="#00C853" />
-        <Text className="text-white font-bold text-base ml-2">
+        <Text style={{ color: colors.text }} className="font-bold text-base ml-2">
           AI Санхүүгийн зөвлөгч
         </Text>
       </View>
 
       {/* Messages */}
-      <ScrollView className="flex-1 px-5 py-4">
+      <ScrollView className="flex-1 px-5 py-4" keyboardDismissMode="on-drag">
         {messages.map((msg, index) => (
           <View
             key={msg.id || index}
             className={`mb-4 ${msg.role === "user" ? "items-end" : "items-start"}`}
           >
             <View
+              style={msg.role === "user" ? undefined : { backgroundColor: colors.card }}
               className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                 msg.role === "user"
                   ? "bg-accent-green"
-                  : "bg-dark-card"
+                  : ""
               }`}
             >
               <Text
+                style={msg.role === "user" ? undefined : { color: colors.text }}
                 className={`text-sm leading-5 ${
-                  msg.role === "user" ? "text-dark-bg" : "text-white"
+                  msg.role === "user" ? "text-dark-bg" : ""
                 }`}
               >
                 {msg.content}
@@ -208,7 +213,7 @@ export default function AIChatScreen() {
         ))}
         {loading && (
           <View className="items-start mb-4">
-            <View className="bg-dark-card rounded-2xl px-4 py-3">
+            <View style={{ backgroundColor: colors.card }} className="rounded-2xl px-4 py-3">
               <ActivityIndicator size="small" color="#00C853" />
             </View>
           </View>
@@ -216,12 +221,13 @@ export default function AIChatScreen() {
       </ScrollView>
 
       {/* Input */}
-      <View className="px-5 pb-8 pt-3 border-t border-dark-border">
-        <View className="flex-row items-center bg-dark-card rounded-2xl px-4 py-2">
+      <View style={{ borderColor: colors.border }} className="px-5 pb-8 pt-3 border-t">
+        <View style={{ backgroundColor: colors.card }} className="flex-row items-center rounded-2xl px-4 py-2">
           <TextInput
-            className="flex-1 text-white text-sm py-2"
+            style={{ color: colors.text }}
+            className="flex-1 text-sm py-2"
             placeholder="Мессеж бичих..."
-            placeholderTextColor="#666"
+            placeholderTextColor={colors.textMuted}
             value={input}
             onChangeText={setInput}
             multiline

@@ -14,8 +14,10 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createTransaction, getCategories, getAccounts } from "../services/api";
 import { RootStackParamList, Category, Account } from "../types";
+import { useTheme } from "../context/ThemeContext";
 
 export default function AddTransactionScreen() {
+  const { isDark, colors } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [type, setType] = useState<"income" | "expense">("expense");
   const [amount, setAmount] = useState<string>("");
@@ -71,19 +73,19 @@ export default function AddTransactionScreen() {
   };
 
   return (
-    <View className="flex-1 bg-dark-bg">
-      <StatusBar style="light" />
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <StatusBar style={isDark ? "light" : "dark"} />
       <View className="px-5 pt-14 pb-4">
         <View className="flex-row items-center justify-between mb-6">
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="close" size={24} color="#fff" />
+            <Ionicons name="close" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text className="text-white font-bold text-xl">Гүйлгээ нэмэх</Text>
+          <Text className="font-bold text-xl" style={{ color: colors.text }}>Гүйлгээ нэмэх</Text>
           <View className="w-6" />
         </View>
 
         {/* Type Toggle */}
-        <View className="flex-row bg-dark-card rounded-xl p-1 mb-6">
+        <View className="flex-row rounded-xl p-1 mb-6" style={{ backgroundColor: colors.card }}>
           {(["expense", "income"] as const).map((t) => (
             <TouchableOpacity
               key={t}
@@ -101,8 +103,9 @@ export default function AddTransactionScreen() {
             >
               <Text
                 className={`font-bold text-sm ${
-                  type === t ? "text-white" : "text-gray-400"
+                  type === t ? "text-white" : ""
                 }`}
+                style={type !== t ? { color: colors.textSecondary } : undefined}
               >
                 {t === "expense" ? "Зарлага" : "Орлого"}
               </Text>
@@ -111,38 +114,39 @@ export default function AddTransactionScreen() {
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-5">
+      <ScrollView className="flex-1 px-5" keyboardDismissMode="on-drag">
         {/* Amount */}
         <View className="items-center mb-8">
-          <Text className="text-gray-400 text-sm mb-2">Дүн</Text>
+          <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Дүн</Text>
           <View className="flex-row items-center">
-            <Text className="text-white text-4xl font-bold">₮</Text>
+            <Text className="text-4xl font-bold" style={{ color: colors.text }}>₮</Text>
             <TextInput
-              className="text-white text-4xl font-bold ml-1"
+              className="text-4xl font-bold ml-1"
               placeholder="0"
-              placeholderTextColor="#444"
+              placeholderTextColor={colors.textMuted}
               value={amount}
               onChangeText={setAmount}
               keyboardType="decimal-pad"
-              style={{ minWidth: 100 }}
+              style={{ minWidth: 100, color: colors.text }}
             />
           </View>
         </View>
 
         {/* Description */}
         <View className="mb-6">
-          <Text className="text-gray-400 text-sm mb-2">Тайлбар</Text>
+          <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Тайлбар</Text>
           <TextInput
-            className="bg-dark-card text-white rounded-xl px-4 py-4 text-base border border-dark-border"
+            className="rounded-xl px-4 py-4 text-base"
+            style={{ backgroundColor: colors.card, color: colors.text, borderWidth: 1, borderColor: colors.border }}
             placeholder="Юунд зарцуулсан бэ?"
-            placeholderTextColor="#666"
+            placeholderTextColor={colors.textMuted}
             value={description}
             onChangeText={setDescription}
           />
         </View>
 
         {/* Account Selection */}
-        <Text className="text-gray-400 text-sm mb-2">Данс</Text>
+        <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Данс</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
           {accounts.map((account) => (
             <TouchableOpacity
@@ -150,17 +154,18 @@ export default function AddTransactionScreen() {
               className={`px-4 py-3 rounded-xl mr-2 border ${
                 selectedAccount?.id === account.id
                   ? "border-accent-green bg-accent-green/10"
-                  : "border-dark-border bg-dark-card"
+                  : ""
               }`}
+              style={selectedAccount?.id !== account.id ? { borderColor: colors.border, backgroundColor: colors.card } : undefined}
               onPress={() => setSelectedAccount(account)}
             >
-              <Text className="text-white text-sm">{account.name}</Text>
+              <Text className="text-sm" style={{ color: colors.text }}>{account.name}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
 
         {/* Category Selection */}
-        <Text className="text-gray-400 text-sm mb-2">Ангилал</Text>
+        <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Ангилал</Text>
         <View className="flex-row flex-wrap gap-2 mb-8">
           {categories.map((cat) => (
             <TouchableOpacity
@@ -168,8 +173,9 @@ export default function AddTransactionScreen() {
               className={`flex-row items-center px-3 py-2 rounded-xl border ${
                 selectedCategory?.id === cat.id
                   ? "border-accent-green bg-accent-green/10"
-                  : "border-dark-border bg-dark-card"
+                  : ""
               }`}
+              style={selectedCategory?.id !== cat.id ? { borderColor: colors.border, backgroundColor: colors.card } : undefined}
               onPress={() => setSelectedCategory(cat)}
             >
               <Ionicons
@@ -177,7 +183,7 @@ export default function AddTransactionScreen() {
                 size={16}
                 color={cat.color || "#666"}
               />
-              <Text className="text-white text-sm ml-2">{cat.name}</Text>
+              <Text className="text-sm ml-2" style={{ color: colors.text }}>{cat.name}</Text>
             </TouchableOpacity>
           ))}
         </View>

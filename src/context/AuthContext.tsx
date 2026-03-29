@@ -11,6 +11,7 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  hasSavedCredentials: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -19,6 +20,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasSavedCredentials, setHasSavedCredentials] = useState(false);
 
   useEffect(() => {
     loadStoredAuth();
@@ -32,6 +34,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const { data } = await getProfile();
         setUser(data);
       }
+      // Check if saved credentials exist for biometric login
+      const savedEmail = await AsyncStorage.getItem("saved_email");
+      setHasSavedCredentials(!!savedEmail);
     } catch {
       await AsyncStorage.removeItem("token");
     } finally {
@@ -44,6 +49,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await AsyncStorage.setItem("token", data.token);
     setToken(data.token);
     setUser(data.user);
+
+    // Save credentials for biometric login if enabled
+    const biometricEnabled = await AsyncStorage.getItem("biometric_enabled");
+    if (biometricEnabled === "true") {
+      await AsyncStorage.setItem("saved_email", email);
+      await AsyncStorage.setItem("saved_password", password);
+      setHasSavedCredentials(true);
+    }
   };
 
   const register = async (name: string, email: string, password: string) => {
@@ -61,7 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, loading, login, register, logout, setUser }}
+      value={{ user, token, loading, login, register, logout, setUser, hasSavedCredentials }}
     >
       {children}
     </AuthContext.Provider>

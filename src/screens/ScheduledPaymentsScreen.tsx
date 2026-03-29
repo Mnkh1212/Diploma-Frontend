@@ -21,10 +21,14 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList, ScheduledPayment, Category, Account } from "../types";
+import { useTheme } from "../context/ThemeContext";
+import { useCurrency } from "../context/CurrencyContext";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ScheduledPayments">;
 
 export default function ScheduledPaymentsScreen({ navigation }: Props) {
+  const { isDark, colors } = useTheme();
+  const { formatAmount } = useCurrency();
   const [payments, setPayments] = useState<ScheduledPayment[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
@@ -109,16 +113,16 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
   const frequencies: ScheduledPayment["frequency"][] = ["daily", "weekly", "monthly", "yearly"];
 
   return (
-    <View className="flex-1 bg-dark-bg">
-      <StatusBar style="light" />
-      <ScrollView className="flex-1 px-5 pt-14">
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      <ScrollView className="flex-1 px-5 pt-14" keyboardDismissMode="on-drag">
         {/* Header */}
         <View className="flex-row items-center justify-between mb-6">
           <View className="flex-row items-center">
             <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
-              <Ionicons name="chevron-back" size={24} color="#fff" />
+              <Ionicons name="chevron-back" size={24} color={colors.text} />
             </TouchableOpacity>
-            <Text className="text-white font-bold text-xl">Төлөвлөсөн төлбөр</Text>
+            <Text className="font-bold text-xl" style={{ color: colors.text }}>Төлөвлөсөн төлбөр</Text>
           </View>
           <TouchableOpacity
             className="bg-accent-purple/20 p-2 rounded-xl"
@@ -132,7 +136,8 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
         {payments.map((payment) => (
           <TouchableOpacity
             key={payment.id}
-            className="flex-row items-center bg-dark-card rounded-xl p-4 mb-2"
+            className="flex-row items-center rounded-xl p-4 mb-2"
+            style={{ backgroundColor: colors.card }}
             onLongPress={() => handleDelete(payment.id)}
           >
             <View
@@ -146,14 +151,14 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
               />
             </View>
             <View className="flex-1">
-              <Text className="text-white font-medium text-sm">{payment.description}</Text>
-              <Text className="text-gray-500 text-xs">
+              <Text className="font-medium text-sm" style={{ color: colors.text }}>{payment.description}</Text>
+              <Text className="text-xs" style={{ color: colors.textMuted }}>
                 {payment.frequency === "daily" ? "Өдөр бүр" : payment.frequency === "weekly" ? "7 хоног бүр" : payment.frequency === "monthly" ? "Сар бүр" : "Жил бүр"} - Дараагийн: {new Date(payment.next_date).toLocaleDateString()}
               </Text>
             </View>
             <View className="items-end">
               <Text className="text-accent-red font-bold text-sm">
-                -{(payment.amount || 0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}₮
+                -{formatAmount(payment.amount)}
               </Text>
               <View
                 className={`px-2 py-0.5 rounded-full mt-1 ${
@@ -174,8 +179,8 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
 
         {payments.length === 0 && (
           <View className="items-center py-12">
-            <Ionicons name="repeat-outline" size={48} color="#444" />
-            <Text className="text-gray-500 text-base mt-3">Төлөвлөсөн төлбөр байхгүй</Text>
+            <Ionicons name="repeat-outline" size={48} color={colors.textMuted} />
+            <Text className="text-base mt-3" style={{ color: colors.textMuted }}>Төлөвлөсөн төлбөр байхгүй</Text>
             <TouchableOpacity
               className="bg-accent-purple/20 px-6 py-3 rounded-xl mt-4"
               onPress={() => setShowModal(true)}
@@ -191,21 +196,22 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
       {/* Add Payment Modal */}
       <Modal visible={showModal} transparent animationType="slide">
         <View className="flex-1 bg-black/60 justify-end">
-          <View className="bg-dark-card rounded-t-3xl p-6">
+          <View className="rounded-t-3xl p-6" style={{ backgroundColor: colors.card }}>
             <View className="flex-row items-center justify-between mb-6">
-              <Text className="text-white font-bold text-xl">Шинэ төлөвлөсөн төлбөр</Text>
+              <Text className="font-bold text-xl" style={{ color: colors.text }}>Шинэ төлөвлөсөн төлбөр</Text>
               <TouchableOpacity onPress={() => setShowModal(false)}>
-                <Ionicons name="close" size={24} color="#fff" />
+                <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
 
             {/* Description */}
             <View className="mb-4">
-              <Text className="text-gray-400 text-sm mb-2">Тайлбар</Text>
+              <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Тайлбар</Text>
               <TextInput
-                className="bg-dark-surface text-white rounded-xl px-4 py-4 text-base border border-dark-border"
+                className="rounded-xl px-4 py-4 text-base"
+                style={{ backgroundColor: colors.surface, color: colors.text, borderWidth: 1, borderColor: colors.border }}
                 placeholder="Жишээ нь: Netflix захиалга"
-                placeholderTextColor="#666"
+                placeholderTextColor={colors.textMuted}
                 value={description}
                 onChangeText={setDescription}
               />
@@ -213,11 +219,12 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
 
             {/* Amount */}
             <View className="mb-4">
-              <Text className="text-gray-400 text-sm mb-2">Дүн</Text>
+              <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Дүн</Text>
               <TextInput
-                className="bg-dark-surface text-white rounded-xl px-4 py-4 text-base border border-dark-border"
+                className="rounded-xl px-4 py-4 text-base"
+                style={{ backgroundColor: colors.surface, color: colors.text, borderWidth: 1, borderColor: colors.border }}
                 placeholder="0"
-                placeholderTextColor="#666"
+                placeholderTextColor={colors.textMuted}
                 value={amount}
                 onChangeText={setAmount}
                 keyboardType="decimal-pad"
@@ -226,7 +233,7 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
 
             {/* Frequency */}
             <View className="mb-4">
-              <Text className="text-gray-400 text-sm mb-2">Давтамж</Text>
+              <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Давтамж</Text>
               <View className="flex-row gap-2">
                 {frequencies.map((f) => (
                   <TouchableOpacity
@@ -234,14 +241,16 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
                     className={`flex-1 py-2 rounded-xl items-center border ${
                       frequency === f
                         ? "border-accent-purple bg-accent-purple/10"
-                        : "border-dark-border bg-dark-surface"
+                        : ""
                     }`}
+                    style={frequency !== f ? { borderColor: colors.border, backgroundColor: colors.surface } : undefined}
                     onPress={() => setFrequency(f)}
                   >
                     <Text
                       className={`text-xs font-medium ${
-                        frequency === f ? "text-accent-purple" : "text-gray-400"
+                        frequency === f ? "text-accent-purple" : ""
                       }`}
+                      style={frequency !== f ? { color: colors.textSecondary } : undefined}
                     >
                       {f === "daily" ? "Өдөр бүр" : f === "weekly" ? "7 хоног" : f === "monthly" ? "Сар бүр" : "Жил бүр"}
                     </Text>
@@ -252,7 +261,7 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
 
             {/* Category */}
             <View className="mb-4">
-              <Text className="text-gray-400 text-sm mb-2">Ангилал</Text>
+              <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Ангилал</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View className="flex-row gap-2">
                   {categories.map((cat) => (
@@ -261,12 +270,13 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
                       className={`flex-row items-center px-3 py-2 rounded-xl border ${
                         selectedCategory?.id === cat.id
                           ? "border-accent-green bg-accent-green/10"
-                          : "border-dark-border bg-dark-surface"
+                          : ""
                       }`}
+                      style={selectedCategory?.id !== cat.id ? { borderColor: colors.border, backgroundColor: colors.surface } : undefined}
                       onPress={() => setSelectedCategory(cat)}
                     >
                       <Ionicons name={(cat.icon as any) || "cash-outline"} size={14} color={cat.color} />
-                      <Text className="text-gray-300 text-xs ml-1">{cat.name}</Text>
+                      <Text className="text-xs ml-1" style={{ color: colors.textSecondary }}>{cat.name}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -282,7 +292,7 @@ export default function ScheduledPaymentsScreen({ navigation }: Props) {
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="text-white font-bold text-lg">Төлбөр үүсгэх</Text>
+                <Text className="font-bold text-lg" style={{ color: colors.text }}>Төлбөр үүсгэх</Text>
               )}
             </TouchableOpacity>
 

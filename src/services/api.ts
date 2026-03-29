@@ -54,6 +54,10 @@ export const register = (data: { name: string; email: string; password: string }
 export const getProfile = (): Promise<AxiosResponse<User>> => api.get("/profile");
 export const updateProfile = (data: Partial<User>): Promise<AxiosResponse<User>> =>
   api.put("/profile", data);
+export const changePassword = (data: { old_password: string; new_password: string }): Promise<AxiosResponse<{ message: string }>> =>
+  api.put("/profile/password", data);
+export const uploadAvatar = (formData: FormData): Promise<AxiosResponse<User>> =>
+  api.post("/profile/avatar", formData, { headers: { "Content-Type": "multipart/form-data" } });
 
 // Dashboard
 export const getDashboard = (): Promise<AxiosResponse<DashboardResponse>> =>
@@ -108,5 +112,15 @@ export const sendAIMessage = (data: AIChatRequest): Promise<AxiosResponse<AIChat
   api.post("/ai/chat", data);
 export const deleteAIChat = (id: number): Promise<AxiosResponse<{ message: string }>> =>
   api.delete(`/ai/chats/${id}`);
+
+// Notifications
+export const savePushToken = (token: string): Promise<AxiosResponse<{ message: string }>> =>
+  api.post("/push-token", { token });
+export const getNotifications = (): Promise<AxiosResponse<any[]>> =>
+  api.get("/notifications");
+export const markNotificationRead = (id: number): Promise<AxiosResponse<{ message: string }>> =>
+  api.put(`/notifications/${id}/read`);
+export const markAllNotificationsRead = (): Promise<AxiosResponse<{ message: string }>> =>
+  api.put("/notifications/read-all");
 
 export default api;

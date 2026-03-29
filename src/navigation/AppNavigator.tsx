@@ -4,6 +4,7 @@ import { createBottomTabNavigator, BottomTabBarButtonProps } from "@react-naviga
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 import { RootStackParamList, BottomTabParamList } from "../types";
 
 // Screens
@@ -21,6 +22,8 @@ import AddTransactionScreen from "../screens/AddTransactionScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import AccountsScreen from "../screens/AccountsScreen";
 import ScheduledPaymentsScreen from "../screens/ScheduledPaymentsScreen";
+import PrivacyScreen from "../screens/PrivacyScreen";
+import NotificationsScreen from "../screens/NotificationsScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -49,20 +52,21 @@ function CustomTabButton({ onPress }: BottomTabBarButtonProps) {
 }
 
 function BottomTabs() {
+  const { colors } = useTheme();
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#1A1A2E",
-          borderTopColor: "#2A2A3E",
+          backgroundColor: colors.bg,
+          borderTopColor: colors.border,
           borderTopWidth: 1,
           height: 85,
           paddingBottom: 25,
           paddingTop: 10,
         },
         tabBarActiveTintColor: "#00C853",
-        tabBarInactiveTintColor: "#666",
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: "500",
@@ -152,6 +156,8 @@ export default function AppNavigator(): React.JSX.Element {
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Accounts" component={AccountsScreen} />
           <Stack.Screen name="ScheduledPayments" component={ScheduledPaymentsScreen} />
+          <Stack.Screen name="Privacy" component={PrivacyScreen} />
+          <Stack.Screen name="Notifications" component={NotificationsScreen} />
           <Stack.Screen
             name="AddTransaction"
             component={AddTransactionScreen}
