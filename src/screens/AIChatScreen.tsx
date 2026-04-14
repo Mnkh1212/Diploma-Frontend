@@ -15,8 +15,6 @@ import {
   getAIChats,
   getAIChat,
   sendAIMessage,
-  createAIChat,
-  deleteAIChat,
 } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import { AIChat, AIMessage, AIChatRequest } from "../types";
@@ -74,8 +72,15 @@ export default function AIChatScreen() {
     setShowChatList(false);
   };
 
+  const syncChat = async (chatId: number): Promise<void> => {
+    const { data } = await getAIChat(chatId);
+    setActiveChat(data);
+    setMessages(data.messages || []);
+    await fetchChats();
+  };
+
   const handleSend = async (): Promise<void> => {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
     const userMessage: string = input.trim();
     setInput("");
@@ -93,17 +98,15 @@ export default function AIChatScreen() {
 
       const { data } = await sendAIMessage(payload);
 
-      if (!activeChat?.id && data.chat_id) {
-        setActiveChat({ id: data.chat_id } as AIChat);
-      }
-
-      setMessages((prev) => [...prev, data.message]);
-    } catch (error) {
+      await syncChat(data.chat_id);
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.error || "Уучлаарай, алдаа гарлаа. Дахин оролдоно уу.";
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: "Уучлаарай, алдаа гарлаа. Дахин оролдоно уу.",
+          content: errorMessage,
           id: Date.now() + 1,
         } as OptimisticMessage,
       ]);

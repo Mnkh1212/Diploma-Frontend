@@ -64,7 +64,11 @@ export default function AddTransactionScreen() {
         description,
         date: new Date().toISOString().split("T")[0],
       });
-      navigation.goBack();
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      }
+      // Force refresh by navigating to Home
+      navigation.navigate("MainTabs" as any);
     } catch (error) {
       Alert.alert("Алдаа", "Гүйлгээ үүсгэж чадсангүй");
     } finally {

@@ -23,6 +23,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import AccountsScreen from "../screens/AccountsScreen";
 import ScheduledPaymentsScreen from "../screens/ScheduledPaymentsScreen";
 import PrivacyScreen from "../screens/PrivacyScreen";
+import DataImportScreen from "../screens/DataImportScreen";
 import NotificationsScreen from "../screens/NotificationsScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -157,6 +158,7 @@ export default function AppNavigator(): React.JSX.Element {
           <Stack.Screen name="Accounts" component={AccountsScreen} />
           <Stack.Screen name="ScheduledPayments" component={ScheduledPaymentsScreen} />
           <Stack.Screen name="Privacy" component={PrivacyScreen} />
+          <Stack.Screen name="DataImport" component={DataImportScreen} />
           <Stack.Screen name="Notifications" component={NotificationsScreen} />
           <Stack.Screen
             name="AddTransaction"

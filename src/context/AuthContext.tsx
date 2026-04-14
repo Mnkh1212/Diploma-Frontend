@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { login as loginApi, register as registerApi, getProfile } from "../services/api";
-import { User } from "../types";
+import { login as loginApi, register as registerApi, getProfile, getSocialProviders, loginWithSocial } from "../services/api";
+import { User, SocialProvider, SocialProviderStatus } from "../types";
 
 interface AuthContextType {
   user: User | null;
@@ -12,6 +12,9 @@ interface AuthContextType {
   logout: () => Promise<void>;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   hasSavedCredentials: boolean;
+  socialProviders: SocialProviderStatus[];
+  refreshSocialProviders: () => Promise<void>;
+  socialLogin: (provider: SocialProvider) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -21,6 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasSavedCredentials, setHasSavedCredentials] = useState(false);
+  const [socialProviders, setSocialProviders] = useState<SocialProviderStatus[]>([]);
 
   useEffect(() => {
     loadStoredAuth();
@@ -37,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Check if saved credentials exist for biometric login
       const savedEmail = await AsyncStorage.getItem("saved_email");
       setHasSavedCredentials(!!savedEmail);
+      await refreshSocialProviders();
     } catch {
       await AsyncStorage.removeItem("token");
     } finally {
@@ -66,6 +71,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(data.user);
   };
 
+  const refreshSocialProviders = async () => {
+    try {
+      const { data } = await getSocialProviders();
+      setSocialProviders(data || []);
+    } catch {
+      setSocialProviders([]);
+    }
+  };
+
+  const socialLogin = async (provider: SocialProvider) => {
+    const { data } = await loginWithSocial({ provider });
+    await AsyncStorage.setItem("token", data.token);
+    setToken(data.token);
+    setUser(data.user);
+  };
+
   const logout = async () => {
     await AsyncStorage.removeItem("token");
     setToken(null);
@@ -74,7 +95,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, loading, login, register, logout, setUser, hasSavedCredentials }}
+      value={{
+        user,
+        token,
+        loading,
+        login,
+        register,
+        logout,
+        setUser,
+        hasSavedCredentials,
+        socialProviders,
+        refreshSocialProviders,
+        socialLogin,
+      }}
     >
       {children}
     </AuthContext.Provider>

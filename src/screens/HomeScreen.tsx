@@ -19,8 +19,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BottomTabParamList, RootStackParamList, DashboardResponse, Transaction } from "../types";
-
-const API_BASE = "http://192.168.1.130:8080";
+import { buildAssetUrl } from "../config/network";
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<BottomTabParamList, "Home">,
@@ -166,7 +165,7 @@ export default function HomeScreen({ navigation }: Props) {
             {user?.avatar && user.avatar.length > 1 ? (
               <Image
                 source={{
-                  uri: user.avatar.startsWith("http") ? user.avatar : API_BASE + user.avatar,
+                  uri: buildAssetUrl(user.avatar),
                   cache: "reload",
                 }}
                 style={{ width: 44, height: 44, borderRadius: 22, marginRight: 12 }}
@@ -199,15 +198,15 @@ export default function HomeScreen({ navigation }: Props) {
           <Svg style={{ position: "absolute", width: "100%", height: "100%" }}>
             <Defs>
               <LinearGradient id="balanceGrad" x1="0" y1="0" x2="1" y2="1">
-                <Stop offset="0" stopColor="#0F2318" />
-                <Stop offset="0.5" stopColor="#121F1A" />
-                <Stop offset="1" stopColor="#1A1A2E" />
+                <Stop offset="0" stopColor={isDark ? "#0F2318" : "#E8F5E9"} />
+                <Stop offset="0.5" stopColor={isDark ? "#121F1A" : "#F1F8E9"} />
+                <Stop offset="1" stopColor={isDark ? "#1A1A2E" : "#E0F2F1"} />
               </LinearGradient>
             </Defs>
             <Rect x="0" y="0" width="100%" height="100%" fill="url(#balanceGrad)" />
           </Svg>
           <View style={{ padding: 18 }}>
-            <Text style={{ color: "#777", fontSize: 12, fontWeight: "500", marginBottom: 4 }}>
+            <Text style={{ color: isDark ? "#777" : "#555", fontSize: 12, fontWeight: "500", marginBottom: 4 }}>
               Нийт үлдэгдэл
             </Text>
             <Text style={{ color: "#00C853", fontSize: 28, fontWeight: "800", marginBottom: 12 }}>

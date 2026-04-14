@@ -97,6 +97,25 @@ export interface AuthResponse {
   user: User;
 }
 
+export type SocialProvider = "google" | "facebook" | "apple";
+
+export interface SocialProviderStatus {
+  provider: SocialProvider;
+  label: string;
+  enabled: boolean;
+  configured: boolean;
+  hint: string;
+}
+
+export interface SocialAuthRequest {
+  provider: SocialProvider;
+  id_token?: string;
+  access_token?: string;
+  authorization_code?: string;
+  email?: string;
+  name?: string;
+}
+
 export interface DashboardResponse {
   balance: number;
   total_income: number;
@@ -183,6 +202,7 @@ export type RootStackParamList = {
   Notifications: undefined;
   Accounts: undefined;
   ScheduledPayments: undefined;
+  DataImport: undefined;
 };
 
 export type BottomTabParamList = {

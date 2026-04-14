@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,22 +12,27 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackScreenProps }ww from "@react-navigation/native-stack";
 import { useAuth } from "../context/AuthContext";
 import { RootStackParamList } from "../types";
 import { useTheme } from "../context/ThemeContext";
+import { SOCIAL_PROVIDERS } from "../config/socialAuth";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Register">;
 
 export default function RegisterScreen({ navigation }: Props) {
   const { isDark, colors } = useTheme();
-  const { register } = useAuth();
+  const { register, socialProviders, refreshSocialProviders, socialLogin } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    refreshSocialProviders();
+  }, []);
 
   const formatPhone = (text: string) => {
     const digits = text.replace(/\D/g, "");
@@ -54,6 +59,23 @@ export default function RegisterScreen({ navigation }: Props) {
       await register(name, email, password);
     } catch (error: any) {
       Alert.alert("Алдаа", error?.response?.data?.error || "Бүртгэл амжилтгүй боллоо");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSocialRegister = async (provider: "google" | "facebook" | "apple") => {
+    const providerStatus = socialProviders.find((item) => item.provider === provider);
+    if (!providerStatus?.enabled) {
+      Alert.alert("Тохиргоо дутуу", providerStatus?.hint || "Энэ social register одоогоор тохируулагдаагүй байна.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await socialLogin(provider);
+    } catch (error: any) {
+      Alert.alert("Social Register", error?.response?.data?.error || "Social register урсгал бэлэн болоогүй байна.");
     } finally {
       setLoading(false);
     }
@@ -186,25 +208,27 @@ export default function RegisterScreen({ navigation }: Props) {
         </View>
 
         {/* Social Buttons */}
-        <View style={{ flexDirection: "row", justifyContent: "center", gap: 16, marginBottom: 28 }}>
-          {[
-            { icon: "logo-facebook", color: "#1877F2" },
-            { icon: "logo-google", color: "#EA4335" },
-            { icon: "logo-linkedin", color: "#0A66C2" },
-          ].map((s, i) => (
+        <View style={{ flexDirection: "row", justifyContent: "center", gap: 16, marginBottom: 12 }}>
+          {SOCIAL_PROVIDERS.map((s, i) => {
+            const status = socialProviders.find((item) => item.provider === s.provider);
+            const enabled = !!status?.enabled;
+            return (
             <TouchableOpacity
               key={i}
               style={{
                 width: 52, height: 52, borderRadius: 14,
                 backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border,
-                alignItems: "center", justifyContent: "center",
+                alignItems: "center", justifyContent: "center", opacity: enabled ? 1 : 0.45,
               }}
-              onPress={() => Alert.alert("Тун удахгүй", "Нийгмийн сүлжээгээр бүртгүүлэх боломж удахгүй нэмэгдэнэ")}
+              onPress={() => handleSocialRegister(s.provider)}
             >
               <Ionicons name={s.icon as any} size={24} color={s.color} />
             </TouchableOpacity>
-          ))}
+          )})}
         </View>
+        <Text style={{ color: colors.textMuted, fontSize: 12, textAlign: "center", marginBottom: 28 }}>
+          Social register scaffold бэлэн. Дараагийн шатанд provider SDK token verify, redirect callback, account linking залгана.
+        </Text>
 
         {/* Login Link */}
         <TouchableOpacity

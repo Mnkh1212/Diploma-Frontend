@@ -17,12 +17,13 @@ import {
   AIChat,
   AIChatRequest,
   AIChatResponse,
+  SocialAuthRequest,
+  SocialProviderStatus,
 } from "../types";
-
-const API_URL = "http://192.168.1.130:8080/api/v1";
+import { NetworkConfig } from "../config/network";
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: NetworkConfig.ApiBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },
@@ -52,6 +53,10 @@ export const login = (data: { email: string; password: string }): Promise<AxiosR
 export const register = (data: { name: string; email: string; password: string }): Promise<AxiosResponse<AuthResponse>> =>
   api.post("/auth/register", data);
 export const getProfile = (): Promise<AxiosResponse<User>> => api.get("/profile");
+export const getSocialProviders = (): Promise<AxiosResponse<SocialProviderStatus[]>> =>
+  api.get("/auth/social/providers");
+export const loginWithSocial = (data: SocialAuthRequest): Promise<AxiosResponse<AuthResponse>> =>
+  api.post("/auth/social/login", data);
 export const updateProfile = (data: Partial<User>): Promise<AxiosResponse<User>> =>
   api.put("/profile", data);
 export const changePassword = (data: { old_password: string; new_password: string }): Promise<AxiosResponse<{ message: string }>> =>
@@ -122,5 +127,9 @@ export const markNotificationRead = (id: number): Promise<AxiosResponse<{ messag
   api.put(`/notifications/${id}/read`);
 export const markAllNotificationsRead = (): Promise<AxiosResponse<{ message: string }>> =>
   api.put("/notifications/read-all");
+
+// Import
+export const importStatement = (formData: FormData): Promise<AxiosResponse<{ message: string; filename: string; analysis: string }>> =>
+  api.post("/import/statement", formData, { headers: { "Content-Type": "multipart/form-data" }, timeout: 60000 });
 
 export default api;

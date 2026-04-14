@@ -18,8 +18,7 @@ import { useTheme } from "../context/ThemeContext";
 import { updateProfile, uploadAvatar } from "../services/api";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types";
-
-const API_BASE = "http://192.168.1.130:8080";
+import { buildAssetUrl } from "../config/network";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
@@ -98,7 +97,7 @@ export default function ProfileScreen({ navigation }: Props) {
           {user?.avatar && user.avatar.length > 1 ? (
             <Image
               source={{
-                uri: user.avatar.startsWith("http") ? user.avatar : API_BASE + user.avatar,
+                uri: buildAssetUrl(user.avatar),
                 cache: "reload",
               }}
               style={{ width: 96, height: 96, borderRadius: 48, marginBottom: 12 }}
