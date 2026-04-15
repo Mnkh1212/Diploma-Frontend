@@ -141,7 +141,15 @@ export default function AppNavigator(): React.JSX.Element {
   }
 
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        animation: "slide_from_right",
+        animationDuration: 280,
+        gestureEnabled: true,
+        gestureDirection: "horizontal",
+      }}
+    >
       {!token ? (
         <>
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />

@@ -18,13 +18,12 @@ function niceNum(val: number): number {
   const exp = Math.pow(10, Math.floor(Math.log10(val)));
   const frac = val / exp;
   let nice: number;
-  if (frac <= 1.5) nice = 1.5;
+  if (frac <= 1) nice = 1;
   else if (frac <= 2) nice = 2;
-  else if (frac <= 3) nice = 3;
+  else if (frac <= 2.5) nice = 2.5;
   else if (frac <= 5) nice = 5;
-  else if (frac <= 7) nice = 7;
   else nice = 10;
-  return Math.ceil((nice * exp) / exp) * exp;
+  return nice * exp;
 }
 
 function formatAxis(val: number): string {
@@ -33,8 +32,11 @@ function formatAxis(val: number): string {
     const m = val / 1000000;
     return m % 1 === 0 ? `${m}сая` : `${m.toFixed(1)}сая`;
   }
-  if (val >= 1000) return `${(val / 1000).toFixed(0)}мян`;
-  return `${val}`;
+  if (val >= 1000) {
+    const k = val / 1000;
+    return k % 1 === 0 ? `${k}мян` : `${k.toFixed(1)}мян`;
+  }
+  return `${Math.round(val)}`;
 }
 
 function smoothPath(pts: { x: number; y: number }[]): string {
@@ -75,9 +77,10 @@ export default function StatisticsScreen() {
   useFocusEffect(useCallback(() => { fetchData(); }, [period]));
 
   const pData = stats?.periods || [];
-  const rawMax = Math.max(...pData.flatMap((p) => [p.income, p.expenses]), 1);
+  const rawMaxData = Math.max(...pData.flatMap((p) => [p.income, p.expenses]), 0);
+  const rawMax = rawMaxData > 0 ? rawMaxData : 1000000;
   const ceilMax = niceNum(rawMax);
-  const ticks = Array.from({ length: 6 }, (_, i) => ceilMax - (ceilMax / 5) * i);
+  const ticks = Array.from({ length: 6 }, (_, i) => Math.round((ceilMax - (ceilMax / 5) * i) * 100) / 100);
 
   const toY = (v: number) => CHART_H - (v / ceilMax) * (CHART_H - 10);
   const toX = (i: number) => (i / Math.max(pData.length - 1, 1)) * CHART_W;
@@ -90,7 +93,7 @@ export default function StatisticsScreen() {
   const totMax = Math.max(totInc, totExp, 1);
 
   const barMax = niceNum(rawMax);
-  const barTicks = Array.from({ length: 6 }, (_, i) => barMax - (barMax / 5) * i);
+  const barTicks = Array.from({ length: 6 }, (_, i) => Math.round((barMax - (barMax / 5) * i) * 100) / 100);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>

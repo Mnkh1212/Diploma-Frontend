@@ -20,7 +20,11 @@
     "expo-constants": "~55.0.9",
     "expo-dev-client": "~55.0.18",
     "expo-device": "~55.0.10",
+<<<<<<< HEAD
     "expo-document-picker": "~55.0.9",
+=======
+    "expo-document-picker": "~55.0.13",
+>>>>>>> develop
     "expo-image-picker": "~55.0.14",
     "expo-linear-gradient": "^55.0.9",
     "expo-local-authentication": "~55.0.9",

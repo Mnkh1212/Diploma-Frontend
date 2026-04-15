@@ -18,7 +18,12 @@ import { useTheme } from "../context/ThemeContext";
 import { updateProfile, uploadAvatar } from "../services/api";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types";
+<<<<<<< HEAD
 import { buildAssetUrl } from "../config/network";
+=======
+
+const API_BASE = "http://172.20.10.3:8080";
+>>>>>>> develop
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 

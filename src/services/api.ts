@@ -17,13 +17,12 @@ import {
   AIChat,
   AIChatRequest,
   AIChatResponse,
-  SocialAuthRequest,
-  SocialProviderStatus,
 } from "../types";
-import { NetworkConfig } from "../config/network";
+
+const API_URL = "http://172.20.10.3:8080/api/v1";
 
 const api = axios.create({
-  baseURL: NetworkConfig.ApiBaseUrl,
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -53,10 +52,6 @@ export const login = (data: { email: string; password: string }): Promise<AxiosR
 export const register = (data: { name: string; email: string; password: string }): Promise<AxiosResponse<AuthResponse>> =>
   api.post("/auth/register", data);
 export const getProfile = (): Promise<AxiosResponse<User>> => api.get("/profile");
-export const getSocialProviders = (): Promise<AxiosResponse<SocialProviderStatus[]>> =>
-  api.get("/auth/social/providers");
-export const loginWithSocial = (data: SocialAuthRequest): Promise<AxiosResponse<AuthResponse>> =>
-  api.post("/auth/social/login", data);
 export const updateProfile = (data: Partial<User>): Promise<AxiosResponse<User>> =>
   api.put("/profile", data);
 export const changePassword = (data: { old_password: string; new_password: string }): Promise<AxiosResponse<{ message: string }>> =>
@@ -130,6 +125,9 @@ export const markAllNotificationsRead = (): Promise<AxiosResponse<{ message: str
 
 // Import
 export const importStatement = (formData: FormData): Promise<AxiosResponse<{ message: string; filename: string; analysis: string }>> =>
-  api.post("/import/statement", formData, { headers: { "Content-Type": "multipart/form-data" }, timeout: 60000 });
+  api.post("/import/statement", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    timeout: 60000,
+  });
 
 export default api;

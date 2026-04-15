@@ -19,7 +19,12 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BottomTabParamList, RootStackParamList, DashboardResponse, Transaction } from "../types";
+<<<<<<< HEAD
 import { buildAssetUrl } from "../config/network";
+=======
+
+const API_BASE = "http://172.20.10.3:8080";
+>>>>>>> develop
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<BottomTabParamList, "Home">,
@@ -181,11 +186,19 @@ export default function HomeScreen({ navigation }: Props) {
               {user?.name || "User"}
             </Text>
           </TouchableOpacity>
-          <View className="flex-row items-center">
-            <TouchableOpacity className="mr-4" onPress={toggleTheme}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
+            <TouchableOpacity
+              onPress={toggleTheme}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ padding: 4 }}
+            >
               <Ionicons name={isDark ? "moon-outline" : "sunny-outline"} size={22} color={colors.text} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Notifications")}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ padding: 4 }}
+            >
               <Ionicons name="notifications-outline" size={22} color={colors.text} />
             </TouchableOpacity>
           </View>
@@ -194,6 +207,7 @@ export default function HomeScreen({ navigation }: Props) {
         {/* Үлдэгдэл Card */}
         <View style={{
           borderRadius: 20, overflow: "hidden", marginBottom: 20,
+          borderWidth: 1, borderColor: colors.border,
         }}>
           <Svg style={{ position: "absolute", width: "100%", height: "100%" }}>
             <Defs>
@@ -206,7 +220,11 @@ export default function HomeScreen({ navigation }: Props) {
             <Rect x="0" y="0" width="100%" height="100%" fill="url(#balanceGrad)" />
           </Svg>
           <View style={{ padding: 18 }}>
+<<<<<<< HEAD
             <Text style={{ color: isDark ? "#777" : "#555", fontSize: 12, fontWeight: "500", marginBottom: 4 }}>
+=======
+            <Text style={{ color: isDark ? "#999" : "#555", fontSize: 12, fontWeight: "500", marginBottom: 4 }}>
+>>>>>>> develop
               Нийт үлдэгдэл
             </Text>
             <Text style={{ color: "#00C853", fontSize: 28, fontWeight: "800", marginBottom: 12 }}>
@@ -224,7 +242,7 @@ export default function HomeScreen({ navigation }: Props) {
                   <Ionicons name="arrow-down" size={14} color="#00C853" />
                 </View>
                 <View>
-                  <Text style={{ color: "#777", fontSize: 10 }}>Орлого</Text>
+                  <Text style={{ color: isDark ? "#999" : "#555", fontSize: 10 }}>Орлого</Text>
                   <Text style={{ color: "#00C853", fontSize: 13, fontWeight: "700" }}>
                     {formatAmount(dashboard?.total_income)}
                   </Text>
@@ -241,7 +259,7 @@ export default function HomeScreen({ navigation }: Props) {
                   <Ionicons name="arrow-up" size={14} color="#FF4444" />
                 </View>
                 <View>
-                  <Text style={{ color: "#777", fontSize: 10 }}>Зарлага</Text>
+                  <Text style={{ color: isDark ? "#999" : "#555", fontSize: 10 }}>Зарлага</Text>
                   <Text style={{ color: "#FF4444", fontSize: 13, fontWeight: "700" }}>
                     {formatAmount(dashboard?.total_expenses)}
                   </Text>
