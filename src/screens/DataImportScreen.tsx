@@ -9,14 +9,10 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
-<<<<<<< HEAD
-import * as DocumentPicker from "expo-document-picker";
-=======
 let DocumentPicker: any = null;
 try {
   DocumentPicker = require("expo-document-picker");
 } catch {}
->>>>>>> develop
 import { useTheme } from "../context/ThemeContext";
 import { importStatement } from "../services/api";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -24,8 +20,6 @@ import { RootStackParamList } from "../types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "DataImport">;
 
-<<<<<<< HEAD
-=======
 const SUPPORTED_BANKS = [
   { name: "Хаан банк", color: "#0066B3" },
   { name: "Голомт банк", color: "#E30613" },
@@ -34,15 +28,12 @@ const SUPPORTED_BANKS = [
   { name: "Төрийн банк", color: "#C8102E" },
 ];
 
->>>>>>> develop
 export default function DataImportScreen({ navigation }: Props) {
   const { isDark, colors } = useTheme();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ filename: string; analysis: string } | null>(null);
 
   const handlePickFile = async () => {
-<<<<<<< HEAD
-=======
     if (!DocumentPicker) {
       Alert.alert(
         "Native rebuild шаардлагатай",
@@ -50,7 +41,6 @@ export default function DataImportScreen({ navigation }: Props) {
       );
       return;
     }
->>>>>>> develop
     try {
       const res = await DocumentPicker.getDocumentAsync({
         type: [
@@ -58,10 +48,7 @@ export default function DataImportScreen({ navigation }: Props) {
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
           "application/vnd.ms-excel",
           "text/csv",
-<<<<<<< HEAD
-=======
           "text/comma-separated-values",
->>>>>>> develop
         ],
         copyToCacheDirectory: true,
       });
@@ -92,27 +79,15 @@ export default function DataImportScreen({ navigation }: Props) {
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style={isDark ? "light" : "dark"} />
-<<<<<<< HEAD
-      <ScrollView style={{ flex: 1, paddingHorizontal: 20, paddingTop: 56 }} keyboardDismissMode="on-drag">
-=======
       <ScrollView
         style={{ flex: 1, paddingHorizontal: 20, paddingTop: 56 }}
         keyboardDismissMode="on-drag"
       >
->>>>>>> develop
         {/* Header */}
         <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 12 }}>
             <Ionicons name="chevron-back" size={24} color={colors.text} />
           </TouchableOpacity>
-<<<<<<< HEAD
-          <Text style={{ color: colors.text, fontWeight: "700", fontSize: 20 }}>Өгөгдөл импортлох</Text>
-        </View>
-
-        {/* Info */}
-        <View style={{
-          backgroundColor: colors.card, borderRadius: 16, padding: 20, marginBottom: 20,
-=======
           <Text style={{ color: colors.text, fontWeight: "700", fontSize: 20 }}>
             Өгөгдөл импортлох
           </Text>
@@ -121,30 +96,11 @@ export default function DataImportScreen({ navigation }: Props) {
         {/* Info Card */}
         <View style={{
           backgroundColor: colors.card, borderRadius: 16, padding: 20, marginBottom: 16,
->>>>>>> develop
         }}>
           <Text style={{ color: colors.text, fontWeight: "600", fontSize: 16, marginBottom: 8 }}>
             📄 Банкны хуулга оруулах
           </Text>
           <Text style={{ color: colors.textSecondary, fontSize: 13, lineHeight: 20 }}>
-<<<<<<< HEAD
-            Гүйлгээний хуулгаа PDF, Excel, CSV формат-аар оруулж AI-аар шинжилгээ хийнэ.
-          </Text>
-          <View style={{ marginTop: 12 }}>
-            {["Хаан банк", "Голомт банк", "ХХБ", "Төрийн банк"].map((bank, i) => (
-              <View key={i} style={{ flexDirection: "row", alignItems: "center", marginTop: 6 }}>
-                <Ionicons name="checkmark-circle" size={16} color="#00C853" />
-                <Text style={{ color: colors.textSecondary, fontSize: 13, marginLeft: 8 }}>{bank}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        {/* Supported formats */}
-        <View style={{
-          flexDirection: "row", gap: 8, marginBottom: 20,
-        }}>
-=======
             Банкнаас татсан гүйлгээний хуулгаа PDF, Excel, CSV форматаар оруулж AI-аар шинжилгээ хийлгэнэ үү.
           </Text>
         </View>
@@ -159,9 +115,7 @@ export default function DataImportScreen({ navigation }: Props) {
           {SUPPORTED_BANKS.map((bank, i) => (
             <View
               key={i}
-              style={{
-                flexDirection: "row", alignItems: "center", paddingVertical: 8,
-              }}
+              style={{ flexDirection: "row", alignItems: "center", paddingVertical: 8 }}
             >
               <View style={{
                 width: 10, height: 10, borderRadius: 5, backgroundColor: bank.color, marginRight: 12,
@@ -174,20 +128,11 @@ export default function DataImportScreen({ navigation }: Props) {
 
         {/* Supported Formats */}
         <View style={{ flexDirection: "row", gap: 8, marginBottom: 20 }}>
->>>>>>> develop
           {[
             { ext: "PDF", icon: "document-text", color: "#FF4444" },
             { ext: "Excel", icon: "grid", color: "#00C853" },
             { ext: "CSV", icon: "list", color: "#448AFF" },
           ].map((f, i) => (
-<<<<<<< HEAD
-            <View key={i} style={{
-              flex: 1, backgroundColor: colors.card, borderRadius: 12,
-              padding: 12, alignItems: "center",
-            }}>
-              <Ionicons name={f.icon as any} size={24} color={f.color} />
-              <Text style={{ color: colors.text, fontSize: 12, fontWeight: "600", marginTop: 4 }}>{f.ext}</Text>
-=======
             <View
               key={i}
               style={{
@@ -199,7 +144,6 @@ export default function DataImportScreen({ navigation }: Props) {
               <Text style={{ color: colors.text, fontSize: 12, fontWeight: "600", marginTop: 4 }}>
                 {f.ext}
               </Text>
->>>>>>> develop
             </View>
           ))}
         </View>
@@ -217,14 +161,6 @@ export default function DataImportScreen({ navigation }: Props) {
           {loading ? (
             <>
               <ActivityIndicator color="#0D0D0D" style={{ marginRight: 8 }} />
-<<<<<<< HEAD
-              <Text style={{ color: "#0D0D0D", fontWeight: "700", fontSize: 16 }}>AI шинжилж байна...</Text>
-            </>
-          ) : (
-            <>
-              <Ionicons name="cloud-upload-outline" size={22} color="#0D0D0D" style={{ marginRight: 8 }} />
-              <Text style={{ color: "#0D0D0D", fontWeight: "700", fontSize: 16 }}>Файл сонгох</Text>
-=======
               <Text style={{ color: "#0D0D0D", fontWeight: "700", fontSize: 16 }}>
                 AI шинжилж байна...
               </Text>
@@ -240,7 +176,6 @@ export default function DataImportScreen({ navigation }: Props) {
               <Text style={{ color: "#0D0D0D", fontWeight: "700", fontSize: 16 }}>
                 Файл сонгох
               </Text>
->>>>>>> develop
             </>
           )}
         </TouchableOpacity>
@@ -252,13 +187,9 @@ export default function DataImportScreen({ navigation }: Props) {
           }}>
             <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
               <Ionicons name="analytics" size={20} color="#00C853" style={{ marginRight: 8 }} />
-<<<<<<< HEAD
-              <Text style={{ color: colors.text, fontWeight: "700", fontSize: 16 }}>AI Шинжилгээ</Text>
-=======
               <Text style={{ color: colors.text, fontWeight: "700", fontSize: 16 }}>
                 AI Шинжилгээ
               </Text>
->>>>>>> develop
             </View>
             <Text style={{ color: colors.textSecondary, fontSize: 12, marginBottom: 12 }}>
               📎 {result.filename}
