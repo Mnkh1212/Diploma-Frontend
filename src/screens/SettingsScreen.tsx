@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types";
 
-const API_BASE = "http://192.168.1.130:8080";
+const API_BASE = "http://172.20.10.3:8080";
 
 interface GridItem {
   icon: keyof typeof Ionicons.glyphMap;
@@ -19,7 +19,7 @@ interface GridItem {
 
 export default function SettingsScreen() {
   const { user, logout } = useAuth();
-  const { isDark, colors } = useTheme();
+  const { isDark, colors, toggleTheme } = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleLogout = (): void => {
@@ -65,7 +65,7 @@ export default function SettingsScreen() {
         icon: "analytics-outline",
         label: "Өгөгдөл",
         sublabel: "Өгөгдөл удирдах, экспорт, импорт",
-        onPress: comingSoon,
+        onPress: () => navigation.navigate("DataImport"),
       },
       {
         icon: "lock-closed-outline",
@@ -80,15 +80,12 @@ export default function SettingsScreen() {
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style={isDark ? "light" : "dark"} />
       <ScrollView style={{ flex: 1, paddingHorizontal: 20, paddingTop: 56 }}>
-        {/* Header with user info */}
-        <TouchableOpacity
-          style={{
-            flexDirection: "row", alignItems: "center", justifyContent: "space-between",
-            marginBottom: 28,
-          }}
-          onPress={() => navigation.navigate("Profile")}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {/* Header */}
+        <View className="flex-row items-center justify-between mb-6">
+          <TouchableOpacity
+            className="flex-row items-center"
+            onPress={() => navigation.navigate("Profile")}
+          >
             {user?.avatar && user.avatar.length > 1 ? (
               <Image
                 source={{
@@ -98,24 +95,33 @@ export default function SettingsScreen() {
                 style={{ width: 44, height: 44, borderRadius: 22, marginRight: 12 }}
               />
             ) : (
-              <View style={{
-                width: 44, height: 44, borderRadius: 22, backgroundColor: "#7C4DFF",
-                alignItems: "center", justifyContent: "center", marginRight: 12,
-              }}>
-                <Text style={{ color: "#fff", fontWeight: "700", fontSize: 18 }}>
+              <View className="w-11 h-11 rounded-full bg-accent-purple items-center justify-center mr-3">
+                <Text className="font-bold text-lg" style={{ color: "#fff" }}>
                   {user?.name?.charAt(0) || "U"}
                 </Text>
               </View>
             )}
-            <Text style={{ color: colors.text, fontWeight: "600", fontSize: 16 }}>
+            <Text className="font-semibold text-base" style={{ color: colors.text }}>
               {user?.name || "Хэрэглэгч"}
             </Text>
-          </View>
+          </TouchableOpacity>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 16 }}>
-            <Ionicons name="moon-outline" size={22} color={colors.text} />
-            <Ionicons name="notifications-outline" size={22} color={colors.text} />
+            <TouchableOpacity
+              onPress={toggleTheme}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ padding: 4 }}
+            >
+              <Ionicons name={isDark ? "moon-outline" : "sunny-outline"} size={22} color={colors.text} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Notifications")}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ padding: 4 }}
+            >
+              <Ionicons name="notifications-outline" size={22} color={colors.text} />
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+        </View>
 
         {/* Grid Items */}
         {gridItems.map((row, rowIndex) => (

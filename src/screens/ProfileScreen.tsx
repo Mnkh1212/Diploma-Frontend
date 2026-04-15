@@ -19,7 +19,7 @@ import { updateProfile, uploadAvatar } from "../services/api";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types";
 
-const API_BASE = "http://192.168.1.130:8080";
+const API_BASE = "http://172.20.10.3:8080";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 

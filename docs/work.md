@@ -196,3 +196,28 @@
 - [ ] Custom categories нэмэх
 - [ ] Transaction update endpoint
 - [ ] Charts сайжруулах (react-native-svg)
+
+---
+
+## 2026-04-14: Bank statement import + UI fixes (v1.0.2)
+
+### Нэмсэн feature-ууд
+- **DataImportScreen** — Банкны хуулга импортлох хуудас (Хаан, Голомт, ХХБ, Хас, Төрийн банк дэмжигдсэн)
+  - PDF, Excel, CSV формат
+  - expo-document-picker суулгасан (lazy load — native module байхгүй ч crash хийхгүй)
+  - Backend `/api/v1/import/statement` дуудаж Gemini AI-аар анализ хийлгэнэ
+- **AI зөвлөгч өдөр бүрийн notification** (local scheduled)
+
+### Засагдсан алдаанууд
+- Settings хуудасны moon + notification icon-ууд profile руу ороод байсан → тусдаа TouchableOpacity + hitSlop
+- Home screen header толгой icons profile-тэй холилдож байсан → hitSlop нэмж засав
+- StatisticsScreen niceNum() алгоритм буруу тоо (0.7999999...) гаргаж байсан → засав
+- Хуудас шилжих animation хатуу байсан → slide_from_right 280ms + gesture enable
+- Balance card light mode-д хар харагдаж байсан → theme-dependent gradient (ногоон light / хар dark)
+- DataImport route AppNavigator-д бүртгэлгүй байсан → нэмэв
+- IP хаяг солигдох үед 4 файл (api.ts, 3 screen) бүгдийг гараар засах шаардлагатай
+
+### Git workflow
+- develop branch дээр ажиллаж, main branch руу weekly merge хийнэ
+- Version: 1.0.0 (main) → дараагийн merge дээр 1.0.1 болно
+

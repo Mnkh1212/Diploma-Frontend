@@ -183,6 +183,7 @@ export type RootStackParamList = {
   Notifications: undefined;
   Accounts: undefined;
   ScheduledPayments: undefined;
+  DataImport: undefined;
 };
 
 export type BottomTabParamList = {

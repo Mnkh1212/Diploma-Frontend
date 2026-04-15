@@ -19,7 +19,7 @@ import {
   AIChatResponse,
 } from "../types";
 
-const API_URL = "http://192.168.1.130:8080/api/v1";
+const API_URL = "http://172.20.10.3:8080/api/v1";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -122,5 +122,12 @@ export const markNotificationRead = (id: number): Promise<AxiosResponse<{ messag
   api.put(`/notifications/${id}/read`);
 export const markAllNotificationsRead = (): Promise<AxiosResponse<{ message: string }>> =>
   api.put("/notifications/read-all");
+
+// Import
+export const importStatement = (formData: FormData): Promise<AxiosResponse<{ message: string; filename: string; analysis: string }>> =>
+  api.post("/import/statement", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    timeout: 60000,
+  });
 
 export default api;
