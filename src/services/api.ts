@@ -18,11 +18,10 @@ import {
   AIChatRequest,
   AIChatResponse,
 } from "../types";
-
-const API_URL = "http://172.20.10.3:8080/api/v1";
+import { NetworkConfig } from "../config/network";
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: NetworkConfig.ApiBaseUrl,
   headers: {
     "Content-Type": "application/json",
   },

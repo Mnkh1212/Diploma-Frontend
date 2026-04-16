@@ -18,12 +18,7 @@ import { useTheme } from "../context/ThemeContext";
 import { updateProfile, uploadAvatar } from "../services/api";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types";
-<<<<<<< HEAD
 import { buildAssetUrl } from "../config/network";
-=======
-
-const API_BASE = "http://172.20.10.3:8080";
->>>>>>> develop
 
 type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 
@@ -43,24 +38,27 @@ export default function ProfileScreen({ navigation }: Props) {
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, //MediaType ["images"]-ийг стандарт руу шилжүүлэв
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.7,
     });
+
     if (!result.canceled && result.assets[0]) {
       const uri = result.assets[0].uri;
       const formData = new FormData();
+      // @ts-ignore
       formData.append("avatar", {
         uri,
         name: "avatar.jpg",
         type: "image/jpeg",
-      } as any);
+      });
+
       try {
         const { data } = await uploadAvatar(formData);
         setUser(data);
         Alert.alert("Амжилттай", "Профайл зураг шинэчлэгдлээ");
-      } catch {
+      } catch (error) {
         Alert.alert("Алдаа", "Зураг оруулж чадсангүй");
       }
     }

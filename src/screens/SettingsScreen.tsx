@@ -7,8 +7,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types";
-
-const API_BASE = "http://172.20.10.3:8080";
+import { buildAssetUrl } from "../config/network";
 
 interface GridItem {
   icon: keyof typeof Ionicons.glyphMap;
@@ -89,7 +88,7 @@ export default function SettingsScreen() {
             {user?.avatar && user.avatar.length > 1 ? (
               <Image
                 source={{
-                  uri: user.avatar.startsWith("http") ? user.avatar : API_BASE + user.avatar,
+                  uri: buildAssetUrl(user.avatar),
                   cache: "reload",
                 }}
                 style={{ width: 44, height: 44, borderRadius: 22, marginRight: 12 }}
@@ -144,7 +143,7 @@ export default function SettingsScreen() {
                   {item.icon === "person-outline" && user?.avatar && user.avatar.length > 1 ? (
                     <Image
                       source={{
-                        uri: user.avatar.startsWith("http") ? user.avatar : API_BASE + user.avatar,
+                        uri: buildAssetUrl(user.avatar),
                         cache: "reload",
                       }}
                       style={{ width: 40, height: 40, borderRadius: 10 }}

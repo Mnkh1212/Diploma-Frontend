@@ -19,12 +19,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BottomTabParamList, RootStackParamList, DashboardResponse, Transaction } from "../types";
-<<<<<<< HEAD
-import { buildAssetUrl } from "../config/network";
-=======
-
-const API_BASE = "http://172.20.10.3:8080";
->>>>>>> develop
+import { buildAssetUrl } from "../config/network"; // develop-оос орж ирсэн API_BASE-ийг устгаж, buildAssetUrl-ийг үлдээв
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<BottomTabParamList, "Home">,
@@ -220,11 +215,7 @@ export default function HomeScreen({ navigation }: Props) {
             <Rect x="0" y="0" width="100%" height="100%" fill="url(#balanceGrad)" />
           </Svg>
           <View style={{ padding: 18 }}>
-<<<<<<< HEAD
-            <Text style={{ color: isDark ? "#777" : "#555", fontSize: 12, fontWeight: "500", marginBottom: 4 }}>
-=======
             <Text style={{ color: isDark ? "#999" : "#555", fontSize: 12, fontWeight: "500", marginBottom: 4 }}>
->>>>>>> develop
               Нийт үлдэгдэл
             </Text>
             <Text style={{ color: "#00C853", fontSize: 28, fontWeight: "800", marginBottom: 12 }}>
