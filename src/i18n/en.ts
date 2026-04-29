@@ -1,0 +1,163 @@
+export default {
+  // Common
+  appName: "FinTrack",
+  save: "Save",
+  cancel: "Cancel",
+  delete: "Delete",
+  edit: "Edit",
+  done: "Done",
+  loading: "Loading...",
+  error: "Error",
+  success: "Success",
+  ok: "OK",
+  comingSoon: "Coming Soon",
+  comingSoonDesc: "This feature is under development",
+
+  // Auth
+  welcome: "Welcome Back!",
+  signUp: "Sign Up!",
+  login: "Sign In",
+  register: "Create Account",
+  logout: "Logout",
+  logoutConfirm: "Are you sure you want to logout?",
+  email: "E-mail",
+  emailPlaceholder: "Enter your email",
+  password: "Password",
+  passwordPlaceholder: "Enter your password",
+  fullName: "Full Name",
+  fullNamePlaceholder: "Enter your full name",
+  phoneNumber: "Phone Number",
+  rememberMe: "Remember Me",
+  forgotPassword: "Forgot Password?",
+  noAccount: "Don't have an account?",
+  hasAccount: "Already have an account?",
+  or: "or",
+  loginFailed: "Login failed",
+  registerFailed: "Registration failed",
+  fillAllFields: "Please fill in all fields",
+  passwordMin6: "Password must be at least 6 characters",
+  nameEmailRequired: "Name, email, and password are required",
+
+  // Onboarding
+  onboarding1Title: "Take Control of Your Finances",
+  onboarding1Desc: "Your personal financial companion. Track your money effortlessly with AI-powered advice.",
+  onboarding2Title: "Budget Smarter",
+  onboarding2Desc: "Set your monthly budget, track expenses, and save more effectively.",
+  onboarding3Title: "Streamline Your Finances",
+  onboarding3Desc: "Link bank accounts, credit cards, and get real-time financial updates.",
+  next: "Next",
+  getStarted: "Get Started",
+  skip: "Skip",
+
+  // Tabs
+  tabHome: "Home",
+  tabAnalytics: "Analytics",
+  tabAdvice: "Advice",
+  tabSettings: "Settings",
+
+  // Home
+  totalBalance: "Total Balance",
+  income: "Income",
+  expense: "Expense",
+  savings: "Savings",
+  congrats: "Congratulations!",
+  expenseDecreased: "Your expenses decreased by %{percent}% compared to last month.",
+  details: "Details",
+  transactionHistory: "Transaction History",
+  viewAll: "View All",
+  all: "All",
+
+  // Statistics
+  statistics: "Statistics",
+  diagram: "Diagram",
+  daily: "Daily",
+  weekly: "Weekly",
+  monthly: "Monthly",
+  yearly: "Yearly",
+  last6Periods: "Last 6 Periods",
+  scheduledPayments: "Scheduled Payments",
+
+  // AI Chat
+  aiAdvisor: "AI Financial Advisor",
+  messagePlaceholder: "Type a message...",
+  newChat: "New Chat",
+
+  // Settings
+  profile: "Profile",
+  profileSubtitle: "Login, authenticator",
+  appearance: "Appearance",
+  appearanceSubtitle: "Widgets, Themes",
+  general: "General",
+  generalSubtitle: "Currency, clear data and more",
+  settings: "Settings",
+  settingsSubtitle: "Account settings, notifications",
+  data: "Data",
+  dataSubtitle: "Data management, export and import",
+  privacy: "Privacy",
+  privacySubtitle: "Password management, privacy preferences",
+
+  // Profile
+  editProfile: "Edit Profile",
+  tapToChangePhoto: "Tap to change photo",
+  name: "Name",
+  namePlaceholder: "Enter your name",
+  currency: "Currency",
+  memberSince: "Member Since",
+  darkMode: "Dark Mode",
+  lightMode: "Light Mode",
+  switchToLight: "Switch to light mode",
+  switchToDark: "Switch to dark mode",
+  profileUpdated: "Profile updated successfully",
+  photoUpdated: "Profile photo updated",
+
+  // Privacy
+  changePassword: "Change Password",
+  oldPassword: "Current Password",
+  newPassword: "New Password (6+ characters)",
+  confirmPassword: "Confirm New Password",
+  passwordChanged: "Password changed successfully",
+  passwordMismatch: "Passwords do not match",
+  faceId: "Face ID / Touch ID",
+  biometric: "Biometric Authentication",
+  phoneSaved: "Phone number saved",
+
+  // Accounts
+  accounts: "Accounts",
+  addAccount: "Add Account",
+  accountName: "Account Name",
+  accountType: "Type",
+  bank: "Bank",
+  cash: "Cash",
+  creditCard: "Credit Card",
+  investment: "Investment",
+
+  // Transactions
+  addTransaction: "Add Transaction",
+  amount: "Amount",
+  description: "Description",
+  category: "Category",
+  account: "Account",
+  date: "Date",
+  transactionCreated: "Transaction created successfully",
+
+  // Budget
+  budget: "Budget",
+  addBudget: "Add Budget",
+  overallBudget: "Overall Budget",
+  spent: "Spent",
+  remaining: "Remaining",
+
+  // Data Import
+  dataImport: "Import Data",
+  bankStatement: "Import Bank Statement",
+  bankStatementDesc: "Upload your bank statement in PDF, Excel, or CSV format for AI-powered analysis.",
+  supportedBanks: "Supported Banks",
+  pickFile: "Pick File",
+  aiAnalyzing: "AI analyzing...",
+  aiAnalysis: "AI Analysis",
+
+  // Notifications
+  notifications: "Notifications",
+  markAllRead: "Mark all as read",
+  noNotifications: "No notifications",
+};

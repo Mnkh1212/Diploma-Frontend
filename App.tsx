@@ -5,13 +5,13 @@ import * as Notifications from "expo-notifications";
 import { AuthProvider } from "./src/context/AuthContext";
 import { ThemeProvider } from "./src/context/ThemeContext";
 import { CurrencyProvider } from "./src/context/CurrencyContext";
+import { LanguageProvider } from "./src/context/LanguageContext";
 import { getDashboard } from "./src/services/api";
 import AppNavigator from "./src/navigation/AppNavigator";
 
 // Local notification handler
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
     shouldShowBanner: true,
@@ -114,14 +114,16 @@ export default function App() {
   }, []);
 
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <CurrencyProvider>
-          <NavigationContainer>
-            <AppNavigator />
-          </NavigationContainer>
-        </CurrencyProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <CurrencyProvider>
+            <NavigationContainer>
+              <AppNavigator />
+            </NavigationContainer>
+          </CurrencyProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </LanguageProvider>
   );
 }

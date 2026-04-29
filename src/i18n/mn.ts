@@ -1,0 +1,163 @@
+export default {
+  // Common
+  appName: "FinTrack",
+  save: "Хадгалах",
+  cancel: "Цуцлах",
+  delete: "Устгах",
+  edit: "Засах",
+  done: "Болсон",
+  loading: "Уншиж байна...",
+  error: "Алдаа",
+  success: "Амжилттай",
+  ok: "OK",
+  comingSoon: "Тун удахгүй",
+  comingSoonDesc: "Энэ функц хөгжүүлэлтийн шатанд байна",
+
+  // Auth
+  welcome: "Тавтай морил!",
+  signUp: "Бүртгүүлэх!",
+  login: "Нэвтрэх",
+  register: "Бүртгүүлэх",
+  logout: "Гарах",
+  logoutConfirm: "Та гарахдаа итгэлтэй байна уу?",
+  email: "И-мэйл",
+  emailPlaceholder: "И-мэйл хаягаа оруулна уу",
+  password: "Нууц үг",
+  passwordPlaceholder: "Нууц үгээ оруулна уу",
+  fullName: "Бүтэн нэр",
+  fullNamePlaceholder: "Бүтэн нэрээ оруулна уу",
+  phoneNumber: "Утасны дугаар",
+  rememberMe: "Намайг сана",
+  forgotPassword: "Нууц үг мартсан?",
+  noAccount: "Бүртгэл байхгүй юу?",
+  hasAccount: "Бүртгэлтэй юу?",
+  or: "эсвэл",
+  loginFailed: "Нэвтрэх амжилтгүй боллоо",
+  registerFailed: "Бүртгэл амжилтгүй боллоо",
+  fillAllFields: "Бүх талбарыг бөглөнө үү",
+  passwordMin6: "Нууц үг хамгийн багадаа 6 тэмдэгт байх ёстой",
+  nameEmailRequired: "Нэр, имэйл, нууц үг шаардлагатай",
+
+  // Onboarding
+  onboarding1Title: "Санхүүгээ хянаарай",
+  onboarding1Desc: "Таны хувийн санхүүгийн хамтрагч. Мөнгөө хялбархан хянаж, AI зөвлөгч тусална.",
+  onboarding2Title: "Ухаалаг төсөвлөлт",
+  onboarding2Desc: "Сарын төсвөө тогтоож, зарлагаа хянаж, илүү ихийг хэмнээрэй.",
+  onboarding3Title: "Санхүүгаа нэгтгэ",
+  onboarding3Desc: "Банкны данс, кредит карт холбож, бодит цагийн мэдээлэл аваарай.",
+  next: "Дараах",
+  getStarted: "Эхлэх",
+  skip: "Алгасах",
+
+  // Tabs
+  tabHome: "Нүүр",
+  tabAnalytics: "Шинжилгээ",
+  tabAdvice: "Зөвлөмж",
+  tabSettings: "Тохиргоо",
+
+  // Home
+  totalBalance: "Нийт үлдэгдэл",
+  income: "Орлого",
+  expense: "Зарлага",
+  savings: "Хэмнэлт",
+  congrats: "Баяр хүргэе!",
+  expenseDecreased: "Таны зарлага өмнөх сараас %{percent}%-иар буурсан.",
+  details: "Дэлгэрэнгүй",
+  transactionHistory: "Гүйлгээний түүх",
+  viewAll: "Бүгдийг харах",
+  all: "Бүгд",
+
+  // Statistics
+  statistics: "Статистик",
+  diagram: "Диаграм",
+  daily: "Өдөр",
+  weekly: "7 хоног",
+  monthly: "Сар",
+  yearly: "Жил",
+  last6Periods: "Сүүлийн 6 үе",
+  scheduledPayments: "Төлөвлөсөн төлбөр",
+
+  // AI Chat
+  aiAdvisor: "AI Санхүүгийн зөвлөгч",
+  messagePlaceholder: "Мессеж бичих...",
+  newChat: "Шинэ чат",
+
+  // Settings
+  profile: "Профайл",
+  profileSubtitle: "Нэвтрэх, баталгаажуулалт",
+  appearance: "Харагдац",
+  appearanceSubtitle: "Виджет, Загвар",
+  general: "Ерөнхий",
+  generalSubtitle: "Валют, өгөгдөл цэвэрлэх болон бусад",
+  settings: "Тохиргоо",
+  settingsSubtitle: "Дансны тохиргоо, мэдэгдэл",
+  data: "Өгөгдөл",
+  dataSubtitle: "Өгөгдөл удирдах, экспорт, импорт",
+  privacy: "Нууцлал",
+  privacySubtitle: "Нууц үг удирдах, нууцлалын тохиргоо",
+
+  // Profile
+  editProfile: "Профайл засах",
+  tapToChangePhoto: "Зураг солихын тулд дарна уу",
+  name: "Нэр",
+  namePlaceholder: "Нэрээ оруулна уу",
+  currency: "Валют",
+  memberSince: "Бүртгүүлсэн",
+  darkMode: "Харанхуй горим",
+  lightMode: "Гэрэлтэй горим",
+  switchToLight: "Гэрэлтэй горим руу солих",
+  switchToDark: "Харанхуй горим руу солих",
+  profileUpdated: "Профайл амжилттай шинэчлэгдлээ",
+  photoUpdated: "Профайл зураг шинэчлэгдлээ",
+
+  // Privacy
+  changePassword: "Нууц үг солих",
+  oldPassword: "Хуучин нууц үг",
+  newPassword: "Шинэ нууц үг (6+ тэмдэгт)",
+  confirmPassword: "Шинэ нууц үг давтах",
+  passwordChanged: "Нууц үг амжилттай солигдлоо",
+  passwordMismatch: "Шинэ нууц үг таарахгүй байна",
+  faceId: "Face ID / Touch ID",
+  biometric: "Биометрик нэвтрэлт",
+  phoneSaved: "Утасны дугаар хадгалагдлаа",
+
+  // Accounts
+  accounts: "Данснууд",
+  addAccount: "Данс нэмэх",
+  accountName: "Дансны нэр",
+  accountType: "Төрөл",
+  bank: "Банк",
+  cash: "Бэлэн мөнгө",
+  creditCard: "Кредит карт",
+  investment: "Хөрөнгө оруулалт",
+
+  // Transactions
+  addTransaction: "Гүйлгээ нэмэх",
+  amount: "Дүн",
+  description: "Тайлбар",
+  category: "Ангилал",
+  account: "Данс",
+  date: "Огноо",
+  transactionCreated: "Гүйлгээ амжилттай үүсгэлээ",
+
+  // Budget
+  budget: "Төсөв",
+  addBudget: "Төсөв нэмэх",
+  overallBudget: "Нийт төсөв",
+  spent: "Зарцуулсан",
+  remaining: "Үлдсэн",
+
+  // Data Import
+  dataImport: "Өгөгдөл импортлох",
+  bankStatement: "Банкны хуулга оруулах",
+  bankStatementDesc: "Банкнаас татсан гүйлгээний хуулгаа PDF, Excel, CSV форматаар оруулж AI-аар шинжилгээ хийлгэнэ үү.",
+  supportedBanks: "Дэмжигдсэн банкнууд",
+  pickFile: "Файл сонгох",
+  aiAnalyzing: "AI шинжилж байна...",
+  aiAnalysis: "AI Шинжилгээ",
+
+  // Notifications
+  notifications: "Мэдэгдлүүд",
+  markAllRead: "Бүгдийг уншсан болгох",
+  noNotifications: "Мэдэгдэл байхгүй",
+};

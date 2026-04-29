@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
 import { updateProfile, uploadAvatar } from "../services/api";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types";
@@ -25,6 +26,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 export default function ProfileScreen({ navigation }: Props) {
   const { user, setUser } = useAuth();
   const { isDark, toggleTheme, colors } = useTheme();
+  const { locale, t, changeLanguage } = useLanguage();
 
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
@@ -228,6 +230,44 @@ export default function ProfileScreen({ navigation }: Props) {
             trackColor={{ false: colors.border, true: "#7C4DFF" }}
             thumbColor="#fff"
           />
+        </View>
+
+        {/* Language */}
+        <View style={{
+          flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+          backgroundColor: colors.card, borderRadius: 12, padding: 16, marginBottom: 24,
+        }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Ionicons name="language-outline" size={20} color="#448AFF" style={{ marginRight: 12 }} />
+            <View>
+              <Text style={{ color: colors.text, fontWeight: "600", fontSize: 15 }}>
+                {t("appName")} {locale === "mn" ? "Хэл" : "Language"}
+              </Text>
+              <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 2 }}>
+                {locale === "mn" ? "Монгол" : "English"}
+              </Text>
+            </View>
+          </View>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <TouchableOpacity
+              style={{
+                paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8,
+                backgroundColor: locale === "mn" ? "#00C853" : colors.border,
+              }}
+              onPress={() => changeLanguage("mn")}
+            >
+              <Text style={{ color: locale === "mn" ? "#0D0D0D" : colors.textSecondary, fontWeight: "600", fontSize: 13 }}>MN</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8,
+                backgroundColor: locale === "en" ? "#00C853" : colors.border,
+              }}
+              onPress={() => changeLanguage("en")}
+            >
+              <Text style={{ color: locale === "en" ? "#0D0D0D" : colors.textSecondary, fontWeight: "600", fontSize: 13 }}>EN</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Save Button */}

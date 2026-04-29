@@ -250,3 +250,29 @@
 - develop branch дээр ажиллаж, main branch руу weekly merge хийнэ
 - Version: 1.0.0 (main) → дараагийн merge дээр 1.0.1 болно
 
+
+---
+
+## 2026-04-16: Production deploy + i18n (v1.0.3)
+
+### Production Deploy
+- Backend: Render (https://fintrack-api-lgei.onrender.com)
+- Database: Supabase PostgreSQL (Tokyo region, pooler connection)
+- Frontend: NetworkConfig.ts production URL рүү шилжсэн
+- Бүх API_BASE-ийн оронд `buildAssetUrl()` ашиглах болсон
+- IP солигдох, WiFi сольсон ч ажиллана
+
+### i18n - Олон хэлний дэмжлэг
+- `i18n-js` суулгасан (expo-localization биш — native module шаардахгүй)
+- `src/i18n/mn.ts` — Монгол орчуулга (150+ key)
+- `src/i18n/en.ts` — English орчуулга
+- `LanguageContext` — хэл солих, AsyncStorage-д хадгалах
+- ProfileScreen дээр MN/EN switch товч
+- Утасны хэлийг автоматаар тодорхойлно (NativeModules ашиглан)
+
+### Фрагмент
+- expo-notifications: shouldShowAlert deprecated → shouldShowBanner + shouldShowList
+- Settings → Өгөгдөл навигац DataImport screen рүү
+- DataImport conflict засагдсан, 5 банк дэмжигдсэн
+- Davхардсан файлууд (CurrencyContext 2.tsx, DataImportScreen 2.tsx гэх мэт) устгасан
+
