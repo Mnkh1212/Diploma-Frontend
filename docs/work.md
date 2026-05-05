@@ -228,6 +228,49 @@
 
 ---
 
+## 2026-05-05 — Structured AI Analysis шилжүүлэг (v1.1.0)
+
+### DataImportScreen бүрэн дахин бичсэн
+
+Web client (Diploma-Web)-тэй ижил structured үр дүн харуулдаг болсон.
+
+**Хуучин:** `POST /api/v1/import/statement` → зөвхөн text-based AI summary, charts алга,
+auto-import гүйлгээ үүсгэдэггүй.
+
+**Шинэ:** `POST /api/v1/ai/analysis` → structured JSON. Дараах нэмэлтүүд:
+
+- 4 stat card: эцсийн үлдэгдэл, цэвэр өсөлт, орлого, зарлага
+- "Орлого vs Зарлага" BarChart (`react-native-chart-kit`)
+- Зарлагын ангилал PieChart
+- AI зөвлөмж жагсаалт (`recommendations[]`)
+- Гүйлгээний дэлгэрэнгүй list (50 ширхэг)
+- **Өмнөх анализын history** — horizontal scroll-той карт. Удаан дарж устгана
+- File / period / транзакцийн тоог толгой хэсэгт
+- **Auto-import:** Backend нь parsed гүйлгээнүүдийг `Transaction` record болгож хадгалж,
+  хэрэглэгчийн дансны balance-ыг шинэчилдэг → Dashboard, Гүйлгээ хуудсуудад шууд харагдана
+
+### Шинэчлэгдсэн файлууд
+
+| Файл | Өөрчлөлт |
+|---|---|
+| `src/types/index.ts` | `AIAnalysisResponse`, `ParsedTransaction`, `CategoryBreakdown` types нэмсэн |
+| `src/services/api.ts` | `analyzeStatement`, `listAnalyses`, `getAnalysis`, `deleteAnalysis` нэмсэн |
+| `src/screens/DataImportScreen.tsx` | Бүрэн дахин бичсэн: charts, history, structured stat cards |
+
+### AI Chat — өөрчлөлтгүй
+
+AI Chat (`AIChatScreen.tsx`) screen нь хуучин `POST /api/v1/ai/chat` endpoint-ыг
+ашигладаг — backend дээр `gemini-2.5-flash` model-руу шилжсэн нь автомат
+үр дүнгээр ирнэ. Frontend код өөрчлөгдөөгүй.
+
+### Туршилтын зорилго
+
+- iPhone (USB) дээр Голомт банкны PDF хуулга оруулж 4,662,900₮ / 3,856,888₮ зөв гарахыг шалгах
+- AI Chat нь quota алдаагүй ажиллахыг шалгах
+- Auto-imported гүйлгээнүүд Home + Transactions screen-д харагдахыг шалгах
+
+---
+
 ## 2026-04-14: Bank statement import + UI fixes (v1.0.2)
 
 ### Нэмсэн feature-ууд

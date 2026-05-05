@@ -186,6 +186,43 @@ export interface AIChatResponse {
   message: AIMessage;
 }
 
+// ============ AI Analysis (банкны хуулга structured шинжилгээ) ============
+
+export interface ParsedTransaction {
+  date: string;
+  description: string;
+  amount: number;
+  type: "income" | "expense";
+  category: string;
+  balance: number;
+}
+
+export interface CategoryBreakdown {
+  category: string;
+  amount: number;
+  percentage: number;
+  count: number;
+}
+
+export interface AIAnalysisResponse {
+  id: number;
+  filename: string;
+  bank_name: string;
+  opening_balance: number;
+  closing_balance: number;
+  total_income: number;
+  total_expenses: number;
+  net_cashflow: number;
+  transaction_count: number;
+  period_start: string;
+  period_end: string;
+  transactions: ParsedTransaction[];
+  categories: CategoryBreakdown[];
+  recommendations: string[];
+  ai_summary: string;
+  created_at: string;
+}
+
 // ============ Navigation ============
 
 export type RootStackParamList = {

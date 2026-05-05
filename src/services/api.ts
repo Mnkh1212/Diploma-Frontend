@@ -17,6 +17,7 @@ import {
   AIChat,
   AIChatRequest,
   AIChatResponse,
+  AIAnalysisResponse,
 } from "../types";
 import { NetworkConfig } from "../config/network";
 
@@ -122,11 +123,24 @@ export const markNotificationRead = (id: number): Promise<AxiosResponse<{ messag
 export const markAllNotificationsRead = (): Promise<AxiosResponse<{ message: string }>> =>
   api.put("/notifications/read-all");
 
-// Import
+// Import (хуучин — text-only AI summary)
 export const importStatement = (formData: FormData): Promise<AxiosResponse<{ message: string; filename: string; analysis: string }>> =>
   api.post("/import/statement", formData, {
     headers: { "Content-Type": "multipart/form-data" },
     timeout: 60000,
   });
+
+// AI Analysis (шинэ — structured JSON: balance, income, expense, charts, recommendations)
+export const analyzeStatement = (formData: FormData): Promise<AxiosResponse<AIAnalysisResponse>> =>
+  api.post("/ai/analysis", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    timeout: 90000,
+  });
+export const listAnalyses = (): Promise<AxiosResponse<AIAnalysisResponse[]>> =>
+  api.get("/ai/analyses");
+export const getAnalysis = (id: number): Promise<AxiosResponse<AIAnalysisResponse>> =>
+  api.get(`/ai/analyses/${id}`);
+export const deleteAnalysis = (id: number): Promise<AxiosResponse<{ message: string }>> =>
+  api.delete(`/ai/analyses/${id}`);
 
 export default api;
