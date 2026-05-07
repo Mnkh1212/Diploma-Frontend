@@ -132,11 +132,11 @@ export default function AddTransactionScreen() {
         {/* Amount Card */}
         <View
           className="rounded-2xl items-center justify-center mb-5"
-          style={{ backgroundColor: colors.card, paddingVertical: 28, borderWidth: 1, borderColor: colors.border }}
+          style={{ backgroundColor: colors.card, paddingVertical: 18, borderWidth: 1, borderColor: colors.border }}
         >
-          <Text className="text-xs mb-2" style={{ color: colors.textSecondary, letterSpacing: 1 }}>ДҮН</Text>
-          <View className="flex-row items-center">
-            <Text style={{ color: accent, fontSize: 34, fontWeight: "800" }}>₮</Text>
+          <Text className="text-xs mb-1" style={{ color: colors.textSecondary, letterSpacing: 1 }}>ДҮН</Text>
+          <View className="flex-row items-baseline">
+            <Text style={{ color: accent, fontSize: 36, fontWeight: "800" }}>₮</Text>
             <TextInput
               placeholder="0"
               placeholderTextColor={colors.textMuted}
@@ -145,11 +145,11 @@ export default function AddTransactionScreen() {
               keyboardType="decimal-pad"
               style={{
                 color: colors.text,
-                fontSize: 40,
+                fontSize: 36,
                 fontWeight: "800",
-                marginLeft: 6,
-                minWidth: 80,
-                textAlign: "center",
+                marginLeft: 4,
+                minWidth: 40,
+                padding: 0,
               }}
             />
           </View>
@@ -248,22 +248,24 @@ export default function AddTransactionScreen() {
         </View>
 
         {/* Custom category text input */}
-        <View className="flex-row items-center rounded-2xl mb-6"
+        <View
+          className="flex-row items-center rounded-2xl mb-6"
           style={{
             backgroundColor: colors.card,
             borderWidth: 1,
             borderColor: customCategory.trim() ? accent : colors.border,
             paddingHorizontal: 14,
+            paddingVertical: 12,
           }}
         >
           <Ionicons
             name="add-circle-outline"
-            size={18}
+            size={20}
             color={customCategory.trim() ? accent : colors.textMuted}
           />
           <TextInput
             className="flex-1 text-base ml-2"
-            style={{ color: colors.text, paddingVertical: 14 }}
+            style={{ color: colors.text, padding: 0 }}
             placeholder="Эсвэл шинэ ангилал бичих..."
             placeholderTextColor={colors.textMuted}
             value={customCategory}
