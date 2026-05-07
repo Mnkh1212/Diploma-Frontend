@@ -80,161 +80,234 @@ export default function AddTransactionScreen() {
     }
   };
 
+  const accent = type === "expense" ? "#FF4444" : "#00C853";
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style={isDark ? "light" : "dark"} />
-      <View className="px-5 pt-14 pb-4">
-        <View className="flex-row items-center justify-between mb-6">
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+
+      {/* Header */}
+      <View style={{ paddingHorizontal: 20, paddingTop: 56, paddingBottom: 12 }}>
+        <View className="flex-row items-center justify-between mb-5">
+          <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Ionicons name="close" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text className="font-bold text-xl" style={{ color: colors.text }}>Гүйлгээ нэмэх</Text>
-          <View className="w-6" />
+          <Text className="font-bold text-lg" style={{ color: colors.text }}>Гүйлгээ нэмэх</Text>
+          <View style={{ width: 24 }} />
         </View>
 
-        {/* Type Toggle */}
-        <View className="flex-row rounded-xl p-1 mb-6" style={{ backgroundColor: colors.card }}>
-          {(["expense", "income"] as const).map((t) => (
-            <TouchableOpacity
-              key={t}
-              className={`flex-1 py-3 rounded-lg items-center ${
-                type === t
-                  ? t === "expense"
-                    ? "bg-accent-red"
-                    : "bg-accent-green"
-                  : ""
-              }`}
-              onPress={() => {
-                setType(t);
-                setSelectedCategory(null);
-              }}
-            >
-              <Text
-                className={`font-bold text-sm ${
-                  type === t ? "text-white" : ""
-                }`}
-                style={type !== t ? { color: colors.textSecondary } : undefined}
+        {/* Type Toggle (segmented) */}
+        <View className="flex-row p-1 rounded-2xl" style={{ backgroundColor: colors.card }}>
+          {(["expense", "income"] as const).map((t) => {
+            const active = type === t;
+            const tint = t === "expense" ? "#FF4444" : "#00C853";
+            return (
+              <TouchableOpacity
+                key={t}
+                className="flex-1 py-3 rounded-xl items-center"
+                style={{ backgroundColor: active ? tint : "transparent" }}
+                onPress={() => {
+                  setType(t);
+                  setSelectedCategory(null);
+                  setCustomCategory("");
+                }}
               >
-                {t === "expense" ? "Зарлага" : "Орлого"}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  className="font-semibold text-sm"
+                  style={{ color: active ? "#FFFFFF" : colors.textSecondary }}
+                >
+                  {t === "expense" ? "Зарлага" : "Орлого"}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-5" keyboardDismissMode="on-drag">
-        {/* Amount */}
-        <View className="items-center mb-8">
-          <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Дүн</Text>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
+        keyboardDismissMode="on-drag"
+      >
+        {/* Amount Card */}
+        <View
+          className="rounded-2xl items-center justify-center mb-5"
+          style={{ backgroundColor: colors.card, paddingVertical: 28, borderWidth: 1, borderColor: colors.border }}
+        >
+          <Text className="text-xs mb-2" style={{ color: colors.textSecondary, letterSpacing: 1 }}>ДҮН</Text>
           <View className="flex-row items-center">
-            <Text className="text-4xl font-bold" style={{ color: colors.text }}>₮</Text>
+            <Text style={{ color: accent, fontSize: 34, fontWeight: "800" }}>₮</Text>
             <TextInput
-              className="text-4xl font-bold ml-1"
               placeholder="0"
               placeholderTextColor={colors.textMuted}
               value={amount}
               onChangeText={setAmount}
               keyboardType="decimal-pad"
-              style={{ minWidth: 100, color: colors.text }}
+              style={{
+                color: colors.text,
+                fontSize: 40,
+                fontWeight: "800",
+                marginLeft: 6,
+                minWidth: 80,
+                textAlign: "center",
+              }}
             />
           </View>
         </View>
 
         {/* Description */}
-        <View className="mb-6">
-          <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Тайлбар</Text>
-          <TextInput
-            className="rounded-xl px-4 py-4 text-base"
-            style={{ backgroundColor: colors.card, color: colors.text, borderWidth: 1, borderColor: colors.border }}
-            placeholder="Юунд зарцуулсан бэ?"
-            placeholderTextColor={colors.textMuted}
-            value={description}
-            onChangeText={setDescription}
-          />
-        </View>
-
-        {/* Account Selection */}
-        <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Данс</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
-          {accounts.map((account) => (
-            <TouchableOpacity
-              key={account.id}
-              className={`px-4 py-3 rounded-xl mr-2 border ${
-                selectedAccount?.id === account.id
-                  ? "border-accent-green bg-accent-green/10"
-                  : ""
-              }`}
-              style={selectedAccount?.id !== account.id ? { borderColor: colors.border, backgroundColor: colors.card } : undefined}
-              onPress={() => setSelectedAccount(account)}
-            >
-              <Text className="text-sm" style={{ color: colors.text }}>{account.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        {/* Category Selection */}
-        <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>
-          Ангилал <Text style={{ color: colors.textMuted }}>(сонголтгүй бол "Бусад")</Text>
-        </Text>
-        <View className="flex-row flex-wrap gap-2 mb-3">
-          {categories.map((cat) => (
-            <TouchableOpacity
-              key={cat.id}
-              className={`flex-row items-center px-3 py-2 rounded-xl border ${
-                selectedCategory?.id === cat.id
-                  ? "border-accent-green bg-accent-green/10"
-                  : ""
-              }`}
-              style={selectedCategory?.id !== cat.id ? { borderColor: colors.border, backgroundColor: colors.card } : undefined}
-              onPress={() => {
-                setSelectedCategory(cat);
-                setCustomCategory("");
-              }}
-            >
-              <Ionicons
-                name={(cat.icon as keyof typeof Ionicons.glyphMap) || "cash-outline"}
-                size={16}
-                color={cat.color || "#666"}
-              />
-              <Text className="text-sm ml-2" style={{ color: colors.text }}>{cat.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Text className="text-xs mb-2 ml-1" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>ТАЙЛБАР</Text>
         <TextInput
-          className="rounded-xl px-4 py-3 text-base mb-8"
+          className="rounded-2xl px-4 mb-5 text-base"
           style={{
             backgroundColor: colors.card,
             color: colors.text,
             borderWidth: 1,
-            borderColor: customCategory.trim() ? "#00C853" : colors.border,
+            borderColor: colors.border,
+            paddingVertical: 14,
           }}
-          placeholder="Эсвэл шинэ ангилал бичих..."
+          placeholder="Юунд зарцуулсан бэ?"
           placeholderTextColor={colors.textMuted}
-          value={customCategory}
-          onChangeText={(text) => {
-            setCustomCategory(text);
-            if (text.trim()) {
-              setSelectedCategory(null);
-            }
-          }}
-          autoCapitalize="words"
-          returnKeyType="done"
+          value={description}
+          onChangeText={setDescription}
         />
+
+        {/* Account Selection */}
+        <Text className="text-xs mb-2 ml-1" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>ДАНС</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5">
+          {accounts.map((account) => {
+            const active = selectedAccount?.id === account.id;
+            return (
+              <TouchableOpacity
+                key={account.id}
+                onPress={() => setSelectedAccount(account)}
+                className="flex-row items-center rounded-2xl mr-2"
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 12,
+                  backgroundColor: active ? accent + "15" : colors.card,
+                  borderWidth: 1,
+                  borderColor: active ? accent : colors.border,
+                }}
+              >
+                <Ionicons
+                  name="wallet-outline"
+                  size={16}
+                  color={active ? accent : colors.textSecondary}
+                  style={{ marginRight: 6 }}
+                />
+                <Text
+                  className="text-sm"
+                  style={{ color: active ? accent : colors.text, fontWeight: active ? "600" : "400" }}
+                >
+                  {account.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        {/* Category Selection */}
+        <View className="flex-row items-baseline mb-2 ml-1">
+          <Text className="text-xs" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>АНГИЛАЛ</Text>
+          <Text className="text-xs ml-2" style={{ color: colors.textMuted }}>(сонголтгүй бол "Бусад")</Text>
+        </View>
+        <View className="flex-row flex-wrap mb-3" style={{ gap: 8 }}>
+          {categories.map((cat) => {
+            const active = selectedCategory?.id === cat.id;
+            return (
+              <TouchableOpacity
+                key={cat.id}
+                onPress={() => {
+                  setSelectedCategory(cat);
+                  setCustomCategory("");
+                }}
+                className="flex-row items-center rounded-2xl"
+                style={{
+                  paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  backgroundColor: active ? (cat.color || accent) + "20" : colors.card,
+                  borderWidth: 1,
+                  borderColor: active ? (cat.color || accent) : colors.border,
+                }}
+              >
+                <Ionicons
+                  name={(cat.icon as keyof typeof Ionicons.glyphMap) || "pricetag-outline"}
+                  size={15}
+                  color={cat.color || colors.textSecondary}
+                />
+                <Text
+                  className="text-sm ml-2"
+                  style={{ color: colors.text, fontWeight: active ? "600" : "400" }}
+                >
+                  {cat.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        {/* Custom category text input */}
+        <View className="flex-row items-center rounded-2xl mb-6"
+          style={{
+            backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: customCategory.trim() ? accent : colors.border,
+            paddingHorizontal: 14,
+          }}
+        >
+          <Ionicons
+            name="add-circle-outline"
+            size={18}
+            color={customCategory.trim() ? accent : colors.textMuted}
+          />
+          <TextInput
+            className="flex-1 text-base ml-2"
+            style={{ color: colors.text, paddingVertical: 14 }}
+            placeholder="Эсвэл шинэ ангилал бичих..."
+            placeholderTextColor={colors.textMuted}
+            value={customCategory}
+            onChangeText={(text) => {
+              setCustomCategory(text);
+              if (text.trim()) {
+                setSelectedCategory(null);
+              }
+            }}
+            autoCapitalize="words"
+            returnKeyType="done"
+          />
+        </View>
 
         {/* Submit */}
         <TouchableOpacity
-          className={`py-4 rounded-2xl items-center mb-8 ${
-            type === "expense" ? "bg-accent-red" : "bg-accent-green"
-          }`}
           onPress={handleSubmit}
           disabled={loading}
+          className="rounded-2xl items-center justify-center"
+          style={{
+            backgroundColor: accent,
+            paddingVertical: 16,
+            shadowColor: accent,
+            shadowOpacity: 0.25,
+            shadowOffset: { width: 0, height: 4 },
+            shadowRadius: 8,
+            elevation: 4,
+            opacity: loading ? 0.6 : 1,
+          }}
         >
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text className="text-white font-bold text-lg">
-              {type === "expense" ? "Зарлага" : "Орлого"} нэмэх
-            </Text>
+            <View className="flex-row items-center">
+              <Ionicons
+                name={type === "expense" ? "remove-circle" : "add-circle"}
+                size={20}
+                color="#FFFFFF"
+                style={{ marginRight: 8 }}
+              />
+              <Text className="text-white font-bold text-base">
+                {type === "expense" ? "Зарлага нэмэх" : "Орлого нэмэх"}
+              </Text>
+            </View>
           )}
         </TouchableOpacity>
       </ScrollView>
