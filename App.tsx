@@ -7,7 +7,7 @@ import { ThemeProvider } from "./src/context/ThemeContext";
 import { CurrencyProvider } from "./src/context/CurrencyContext";
 import { LanguageProvider } from "./src/context/LanguageContext";
 import { AccountProvider } from "./src/context/AccountContext";
-import { getDashboard } from "./src/services/api";
+import { getDashboard, getAccounts } from "./src/services/api";
 import AppNavigator from "./src/navigation/AppNavigator";
 
 // Local notification handler
@@ -50,7 +50,18 @@ async function scheduleDailyAnalysis() {
 // App нээгдэх үед шууд шинжилгээ хийж notification харуулах
 async function runInstantAnalysis() {
   try {
-    const { data } = await getDashboard();
+    // Эхний дансыг ав — Notification нь "энэ сар"-ын filter-ээс үл хамаарч
+    // тухайн дансны бүх хугацааны нийлбэрийг ашиглах ёстой (хуулга оруулсан
+    // хуучин огноотой ч гэсэн харагдана).
+    let primaryAccountId: number | undefined;
+    try {
+      const accountsRes = await getAccounts();
+      primaryAccountId = accountsRes.data?.[0]?.id;
+    } catch {
+      // Account list татаагүй ч бүх дансны "энэ сар" view-р үргэлжилнэ.
+    }
+
+    const { data } = await getDashboard(primaryAccountId);
     if (!data) return;
 
     const { balance, total_income, total_expenses } = data;
@@ -83,7 +94,7 @@ async function runInstantAnalysis() {
     if (total_expenses > total_income && total_income > 0) {
       insights.push({
         title: "🚨 Зарлага орлогоос хэтэрсэн",
-        body: "Энэ сард орлогоосоо илүү зарцуулж байна. Шаардлагагүй зардлыг бууруулаарай.",
+        body: "Орлогоосоо илүү зарцуулж байна. Шаардлагагүй зардлыг бууруулаарай.",
       });
     }
 
