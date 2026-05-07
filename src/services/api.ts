@@ -60,8 +60,8 @@ export const uploadAvatar = (formData: FormData): Promise<AxiosResponse<User>> =
   api.post("/profile/avatar", formData, { headers: { "Content-Type": "multipart/form-data" } });
 
 // Dashboard
-export const getDashboard = (): Promise<AxiosResponse<DashboardResponse>> =>
-  api.get("/dashboard");
+export const getDashboard = (accountId?: number): Promise<AxiosResponse<DashboardResponse>> =>
+  api.get("/dashboard", { params: accountId ? { account_id: accountId } : undefined });
 export const getExpensesSummary = (period: string): Promise<AxiosResponse<ExpensesSummary>> =>
   api.get(`/expenses/summary?period=${period}`);
 export const getStatistics = (period: string): Promise<AxiosResponse<StatisticsResponse>> =>

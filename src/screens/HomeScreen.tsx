@@ -90,10 +90,11 @@ export default function HomeScreen({ navigation }: Props) {
   const [recentTx, setRecentTx] = useState<Transaction[]>([]);
   const [txTab, setTxTab] = useState<string>("Бүгд");
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
 
-  const fetchDashboard = async (): Promise<void> => {
+  const fetchDashboard = async (accountId?: number | null): Promise<void> => {
     try {
-      const { data } = await getDashboard();
+      const { data } = await getDashboard(accountId ?? undefined);
       setDashboard(data);
       setRecentTx(data.recent_transactions || []);
     } catch (error) {
@@ -106,6 +107,7 @@ export default function HomeScreen({ navigation }: Props) {
       const params: Record<string, string | number> = { page: 1, limit: 10 };
       if (tab === "Зарлага") params.type = "expense";
       if (tab === "Орлого") params.type = "income";
+      if (selectedAccountId) params.account_id = selectedAccountId;
       const { data } = await getTransactions(params);
       setRecentTx(data.data || []);
     } catch {
@@ -115,13 +117,13 @@ export default function HomeScreen({ navigation }: Props) {
 
   useFocusEffect(
     useCallback(() => {
-      fetchDashboard();
-    }, [])
+      fetchDashboard(selectedAccountId);
+    }, [selectedAccountId])
   );
 
   const onRefresh = async (): Promise<void> => {
     setRefreshing(true);
-    await fetchDashboard();
+    await fetchDashboard(selectedAccountId);
     setTxTab("Бүгд");
     setRefreshing(false);
   };
@@ -134,6 +136,13 @@ export default function HomeScreen({ navigation }: Props) {
       fetchFilteredTx(tab);
     }
   };
+
+  const handleSelectAccount = (accountId: number | null): void => {
+    setSelectedAccountId(accountId);
+    setTxTab("Бүгд");
+  };
+
+  const selectedAccount = (dashboard?.accounts || []).find((a) => a.id === selectedAccountId) || null;
 
 
   const groupByDate = (txList: Transaction[]): Record<string, Transaction[]> => {
@@ -216,7 +225,7 @@ export default function HomeScreen({ navigation }: Props) {
           </Svg>
           <View style={{ padding: 18 }}>
             <Text style={{ color: isDark ? "#999" : "#555", fontSize: 12, fontWeight: "500", marginBottom: 4 }}>
-              Нийт үлдэгдэл
+              {selectedAccount ? selectedAccount.name : "Нийт үлдэгдэл"}
             </Text>
             <Text style={{ color: "#00C853", fontSize: 28, fontWeight: "800", marginBottom: 12 }}>
               {formatAmount(dashboard?.balance)}
@@ -290,31 +299,87 @@ export default function HomeScreen({ navigation }: Props) {
           );
         })()}
 
-        {/* Account Cards */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
-          {(dashboard?.accounts || []).map((account, index) => (
+        {/* Account Switcher */}
+        {(dashboard?.accounts || []).length > 0 && (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
             <TouchableOpacity
-              key={account.id || index}
+              onPress={() => handleSelectAccount(null)}
               className="rounded-2xl p-4 mr-3"
-              style={{ width: 160, backgroundColor: colors.card }}
-              onPress={() => navigation.navigate("Accounts")}
+              style={{
+                width: 160,
+                backgroundColor: selectedAccountId === null ? "#00C853" : colors.card,
+                borderWidth: 1,
+                borderColor: selectedAccountId === null ? "#00C853" : "transparent",
+              }}
             >
-              <View className="w-10 h-10 rounded-lg items-center justify-center mb-3" style={{ backgroundColor: colors.surface }}>
+              <View
+                className="w-10 h-10 rounded-lg items-center justify-center mb-3"
+                style={{ backgroundColor: selectedAccountId === null ? "rgba(0,0,0,0.1)" : colors.surface }}
+              >
                 <Ionicons
-                  name={(account.icon as keyof typeof Ionicons.glyphMap) || accountIconMap[account.type] || "wallet-outline"}
+                  name="albums-outline"
                   size={20}
-                  color={colors.text}
+                  color={selectedAccountId === null ? "#0D0D0D" : colors.text}
                 />
               </View>
-              <Text className="font-bold text-base" style={{ color: colors.text }}>
-                {formatAmount(account.balance)}
+              <Text
+                className="font-bold text-base"
+                style={{ color: selectedAccountId === null ? "#0D0D0D" : colors.text }}
+              >
+                {formatAmount(
+                  (dashboard?.accounts || []).reduce((sum, a) => sum + (a.balance || 0), 0)
+                )}
               </Text>
-              <Text className="text-xs mt-1 uppercase" style={{ color: colors.textSecondary }}>
-                {account.name}
+              <Text
+                className="text-xs mt-1 uppercase"
+                style={{ color: selectedAccountId === null ? "#0D0D0D" : colors.textSecondary }}
+              >
+                Бүх данс
               </Text>
             </TouchableOpacity>
-          ))}
-        </ScrollView>
+            {(dashboard?.accounts || []).map((account, index) => {
+              const active = selectedAccountId === account.id;
+              return (
+                <TouchableOpacity
+                  key={account.id || index}
+                  onPress={() => handleSelectAccount(account.id)}
+                  onLongPress={() => navigation.navigate("Accounts")}
+                  className="rounded-2xl p-4 mr-3"
+                  style={{
+                    width: 160,
+                    backgroundColor: active ? "#00C853" : colors.card,
+                    borderWidth: 1,
+                    borderColor: active ? "#00C853" : "transparent",
+                  }}
+                >
+                  <View
+                    className="w-10 h-10 rounded-lg items-center justify-center mb-3"
+                    style={{ backgroundColor: active ? "rgba(0,0,0,0.1)" : colors.surface }}
+                  >
+                    <Ionicons
+                      name={(account.icon as keyof typeof Ionicons.glyphMap) || accountIconMap[account.type] || "wallet-outline"}
+                      size={20}
+                      color={active ? "#0D0D0D" : colors.text}
+                    />
+                  </View>
+                  <Text
+                    className="font-bold text-base"
+                    style={{ color: active ? "#0D0D0D" : colors.text }}
+                  >
+                    {formatAmount(account.balance)}
+                  </Text>
+                  <Text
+                    className="text-xs mt-1 uppercase"
+                    style={{ color: active ? "#0D0D0D" : colors.textSecondary }}
+                    numberOfLines={1}
+                  >
+                    {account.name}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        )}
 
         {/* Quick Actions */}
         <View className="flex-row items-center justify-between mb-6">
