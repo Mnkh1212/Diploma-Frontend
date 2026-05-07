@@ -6,6 +6,7 @@ import { AuthProvider } from "./src/context/AuthContext";
 import { ThemeProvider } from "./src/context/ThemeContext";
 import { CurrencyProvider } from "./src/context/CurrencyContext";
 import { LanguageProvider } from "./src/context/LanguageContext";
+import { AccountProvider } from "./src/context/AccountContext";
 import { getDashboard } from "./src/services/api";
 import AppNavigator from "./src/navigation/AppNavigator";
 
@@ -118,9 +119,11 @@ export default function App() {
       <ThemeProvider>
         <AuthProvider>
           <CurrencyProvider>
-            <NavigationContainer>
-              <AppNavigator />
-            </NavigationContainer>
+            <AccountProvider>
+              <NavigationContainer>
+                <AppNavigator />
+              </NavigationContainer>
+            </AccountProvider>
           </CurrencyProvider>
         </AuthProvider>
       </ThemeProvider>

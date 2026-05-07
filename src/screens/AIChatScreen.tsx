@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { AIChat, AIMessage, AIChatRequest } from "../types";
 import { useTheme } from "../context/ThemeContext";
+import { useAccount } from "../context/AccountContext";
 
 interface OptimisticMessage {
   id: number;
@@ -30,12 +31,21 @@ interface OptimisticMessage {
 
 export default function AIChatScreen() {
   const { isDark, colors } = useTheme();
+  const { selectedAccountId, selectedAccount } = useAccount();
   const [chats, setChats] = useState<AIChat[]>([]);
   const [activeChat, setActiveChat] = useState<AIChat | null>(null);
   const [messages, setMessages] = useState<(AIMessage | OptimisticMessage)[]>([]);
   const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [showChatList, setShowChatList] = useState<boolean>(true);
+
+  // Account солигдоход active chat-ыг reset — шинэ chat нь сонгосон банкны
+  // context дээр тулгуурлан хариулна. Өмнөх chat-ууд хадгалагдсан хэвээр.
+  useEffect(() => {
+    setActiveChat(null);
+    setMessages([]);
+    setShowChatList(true);
+  }, [selectedAccountId]);
 
   const fetchChats = async (): Promise<void> => {
     try {
@@ -95,6 +105,7 @@ export default function AIChatScreen() {
     try {
       const payload: AIChatRequest = { message: userMessage };
       if (activeChat?.id) payload.chat_id = activeChat.id;
+      if (selectedAccountId) payload.account_id = selectedAccountId;
 
       const { data } = await sendAIMessage(payload);
 
@@ -183,9 +194,16 @@ export default function AIChatScreen() {
           <Ionicons name="chevron-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Ionicons name="sparkles" size={20} color="#00C853" />
-        <Text style={{ color: colors.text }} className="font-bold text-base ml-2">
-          AI Санхүүгийн зөвлөгч
-        </Text>
+        <View className="ml-2 flex-1">
+          <Text style={{ color: colors.text }} className="font-bold text-base">
+            AI Санхүүгийн зөвлөгч
+          </Text>
+          {selectedAccount && (
+            <Text className="text-xs" style={{ color: colors.textSecondary }} numberOfLines={1}>
+              {selectedAccount.name}-д тулгуурласан
+            </Text>
+          )}
+        </View>
       </View>
 
       {/* Messages */}

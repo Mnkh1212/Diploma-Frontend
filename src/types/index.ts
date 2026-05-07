@@ -179,6 +179,7 @@ export interface CreateTransactionRequest {
 export interface AIChatRequest {
   message: string;
   chat_id?: number;
+  account_id?: number;
 }
 
 export interface AIChatResponse {

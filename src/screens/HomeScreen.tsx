@@ -13,6 +13,7 @@ import Svg, { Circle, Defs, LinearGradient, Stop, Rect } from "react-native-svg"
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useCurrency } from "../context/CurrencyContext";
+import { useAccount } from "../context/AccountContext";
 import { getDashboard, getTransactions } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -86,11 +87,11 @@ export default function HomeScreen({ navigation }: Props) {
   const { user } = useAuth();
   const { isDark, colors, toggleTheme } = useTheme();
   const { formatAmount } = useCurrency();
+  const { accounts, selectedAccountId, selectedAccount, setSelectedAccountId, refreshAccounts } = useAccount();
   const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
   const [recentTx, setRecentTx] = useState<Transaction[]>([]);
   const [txTab, setTxTab] = useState<string>("Бүгд");
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
 
   const fetchDashboard = async (accountId?: number | null): Promise<void> => {
     try {
@@ -117,13 +118,19 @@ export default function HomeScreen({ navigation }: Props) {
 
   useFocusEffect(
     useCallback(() => {
-      fetchDashboard(selectedAccountId);
-    }, [selectedAccountId])
+      refreshAccounts();
+      if (selectedAccountId) {
+        fetchDashboard(selectedAccountId);
+      }
+    }, [selectedAccountId, refreshAccounts])
   );
 
   const onRefresh = async (): Promise<void> => {
     setRefreshing(true);
-    await fetchDashboard(selectedAccountId);
+    await refreshAccounts();
+    if (selectedAccountId) {
+      await fetchDashboard(selectedAccountId);
+    }
     setTxTab("Бүгд");
     setRefreshing(false);
   };
@@ -137,12 +144,10 @@ export default function HomeScreen({ navigation }: Props) {
     }
   };
 
-  const handleSelectAccount = (accountId: number | null): void => {
+  const handleSelectAccount = (accountId: number): void => {
     setSelectedAccountId(accountId);
     setTxTab("Бүгд");
   };
-
-  const selectedAccount = (dashboard?.accounts || []).find((a) => a.id === selectedAccountId) || null;
 
 
   const groupByDate = (txList: Transaction[]): Record<string, Transaction[]> => {
@@ -225,7 +230,7 @@ export default function HomeScreen({ navigation }: Props) {
           </Svg>
           <View style={{ padding: 18 }}>
             <Text style={{ color: isDark ? "#999" : "#555", fontSize: 12, fontWeight: "500", marginBottom: 4 }}>
-              {selectedAccount ? selectedAccount.name : "Нийт үлдэгдэл"}
+              {selectedAccount ? selectedAccount.name : "Үлдэгдэл"}
             </Text>
             <Text style={{ color: "#00C853", fontSize: 28, fontWeight: "800", marginBottom: 12 }}>
               {formatAmount(dashboard?.balance)}
@@ -300,44 +305,9 @@ export default function HomeScreen({ navigation }: Props) {
         })()}
 
         {/* Account Switcher */}
-        {(dashboard?.accounts || []).length > 0 && (
+        {accounts.length > 0 && (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
-            <TouchableOpacity
-              onPress={() => handleSelectAccount(null)}
-              className="rounded-2xl p-4 mr-3"
-              style={{
-                width: 160,
-                backgroundColor: selectedAccountId === null ? "#00C853" : colors.card,
-                borderWidth: 1,
-                borderColor: selectedAccountId === null ? "#00C853" : "transparent",
-              }}
-            >
-              <View
-                className="w-10 h-10 rounded-lg items-center justify-center mb-3"
-                style={{ backgroundColor: selectedAccountId === null ? "rgba(0,0,0,0.1)" : colors.surface }}
-              >
-                <Ionicons
-                  name="albums-outline"
-                  size={20}
-                  color={selectedAccountId === null ? "#0D0D0D" : colors.text}
-                />
-              </View>
-              <Text
-                className="font-bold text-base"
-                style={{ color: selectedAccountId === null ? "#0D0D0D" : colors.text }}
-              >
-                {formatAmount(
-                  (dashboard?.accounts || []).reduce((sum, a) => sum + (a.balance || 0), 0)
-                )}
-              </Text>
-              <Text
-                className="text-xs mt-1 uppercase"
-                style={{ color: selectedAccountId === null ? "#0D0D0D" : colors.textSecondary }}
-              >
-                Бүх данс
-              </Text>
-            </TouchableOpacity>
-            {(dashboard?.accounts || []).map((account, index) => {
+            {accounts.map((account, index) => {
               const active = selectedAccountId === account.id;
               return (
                 <TouchableOpacity

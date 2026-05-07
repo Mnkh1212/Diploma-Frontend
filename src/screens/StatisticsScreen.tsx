@@ -8,6 +8,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { StatisticsResponse, ScheduledPayment } from "../types";
 import { useTheme } from "../context/ThemeContext";
 import { useCurrency } from "../context/CurrencyContext";
+import { useAccount } from "../context/AccountContext";
 
 const CHART_W = Dimensions.get("window").width - 100;
 const CHART_H = 180;
@@ -52,6 +53,7 @@ function smoothPath(pts: { x: number; y: number }[]): string {
 export default function StatisticsScreen() {
   const { isDark, colors } = useTheme();
   const { formatAmount } = useCurrency();
+  const { selectedAccountId, selectedAccount } = useAccount();
   const [stats, setStats] = useState<StatisticsResponse | null>(null);
   const [payments, setPayments] = useState<ScheduledPayment[]>([]);
   const [period, setPeriod] = useState<string>("monthly");
@@ -66,7 +68,10 @@ export default function StatisticsScreen() {
 
   const fetchData = async () => {
     try {
-      const [s, p] = await Promise.all([getStatistics(period), getScheduledPayments()]);
+      const [s, p] = await Promise.all([
+        getStatistics(period, selectedAccountId ?? undefined),
+        getScheduledPayments(),
+      ]);
       setStats(s.data);
       setPayments(p.data || []);
     } catch (e) {
@@ -74,7 +79,7 @@ export default function StatisticsScreen() {
     }
   };
 
-  useFocusEffect(useCallback(() => { fetchData(); }, [period]));
+  useFocusEffect(useCallback(() => { fetchData(); }, [period, selectedAccountId]));
 
   const pData = stats?.periods || [];
   const rawMaxData = Math.max(...pData.flatMap((p) => [p.income, p.expenses]), 0);
@@ -99,7 +104,14 @@ export default function StatisticsScreen() {
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style={isDark ? "light" : "dark"} />
       <ScrollView className="flex-1 px-5 pt-14">
-        <Text className="font-bold text-xl mb-4" style={{ color: colors.text }}>Шинжилгээ</Text>
+        <View className="flex-row items-baseline justify-between mb-4">
+          <Text className="font-bold text-xl" style={{ color: colors.text }}>Шинжилгээ</Text>
+          {selectedAccount && (
+            <Text className="text-xs" style={{ color: colors.textSecondary }} numberOfLines={1}>
+              {selectedAccount.name}
+            </Text>
+          )}
+        </View>
 
         {/* Tab Switcher */}
         <View className="flex-row rounded-xl p-1 mb-5" style={{ backgroundColor: colors.card }}>

@@ -8,6 +8,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList, ExpensesSummary, CategoryExpense } from "../types";
 import { useTheme } from "../context/ThemeContext";
 import { useCurrency } from "../context/CurrencyContext";
+import { useAccount } from "../context/AccountContext";
 
 type ExpensesScreenProps = NativeStackScreenProps<RootStackParamList, "Expenses">;
 
@@ -48,6 +49,7 @@ const DonutSegment = ({ categories, total }: DonutSegmentProps) => {
 export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
   const { isDark, colors } = useTheme();
   const { formatAmount } = useCurrency();
+  const { selectedAccountId, selectedAccount } = useAccount();
   const [summary, setSummary] = useState<ExpensesSummary | null>(null);
   const [period, setPeriod] = useState<string>("monthly");
 
@@ -60,7 +62,7 @@ export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
 
   const fetchData = async (): Promise<void> => {
     try {
-      const { data } = await getExpensesSummary(period);
+      const { data } = await getExpensesSummary(period, selectedAccountId ?? undefined);
       setSummary(data);
     } catch (error) {
       console.log("Expenses error:", error);
@@ -70,7 +72,7 @@ export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-    }, [period])
+    }, [period, selectedAccountId])
   );
 
   return (
@@ -82,7 +84,12 @@ export default function ExpensesScreen({ navigation }: ExpensesScreenProps) {
           <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
             <Ionicons name="chevron-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text className="font-bold text-xl" style={{ color: colors.text }}>Зарлага</Text>
+          <Text className="font-bold text-xl flex-1" style={{ color: colors.text }}>Зарлага</Text>
+          {selectedAccount && (
+            <Text className="text-xs" style={{ color: colors.textSecondary }} numberOfLines={1}>
+              {selectedAccount.name}
+            </Text>
+          )}
         </View>
 
         {/* Search */}

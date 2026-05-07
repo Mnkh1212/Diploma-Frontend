@@ -62,10 +62,10 @@ export const uploadAvatar = (formData: FormData): Promise<AxiosResponse<User>> =
 // Dashboard
 export const getDashboard = (accountId?: number): Promise<AxiosResponse<DashboardResponse>> =>
   api.get("/dashboard", { params: accountId ? { account_id: accountId } : undefined });
-export const getExpensesSummary = (period: string): Promise<AxiosResponse<ExpensesSummary>> =>
-  api.get(`/expenses/summary?period=${period}`);
-export const getStatistics = (period: string): Promise<AxiosResponse<StatisticsResponse>> =>
-  api.get(`/statistics?period=${period}`);
+export const getExpensesSummary = (period: string, accountId?: number): Promise<AxiosResponse<ExpensesSummary>> =>
+  api.get("/expenses/summary", { params: { period, ...(accountId ? { account_id: accountId } : {}) } });
+export const getStatistics = (period: string, accountId?: number): Promise<AxiosResponse<StatisticsResponse>> =>
+  api.get("/statistics", { params: { period, ...(accountId ? { account_id: accountId } : {}) } });
 
 // Transactions
 export const getTransactions = (params: Record<string, string | number>): Promise<AxiosResponse<PaginatedResponse<Transaction>>> =>
