@@ -9,6 +9,7 @@ import {
   Transaction,
   PaginatedResponse,
   CreateTransactionRequest,
+  CreateCategoryRequest,
   BudgetListResponse,
   Budget,
   Account,
@@ -95,6 +96,8 @@ export const deleteAccount = (id: number): Promise<AxiosResponse<{ message: stri
 // Categories
 export const getCategories = (type?: string): Promise<AxiosResponse<Category[]>> =>
   api.get(`/categories${type ? `?type=${type}` : ""}`);
+export const createCategory = (data: CreateCategoryRequest): Promise<AxiosResponse<Category>> =>
+  api.post("/categories", data);
 
 // Scheduled Payments
 export const getScheduledPayments = (): Promise<AxiosResponse<ScheduledPayment[]>> =>

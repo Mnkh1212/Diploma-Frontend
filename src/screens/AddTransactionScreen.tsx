@@ -25,6 +25,7 @@ export default function AddTransactionScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [customCategory, setCustomCategory] = useState<string>("");
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -49,16 +50,19 @@ export default function AddTransactionScreen() {
   };
 
   const handleSubmit = async (): Promise<void> => {
-    if (!amount || !selectedCategory || !selectedAccount) {
-      Alert.alert("Алдаа", "Бүх шаардлагатай талбарыг бөглөнө үү");
+    if (!amount || !selectedAccount) {
+      Alert.alert("Алдаа", "Дүн болон данс шаардлагатай");
       return;
     }
 
     setLoading(true);
     try {
+      const trimmedCustom = customCategory.trim();
       await createTransaction({
         account_id: selectedAccount.id,
-        category_id: selectedCategory.id,
+        // Chip сонгосон бол id-аар; үгүй гар бичсэн нэрээр; хоосон бол backend "Бусад"
+        category_id: selectedCategory?.id,
+        category_name: !selectedCategory && trimmedCustom ? trimmedCustom : undefined,
         amount: parseFloat(amount),
         type,
         description,
@@ -169,8 +173,10 @@ export default function AddTransactionScreen() {
         </ScrollView>
 
         {/* Category Selection */}
-        <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>Ангилал</Text>
-        <View className="flex-row flex-wrap gap-2 mb-8">
+        <Text className="text-sm mb-2" style={{ color: colors.textSecondary }}>
+          Ангилал <Text style={{ color: colors.textMuted }}>(сонголтгүй бол "Бусад")</Text>
+        </Text>
+        <View className="flex-row flex-wrap gap-2 mb-3">
           {categories.map((cat) => (
             <TouchableOpacity
               key={cat.id}
@@ -180,7 +186,10 @@ export default function AddTransactionScreen() {
                   : ""
               }`}
               style={selectedCategory?.id !== cat.id ? { borderColor: colors.border, backgroundColor: colors.card } : undefined}
-              onPress={() => setSelectedCategory(cat)}
+              onPress={() => {
+                setSelectedCategory(cat);
+                setCustomCategory("");
+              }}
             >
               <Ionicons
                 name={(cat.icon as keyof typeof Ionicons.glyphMap) || "cash-outline"}
@@ -191,6 +200,26 @@ export default function AddTransactionScreen() {
             </TouchableOpacity>
           ))}
         </View>
+        <TextInput
+          className="rounded-xl px-4 py-3 text-base mb-8"
+          style={{
+            backgroundColor: colors.card,
+            color: colors.text,
+            borderWidth: 1,
+            borderColor: customCategory.trim() ? "#00C853" : colors.border,
+          }}
+          placeholder="Эсвэл шинэ ангилал бичих..."
+          placeholderTextColor={colors.textMuted}
+          value={customCategory}
+          onChangeText={(text) => {
+            setCustomCategory(text);
+            if (text.trim()) {
+              setSelectedCategory(null);
+            }
+          }}
+          autoCapitalize="words"
+          returnKeyType="done"
+        />
 
         {/* Submit */}
         <TouchableOpacity

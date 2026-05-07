@@ -169,11 +169,21 @@ export interface BudgetListResponse {
 
 export interface CreateTransactionRequest {
   account_id: number;
-  category_id: number;
+  // category_id 0 эсвэл undefined үед category_name-ийг ашиглана
+  category_id?: number;
+  // category_name өгсөн бол backend find-or-create хийнэ. Хоосон бол "Бусад"
+  category_name?: string;
   amount: number;
   type: "income" | "expense";
   description: string;
   date: string;
+}
+
+export interface CreateCategoryRequest {
+  name: string;
+  type: "income" | "expense";
+  icon?: string;
+  color?: string;
 }
 
 export interface AIChatRequest {
