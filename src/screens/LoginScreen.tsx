@@ -189,7 +189,7 @@ export default function LoginScreen({ navigation }: Props) {
             </View>
             <Text style={{ color: colors.textSecondary, fontSize: 12 }}>Намайг сана</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
             <Text style={{ color: "#00C853", fontSize: 12, fontWeight: "600" }}>Нууц үг мартсан?</Text>
           </TouchableOpacity>
         </View>
