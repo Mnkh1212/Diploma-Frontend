@@ -29,7 +29,10 @@ interface OptimisticMessage {
   created_at?: string;
 }
 
-export default function AIChatScreen() {
+// embedded: AdvisorScreen дотор tab болж байрласан үед top padding багасгах
+type AIChatScreenProps = { embedded?: boolean };
+
+export default function AIChatScreen({ embedded = false }: AIChatScreenProps = {}) {
   const { isDark, colors } = useTheme();
   const { selectedAccountId, selectedAccount } = useAccount();
   const [chats, setChats] = useState<AIChat[]>([]);
@@ -129,7 +132,10 @@ export default function AIChatScreen() {
   // Chat List View
   if (showChatList) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg }} className="px-5 pt-14">
+      <View
+        style={{ flex: 1, backgroundColor: colors.bg, paddingTop: embedded ? 8 : 56 }}
+        className="px-5"
+      >
         <StatusBar style={isDark ? "light" : "dark"} />
 
         {/* Header with AI icon */}
@@ -183,7 +189,10 @@ export default function AIChatScreen() {
       <StatusBar style={isDark ? "light" : "dark"} />
 
       {/* Chat Header */}
-      <View style={{ borderColor: colors.border }} className="flex-row items-center px-5 pt-14 pb-3 border-b">
+      <View
+        style={{ borderColor: colors.border, paddingTop: embedded ? 8 : 56 }}
+        className="flex-row items-center px-5 pb-3 border-b"
+      >
         <TouchableOpacity
           onPress={() => {
             setShowChatList(true);

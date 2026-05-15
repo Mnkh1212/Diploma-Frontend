@@ -19,7 +19,11 @@ import { analyzeStatement, deleteAnalysis, getAnalysis, listAnalyses } from "../
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AIAnalysisResponse, ParsedTransaction, RootStackParamList } from "../types";
 
-type Props = NativeStackScreenProps<RootStackParamList, "DataImport">;
+// DataImportScreen-ийг хоёр газар (Stack route + Advisor tab) дамжуулж ашиглана.
+// Tab дотор embed хийсэн үед header болон back button нь хэрэггүй учир
+// embedded prop-оор toggle хийнэ.
+type StackProps = NativeStackScreenProps<RootStackParamList, "DataImport">;
+type Props = Partial<Pick<StackProps, "navigation">> & { embedded?: boolean };
 
 const SUPPORTED_BANKS = [
   { name: "Хаан банк", color: "#0066B3" },
@@ -42,7 +46,7 @@ const formatDate = (raw: string) => {
   return d.toLocaleDateString("mn-MN");
 };
 
-export default function DataImportScreen({ navigation }: Props) {
+export default function DataImportScreen({ navigation, embedded = false }: Props) {
   const { isDark, colors } = useTheme();
   const { formatAmount } = useCurrency();
   const [loading, setLoading] = useState(false);
@@ -164,18 +168,27 @@ export default function DataImportScreen({ navigation }: Props) {
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style={isDark ? "light" : "dark"} />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 40 }}>
-        {/* Header */}
-        <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingTop: 56, marginBottom: 20 }}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 12 }}>
-            <Ionicons name="chevron-back" size={26} color={colors.text} />
-          </TouchableOpacity>
-          <Text style={{ color: colors.text, fontWeight: "700", fontSize: 22, flex: 1 }}>AI Шинжилгээ</Text>
-          {cleanedActive && (
+        {/* Header — embedded үед AdvisorScreen-ийн header ашиглагдах учир нуугдана */}
+        {!embedded && (
+          <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingTop: 56, marginBottom: 20 }}>
+            <TouchableOpacity onPress={() => navigation?.goBack()} style={{ marginRight: 12 }}>
+              <Ionicons name="chevron-back" size={26} color={colors.text} />
+            </TouchableOpacity>
+            <Text style={{ color: colors.text, fontWeight: "700", fontSize: 22, flex: 1 }}>AI Шинжилгээ</Text>
+            {cleanedActive && (
+              <TouchableOpacity onPress={handlePickFile} disabled={loading} style={{ padding: 6 }}>
+                <Ionicons name="add-circle" size={32} color="#00C853" />
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+        {embedded && cleanedActive && (
+          <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 20, paddingTop: 8, marginBottom: 12 }}>
             <TouchableOpacity onPress={handlePickFile} disabled={loading} style={{ padding: 6 }}>
               <Ionicons name="add-circle" size={32} color="#00C853" />
             </TouchableOpacity>
-          )}
-        </View>
+          </View>
+        )}
 
         {/* History strip */}
         {history.length > 0 && (

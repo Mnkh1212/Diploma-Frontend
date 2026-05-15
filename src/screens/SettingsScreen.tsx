@@ -47,24 +47,10 @@ export default function SettingsScreen() {
     ],
     [
       {
-        icon: "ellipsis-vertical",
-        label: "Ерөнхий",
-        sublabel: "Валют, өгөгдөл цэвэрлэх болон бусад",
-        onPress: () => navigation.navigate("Profile"),
-      },
-      {
         icon: "settings-outline",
         label: "Тохиргоо",
         sublabel: "Дансны тохиргоо, мэдэгдэл",
         onPress: () => navigation.navigate("Accounts"),
-      },
-    ],
-    [
-      {
-        icon: "analytics-outline",
-        label: "Өгөгдөл",
-        sublabel: "Өгөгдөл удирдах, экспорт, импорт",
-        onPress: () => navigation.navigate("DataImport"),
       },
       {
         icon: "lock-closed-outline",

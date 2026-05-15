@@ -17,7 +17,7 @@ import TransactionsScreen from "../screens/TransactionsScreen";
 import ExpensesScreen from "../screens/ExpensesScreen";
 import BudgetScreen from "../screens/BudgetScreen";
 import StatisticsScreen from "../screens/StatisticsScreen";
-import AIChatScreen from "../screens/AIChatScreen";
+import AdvisorScreen from "../screens/AdvisorScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import AddTransactionScreen from "../screens/AddTransactionScreen";
 import ProfileScreen from "../screens/ProfileScreen";
@@ -108,7 +108,7 @@ function BottomTabs() {
       />
       <Tab.Screen
         name="AI Chat"
-        component={AIChatScreen}
+        component={AdvisorScreen}
         options={{
           tabBarLabel: "Зөвлөмж",
           tabBarIcon: ({ color }: { color: string }) => (
