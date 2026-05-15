@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useTheme } from "../context/ThemeContext";
 import AIChatScreen from "./AIChatScreen";
 import DataImportScreen from "./DataImportScreen";
@@ -15,9 +16,23 @@ type SubTab = "chat" | "analysis";
 export default function AdvisorScreen(): React.JSX.Element {
   const { isDark, colors } = useTheme();
   const [tab, setTab] = useState<SubTab>("chat");
+  // Tab bar өндрийг авч keyboard offset-д ашиглана. AIChatScreen дотрох
+  // KeyboardAvoidingView нь nested layout-д буруу ажилладаг тул parent
+  // level (энд) дээр хийнэ.
+  let tabBarHeight = 0;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    tabBarHeight = useBottomTabBarHeight();
+  } catch {
+    tabBarHeight = 0;
+  }
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={tabBarHeight}
+    >
       <StatusBar style={isDark ? "light" : "dark"} />
 
       {/* Header + tab toggle */}
@@ -95,6 +110,6 @@ export default function AdvisorScreen(): React.JSX.Element {
           <DataImportScreen embedded />
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

@@ -193,10 +193,12 @@ export default function AIChatScreen({ embedded = false }: AIChatScreenProps = {
 
   // Chat Messages View
   return (
+    // Embedded үед AdvisorScreen дээр KeyboardAvoidingView байна (parent түвшин
+    // дээр зөв ажиллана). Энд behavior-ийг undefined болгож no-op болгоно.
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={tabBarHeight}
+      behavior={embedded ? undefined : Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={embedded ? 0 : tabBarHeight}
     >
       <StatusBar style={isDark ? "light" : "dark"} />
 
