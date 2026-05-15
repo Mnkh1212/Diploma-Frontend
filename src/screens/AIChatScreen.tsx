@@ -17,6 +17,7 @@ import {
   sendAIMessage,
 } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { AIChat, AIMessage, AIChatRequest } from "../types";
 import { useTheme } from "../context/ThemeContext";
 import { useAccount } from "../context/AccountContext";
@@ -35,6 +36,16 @@ type AIChatScreenProps = { embedded?: boolean };
 export default function AIChatScreen({ embedded = false }: AIChatScreenProps = {}) {
   const { isDark, colors } = useTheme();
   const { selectedAccountId, selectedAccount } = useAccount();
+  // Embedded үед tab navigator-ийн доор байрлана — KeyboardAvoidingView нь tab
+  // bar-ийн өндрийг тооцоо хийхгүй учир текст input нь keyboard-аар халхлагдаж
+  // байсан. Hook-оор tab bar height-ийг авч keyboardVerticalOffset-д өгнө.
+  let tabBarHeight = 0;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    tabBarHeight = useBottomTabBarHeight();
+  } catch {
+    tabBarHeight = 0;
+  }
   const [chats, setChats] = useState<AIChat[]>([]);
   const [activeChat, setActiveChat] = useState<AIChat | null>(null);
   const [messages, setMessages] = useState<(AIMessage | OptimisticMessage)[]>([]);
@@ -185,6 +196,7 @@ export default function AIChatScreen({ embedded = false }: AIChatScreenProps = {
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.bg }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={tabBarHeight}
     >
       <StatusBar style={isDark ? "light" : "dark"} />
 
