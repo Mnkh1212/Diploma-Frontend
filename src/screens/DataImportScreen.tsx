@@ -173,6 +173,33 @@ export default function DataImportScreen({ navigation, embedded = false }: Props
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style={isDark ? "light" : "dark"} />
+
+      {/* Loading banner — файл upload, parser cold-start, AI summary 30-90s
+         болж магадгүй учир хэрэглэгчид яагаад хүлээж буйг ил харуулна. */}
+      {loading && (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "rgba(0,200,83,0.12)",
+            borderBottomWidth: 1,
+            borderBottomColor: "rgba(0,200,83,0.3)",
+            paddingHorizontal: 20,
+            paddingVertical: 12,
+          }}
+        >
+          <ActivityIndicator size="small" color="#00C853" style={{ marginRight: 12 }} />
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: "#00C853", fontWeight: "700", fontSize: 13 }}>
+              Хуулга уншиж байна...
+            </Text>
+            <Text style={{ color: colors.textSecondary, fontSize: 11, marginTop: 2 }}>
+              Гүйлгээг шүүж, AI шинжилгээ хийж байна. 30-90 секунд хүлээнэ үү.
+            </Text>
+          </View>
+        </View>
+      )}
+
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 40 }}>
         {/* Header — embedded үед AdvisorScreen-ийн header ашиглагдах учир нуугдана */}
         {!embedded && (
