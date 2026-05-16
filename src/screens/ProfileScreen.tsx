@@ -9,7 +9,13 @@ import {
   ScrollView,
   Switch,
   Image,
+  Dimensions,
 } from "react-native";
+
+// Валютын grid 4 баганатай яг тэгш fit-хийхийн тулд pixel-аар тооцоолно.
+// Container нь padding 20*2 = 40, gap=8 (3 ширхэг = 24) хасагдана.
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const CURRENCY_ITEM_WIDTH = (SCREEN_WIDTH - 40 - 24) / 4;
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -26,7 +32,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Profile">;
 export default function ProfileScreen({ navigation }: Props) {
   const { user, setUser } = useAuth();
   const { isDark, toggleTheme, colors } = useTheme();
-  const { locale, t, changeLanguage } = useLanguage();
+  const { locale, changeLanguage } = useLanguage();
 
   const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(user?.email || "");
@@ -90,47 +96,47 @@ export default function ProfileScreen({ navigation }: Props) {
       <StatusBar style={isDark ? "light" : "dark"} />
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 56, paddingBottom: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 56, paddingBottom: 12 }}
         keyboardDismissMode="on-drag"
       >
         {/* Header */}
-        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 14 }}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 12 }}>
             <Ionicons name="chevron-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <Text style={{ color: colors.text, fontWeight: "700", fontSize: 20 }}>Профайл засах</Text>
         </View>
 
-        {/* Avatar — компакт хэлбэрээр */}
-        <TouchableOpacity style={{ alignItems: "center", marginBottom: 20 }} onPress={handlePickAvatar}>
+        {/* Avatar — жижиг компакт */}
+        <TouchableOpacity style={{ alignItems: "center", marginBottom: 14 }} onPress={handlePickAvatar}>
           {user?.avatar && user.avatar.length > 1 ? (
             <Image
               source={{
                 uri: buildAssetUrl(user.avatar),
                 cache: "reload",
               }}
-              style={{ width: 80, height: 80, borderRadius: 40, marginBottom: 8 }}
+              style={{ width: 64, height: 64, borderRadius: 32, marginBottom: 6 }}
             />
           ) : (
             <View style={{
-              width: 80, height: 80, borderRadius: 40,
-              backgroundColor: "#7C4DFF", alignItems: "center", justifyContent: "center", marginBottom: 8,
+              width: 64, height: 64, borderRadius: 32,
+              backgroundColor: "#7C4DFF", alignItems: "center", justifyContent: "center", marginBottom: 6,
             }}>
-              <Text style={{ color: "#fff", fontWeight: "700", fontSize: 30 }}>
+              <Text style={{ color: "#fff", fontWeight: "700", fontSize: 24 }}>
                 {user?.name?.charAt(0) || "U"}
               </Text>
             </View>
           )}
-          <Text style={{ color: colors.textSecondary, fontSize: 12 }}>Зураг солих</Text>
+          <Text style={{ color: colors.textSecondary, fontSize: 11 }}>Зураг солих</Text>
         </TouchableOpacity>
 
         {/* Name */}
-        <View style={{ marginBottom: 16 }}>
-          <Text style={{ color: colors.textSecondary, fontSize: 13, marginBottom: 8 }}>Нэр</Text>
+        <View style={{ marginBottom: 10 }}>
+          <Text style={{ color: colors.textSecondary, fontSize: 12, marginBottom: 5 }}>Нэр</Text>
           <TextInput
             style={{
-              backgroundColor: colors.card, color: colors.text, borderRadius: 12,
-              paddingHorizontal: 16, paddingVertical: 14, fontSize: 15,
+              backgroundColor: colors.card, color: colors.text, borderRadius: 10,
+              paddingHorizontal: 14, paddingVertical: 10, fontSize: 14,
               borderWidth: 1, borderColor: colors.border,
             }}
             placeholder="Нэрээ оруулна уу"
@@ -141,12 +147,12 @@ export default function ProfileScreen({ navigation }: Props) {
         </View>
 
         {/* Email */}
-        <View style={{ marginBottom: 16 }}>
-          <Text style={{ color: colors.textSecondary, fontSize: 13, marginBottom: 8 }}>Имэйл</Text>
+        <View style={{ marginBottom: 10 }}>
+          <Text style={{ color: colors.textSecondary, fontSize: 12, marginBottom: 5 }}>Имэйл</Text>
           <TextInput
             style={{
-              backgroundColor: colors.card, color: colors.text, borderRadius: 12,
-              paddingHorizontal: 16, paddingVertical: 14, fontSize: 15,
+              backgroundColor: colors.card, color: colors.text, borderRadius: 10,
+              paddingHorizontal: 14, paddingVertical: 10, fontSize: 14,
               borderWidth: 1, borderColor: colors.border,
             }}
             placeholder="Имэйл хаягаа оруулна уу"
@@ -159,9 +165,9 @@ export default function ProfileScreen({ navigation }: Props) {
         </View>
 
         {/* Currency — 4×2 grid (8 валют) */}
-        <View style={{ marginBottom: 16 }}>
-          <Text style={{ color: colors.textSecondary, fontSize: 13, marginBottom: 8 }}>Валют</Text>
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ color: colors.textSecondary, fontSize: 12, marginBottom: 6 }}>Валют</Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, rowGap: 6 }}>
             {[
               { code: "MNT", symbol: "₮", name: "Төгрөг" },
               { code: "USD", symbol: "$", name: "Доллар" },
@@ -177,10 +183,10 @@ export default function ProfileScreen({ navigation }: Props) {
                 <TouchableOpacity
                   key={c.code}
                   style={{
-                    width: "23.5%",
-                    paddingVertical: 10,
-                    paddingHorizontal: 4,
-                    borderRadius: 12,
+                    width: CURRENCY_ITEM_WIDTH,
+                    paddingVertical: 8,
+                    paddingHorizontal: 2,
+                    borderRadius: 10,
                     borderWidth: 1,
                     borderColor: active ? "#00C853" : colors.border,
                     backgroundColor: active ? "rgba(0,200,83,0.1)" : colors.card,
@@ -191,7 +197,7 @@ export default function ProfileScreen({ navigation }: Props) {
                   <Text
                     style={{
                       fontWeight: "700",
-                      fontSize: 13,
+                      fontSize: 12,
                       color: active ? "#00C853" : colors.text,
                     }}
                   >
@@ -200,7 +206,7 @@ export default function ProfileScreen({ navigation }: Props) {
                   <Text
                     style={{
                       fontSize: 10,
-                      marginTop: 2,
+                      marginTop: 1,
                       color: active ? "#00C853" : colors.textMuted,
                     }}
                     numberOfLines={1}
@@ -213,79 +219,70 @@ export default function ProfileScreen({ navigation }: Props) {
           </View>
         </View>
 
-        {/* Member Since */}
+        {/* Member Since — компакт */}
         <View style={{
-          backgroundColor: colors.card, borderRadius: 12, padding: 16, marginBottom: 20,
+          backgroundColor: colors.card, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10,
+          marginBottom: 10, flexDirection: "row", alignItems: "center", justifyContent: "space-between",
         }}>
-          <Text style={{ color: colors.textSecondary, fontSize: 13 }}>Бүртгүүлсэн</Text>
-          <Text style={{ color: colors.text, fontWeight: "500", fontSize: 15, marginTop: 4 }}>
+          <Text style={{ color: colors.textSecondary, fontSize: 12 }}>Бүртгүүлсэн</Text>
+          <Text style={{ color: colors.text, fontWeight: "500", fontSize: 13 }}>
             {user?.created_at
               ? new Date(user.created_at).toLocaleDateString("mn-MN", { month: "long", year: "numeric" })
               : "N/A"}
           </Text>
         </View>
 
-        {/* Divider */}
-        <View style={{ height: 1, backgroundColor: colors.border, marginBottom: 20 }} />
-
-        {/* Dark/Light Mode */}
+        {/* Dark/Light Mode — компакт */}
         <View style={{
           flexDirection: "row", alignItems: "center", justifyContent: "space-between",
-          backgroundColor: colors.card, borderRadius: 12, padding: 16, marginBottom: 24,
+          backgroundColor: colors.card, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10,
+          marginBottom: 10,
         }}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Ionicons name={isDark ? "moon-outline" : "sunny-outline"} size={20} color="#FFD600" style={{ marginRight: 12 }} />
-            <View>
-              <Text style={{ color: colors.text, fontWeight: "600", fontSize: 15 }}>
-                {isDark ? "Харанхуй горим" : "Гэрэлтэй горим"}
-              </Text>
-              <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 2 }}>
-                {isDark ? "Гэрэлтэй горим руу солих" : "Харанхуй горим руу солих"}
-              </Text>
-            </View>
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+            <Ionicons name={isDark ? "moon-outline" : "sunny-outline"} size={18} color="#FFD600" style={{ marginRight: 10 }} />
+            <Text style={{ color: colors.text, fontWeight: "600", fontSize: 14 }}>
+              {isDark ? "Харанхуй горим" : "Гэрэлтэй горим"}
+            </Text>
           </View>
           <Switch
             value={isDark}
             onValueChange={toggleTheme}
             trackColor={{ false: colors.border, true: "#7C4DFF" }}
             thumbColor="#fff"
+            style={{ transform: [{ scaleX: 0.85 }, { scaleY: 0.85 }] }}
           />
         </View>
 
-        {/* Language */}
+        {/* Language — компакт */}
         <View style={{
           flexDirection: "row", alignItems: "center", justifyContent: "space-between",
-          backgroundColor: colors.card, borderRadius: 12, padding: 16, marginBottom: 24,
+          backgroundColor: colors.card, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10,
+          marginBottom: 10,
         }}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Ionicons name="language-outline" size={20} color="#448AFF" style={{ marginRight: 12 }} />
-            <View>
-              <Text style={{ color: colors.text, fontWeight: "600", fontSize: 15 }}>
-                {t("appName")} {locale === "mn" ? "Хэл" : "Language"}
-              </Text>
-              <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 2 }}>
-                {locale === "mn" ? "Монгол" : "English"}
-              </Text>
-            </View>
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+            <Ionicons name="language-outline" size={18} color="#448AFF" style={{ marginRight: 10 }} />
+            <Text style={{ color: colors.text, fontWeight: "600", fontSize: 14 }}>
+              {locale === "mn" ? "Хэл" : "Language"}
+            </Text>
           </View>
-          <View style={{ flexDirection: "row", gap: 8 }}>
+          <View style={{ flexDirection: "row", gap: 6 }}>
             <TouchableOpacity
               style={{
-                paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8,
+                paddingHorizontal: 12, paddingVertical: 5, borderRadius: 8,
                 backgroundColor: locale === "mn" ? "#00C853" : colors.border,
               }}
               onPress={() => changeLanguage("mn")}
             >
-              <Text style={{ color: locale === "mn" ? "#0D0D0D" : colors.textSecondary, fontWeight: "600", fontSize: 13 }}>MN</Text>
+              <Text style={{ color: locale === "mn" ? "#0D0D0D" : colors.textSecondary, fontWeight: "600", fontSize: 12 }}>MN</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
-                paddingHorizontal: 14, paddingVertical: 6, borderRadius: 8,
+                paddingHorizontal: 12, paddingVertical: 5, borderRadius: 8,
                 backgroundColor: locale === "en" ? "#00C853" : colors.border,
               }}
               onPress={() => changeLanguage("en")}
             >
-              <Text style={{ color: locale === "en" ? "#0D0D0D" : colors.textSecondary, fontWeight: "600", fontSize: 13 }}>EN</Text>
+              <Text style={{ color: locale === "en" ? "#0D0D0D" : colors.textSecondary, fontWeight: "600", fontSize: 12 }}>EN</Text>
             </TouchableOpacity>
           </View>
         </View>
