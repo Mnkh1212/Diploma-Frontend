@@ -25,12 +25,18 @@ import { AIAnalysisResponse, ParsedTransaction, RootStackParamList } from "../ty
 type StackProps = NativeStackScreenProps<RootStackParamList, "DataImport">;
 type Props = Partial<Pick<StackProps, "navigation">> & { embedded?: boolean };
 
+// Бренд өнгөнүүд (backend bankDisplayInfo-той ижил):
+//   Хаан банк    — ногоон
+//   Голомт банк  — нил ягаан
+//   ХХБ          — цэнхэр
+//   Хас банк     — улбар шар
+//   Төрийн банк  — хөх
 const SUPPORTED_BANKS = [
-  { name: "Хаан банк", color: "#0066B3" },
-  { name: "Голомт банк", color: "#E30613" },
-  { name: "Худалдаа хөгжлийн банк", color: "#00457C" },
-  { name: "Хас банк", color: "#006837" },
-  { name: "Төрийн банк", color: "#C8102E" },
+  { name: "Хаан банк", color: "#00A859" },
+  { name: "Голомт банк", color: "#8E44AD" },
+  { name: "Худалдаа хөгжлийн банк", color: "#00B8D4" },
+  { name: "Хас банк", color: "#F58220" },
+  { name: "Төрийн банк", color: "#0D47A1" },
 ];
 
 const PIE_COLORS = ["#00C853", "#FF6B35", "#448AFF", "#7C4DFF", "#FFD600", "#E056A0", "#4ECDC4", "#F39C12"];
