@@ -25,7 +25,9 @@ export default function PrivacyScreen({ navigation }: Props) {
   const { user, setUser } = useAuth();
   const { isDark, colors } = useTheme();
 
-  // Phone
+  // Phone — Бүртгэгдсэн дугаарыг харуулж, "солих" expandable section-аар
+  // солих (password-той ижил pattern).
+  const [showPhoneSection, setShowPhoneSection] = useState(false);
   const [phone, setPhone] = useState(user?.phone || "");
   const [phoneLoading, setPhoneLoading] = useState(false);
 
@@ -87,11 +89,16 @@ export default function PrivacyScreen({ navigation }: Props) {
   };
 
   const handleSavePhone = async () => {
+    if (phone.length !== 8) {
+      Alert.alert("Алдаа", "Утасны дугаар 8 оронтой байх ёстой");
+      return;
+    }
     setPhoneLoading(true);
     try {
       const { data } = await updateProfile({ phone });
       setUser(data);
       Alert.alert("Амжилттай", "Утасны дугаар хадгалагдлаа");
+      setShowPhoneSection(false);
     } catch {
       Alert.alert("Алдаа", "Утасны дугаар хадгалж чадсангүй");
     } finally {
@@ -140,51 +147,79 @@ export default function PrivacyScreen({ navigation }: Props) {
           <Text style={{ color: colors.text, fontWeight: "700", fontSize: 20 }}>Нууцлал</Text>
         </View>
 
-        {/* Phone */}
-        <View style={{ marginBottom: 20 }}>
-          <Text style={{ color: colors.textSecondary, fontSize: 13, marginBottom: 8 }}>Утасны дугаар</Text>
-          <View style={{
-            flexDirection: "row", alignItems: "center",
-            backgroundColor: colors.card, borderRadius: 12,
-            borderWidth: 1, borderColor: colors.border,
-          }}>
-            <View style={{
-              paddingHorizontal: 14, paddingVertical: 14,
-              borderRightWidth: 1, borderRightColor: colors.border,
-            }}>
-              <Text style={{ color: colors.textSecondary, fontSize: 15, fontWeight: "600" }}>+976</Text>
+        {/* Phone — readable display + collapsible edit section */}
+        <TouchableOpacity
+          style={{
+            flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+            backgroundColor: colors.card, borderRadius: 12, padding: 16, marginBottom: 12,
+          }}
+          onPress={() => setShowPhoneSection(!showPhoneSection)}
+          activeOpacity={0.7}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+            <Ionicons name="call-outline" size={20} color="#00C853" style={{ marginRight: 12 }} />
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: colors.text, fontWeight: "600", fontSize: 15 }}>
+                Утасны дугаар
+              </Text>
+              <Text style={{ color: colors.textSecondary, fontSize: 13, marginTop: 2 }}>
+                {user?.phone ? `+976 ${formatPhone(user.phone)}` : "Бүртгэгдээгүй"}
+              </Text>
             </View>
-            <TextInput
-              style={{
-                flex: 1, color: colors.text,
-                paddingHorizontal: 14, paddingVertical: 14, fontSize: 15,
-              }}
-              placeholder="8888 8888"
-              placeholderTextColor={colors.textMuted}
-              value={formatPhone(phone)}
-              onChangeText={handlePhoneChange}
-              keyboardType="phone-pad"
-              maxLength={9}
-            />
           </View>
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#00C853", paddingVertical: 10, borderRadius: 10,
-              alignItems: "center", marginTop: 12,
-            }}
-            onPress={handleSavePhone}
-            disabled={phoneLoading}
-          >
-            {phoneLoading ? (
-              <ActivityIndicator color="#0D0D0D" />
-            ) : (
-              <Text style={{ color: "#0D0D0D", fontWeight: "700", fontSize: 14 }}>Хадгалах</Text>
-            )}
-          </TouchableOpacity>
-        </View>
+          <Ionicons name={showPhoneSection ? "chevron-up" : "chevron-down"} size={20} color={colors.textSecondary} />
+        </TouchableOpacity>
 
-        {/* Divider */}
-        <View style={{ height: 1, backgroundColor: colors.border, marginBottom: 20 }} />
+        {showPhoneSection && (
+          <View style={{
+            backgroundColor: colors.card, borderRadius: 12, padding: 16, marginBottom: 16,
+          }}>
+            <Text style={{ color: colors.textSecondary, fontSize: 12, marginBottom: 8 }}>
+              Шинэ утасны дугаар
+            </Text>
+            <View style={{
+              flexDirection: "row", alignItems: "center",
+              backgroundColor: colors.bg, borderRadius: 10,
+              borderWidth: 1, borderColor: colors.border, marginBottom: 12,
+            }}>
+              <View style={{
+                paddingHorizontal: 12, paddingVertical: 12,
+                borderRightWidth: 1, borderRightColor: colors.border,
+              }}>
+                <Text style={{ color: colors.textSecondary, fontSize: 14, fontWeight: "600" }}>+976</Text>
+              </View>
+              <TextInput
+                style={{
+                  flex: 1, color: colors.text,
+                  paddingHorizontal: 12, paddingVertical: 12, fontSize: 14,
+                }}
+                placeholder="8888 8888"
+                placeholderTextColor={colors.textMuted}
+                value={formatPhone(phone)}
+                onChangeText={handlePhoneChange}
+                keyboardType="phone-pad"
+                maxLength={9}
+                autoFocus
+              />
+            </View>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#00C853", paddingVertical: 12, borderRadius: 10,
+                alignItems: "center",
+              }}
+              onPress={handleSavePhone}
+              disabled={phoneLoading}
+            >
+              {phoneLoading ? (
+                <ActivityIndicator color="#0D0D0D" />
+              ) : (
+                <Text style={{ color: "#0D0D0D", fontWeight: "700", fontSize: 14 }}>
+                  Дугаар хадгалах
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Password Change */}
         <TouchableOpacity

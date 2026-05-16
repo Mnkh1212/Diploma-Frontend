@@ -64,7 +64,15 @@ export default function SettingsScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style={isDark ? "light" : "dark"} />
-      <ScrollView style={{ flex: 1, paddingHorizontal: 20, paddingTop: 56 }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingTop: 56,
+          paddingBottom: 24,
+          flexGrow: 1,
+        }}
+      >
         {/* Header */}
         <View className="flex-row items-center justify-between mb-6">
           <TouchableOpacity
@@ -151,18 +159,19 @@ export default function SettingsScreen() {
           </View>
         ))}
 
+        {/* Spacer — Гарах товчийг доош байрлуулна (утасны хэмжээнээс үл хамаарч) */}
+        <View style={{ flex: 1, minHeight: 24 }} />
+
         {/* Logout */}
         <TouchableOpacity
           style={{
             backgroundColor: "rgba(255,68,68,0.1)", borderRadius: 16,
-            padding: 16, alignItems: "center", marginTop: 8, marginBottom: 32,
+            padding: 16, alignItems: "center",
           }}
           onPress={handleLogout}
         >
           <Text style={{ color: "#FF4444", fontWeight: "700", fontSize: 15 }}>Гарах</Text>
         </TouchableOpacity>
-
-        <View style={{ height: 80 }} />
       </ScrollView>
     </View>
   );
