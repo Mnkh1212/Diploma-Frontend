@@ -202,9 +202,10 @@ export default function AIChatScreen({ embedded = false }: AIChatScreenProps = {
     >
       <StatusBar style={isDark ? "light" : "dark"} />
 
-      {/* Chat Header */}
+      {/* Chat Header — embedded үед нягт, "AI Зөвлөмж" title давхрахаас сэргийлж
+         AI-н icon, том title-ийг standalone-д л харуулна. */}
       <View
-        style={{ borderColor: colors.border, paddingTop: embedded ? 8 : 56 }}
+        style={{ borderColor: colors.border, paddingTop: embedded ? 4 : 56 }}
         className="flex-row items-center px-5 pb-3 border-b"
       >
         <TouchableOpacity
@@ -212,17 +213,24 @@ export default function AIChatScreen({ embedded = false }: AIChatScreenProps = {
             setShowChatList(true);
             fetchChats();
           }}
-          className="mr-3"
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingVertical: 6,
+            paddingRight: 10,
+          }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Ionicons name="chevron-back" size={24} color={colors.text} />
+          <Ionicons name="chevron-back" size={20} color={colors.text} />
+          <Text style={{ color: colors.text, fontSize: 13, marginLeft: 2 }}>Чат жагсаалт</Text>
         </TouchableOpacity>
-        <Ionicons name="sparkles" size={20} color="#00C853" />
-        <View className="ml-2 flex-1">
-          <Text style={{ color: colors.text }} className="font-bold text-base">
-            AI Санхүүгийн зөвлөгч
-          </Text>
+        <View style={{ flex: 1 }}>
           {selectedAccount && (
-            <Text className="text-xs" style={{ color: colors.textSecondary }} numberOfLines={1}>
+            <Text
+              className="text-xs"
+              style={{ color: colors.textSecondary, textAlign: "right" }}
+              numberOfLines={1}
+            >
               {selectedAccount.name}-д тулгуурласан
             </Text>
           )}

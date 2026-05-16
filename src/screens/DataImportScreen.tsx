@@ -182,20 +182,43 @@ export default function DataImportScreen({ navigation, embedded = false }: Props
             )}
           </View>
         )}
-        {embedded && cleanedActive && (
-          <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 20, paddingTop: 8, marginBottom: 12 }}>
-            <TouchableOpacity onPress={handlePickFile} disabled={loading} style={{ padding: 6 }}>
-              <Ionicons name="add-circle" size={32} color="#00C853" />
-            </TouchableOpacity>
-          </View>
-        )}
-
         {/* History strip */}
         {history.length > 0 && (
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ color: colors.textMuted, fontSize: 12, fontWeight: "600", paddingHorizontal: 20, marginBottom: 8 }}>
-              ӨМНӨХ АНАЛИЗУУД ({history.length})
-            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingHorizontal: 20,
+                marginBottom: 8,
+              }}
+            >
+              <Text
+                style={{ color: colors.textMuted, fontSize: 12, fontWeight: "600", letterSpacing: 0.5 }}
+              >
+                ӨМНӨХ АНАЛИЗУУД ({history.length})
+              </Text>
+              {embedded && cleanedActive && (
+                <TouchableOpacity
+                  onPress={handlePickFile}
+                  disabled={loading}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    backgroundColor: "rgba(0,200,83,0.12)",
+                    paddingHorizontal: 10,
+                    paddingVertical: 6,
+                    borderRadius: 12,
+                  }}
+                >
+                  <Ionicons name="add" size={16} color="#00C853" />
+                  <Text style={{ color: "#00C853", fontWeight: "600", fontSize: 12, marginLeft: 4 }}>
+                    Шинэ
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}>
               {history.map((h) => {
                 const isSel = active?.id === h.id;
