@@ -88,7 +88,11 @@ export default function ProfileScreen({ navigation }: Props) {
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style={isDark ? "light" : "dark"} />
-      <ScrollView style={{ flex: 1, paddingHorizontal: 20, paddingTop: 56 }} keyboardDismissMode="on-drag">
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 56, paddingBottom: 16 }}
+        keyboardDismissMode="on-drag"
+      >
         {/* Header */}
         <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 12 }}>
@@ -97,27 +101,27 @@ export default function ProfileScreen({ navigation }: Props) {
           <Text style={{ color: colors.text, fontWeight: "700", fontSize: 20 }}>Профайл засах</Text>
         </View>
 
-        {/* Avatar */}
-        <TouchableOpacity style={{ alignItems: "center", marginBottom: 32 }} onPress={handlePickAvatar}>
+        {/* Avatar — компакт хэлбэрээр */}
+        <TouchableOpacity style={{ alignItems: "center", marginBottom: 20 }} onPress={handlePickAvatar}>
           {user?.avatar && user.avatar.length > 1 ? (
             <Image
               source={{
                 uri: buildAssetUrl(user.avatar),
                 cache: "reload",
               }}
-              style={{ width: 96, height: 96, borderRadius: 48, marginBottom: 12 }}
+              style={{ width: 80, height: 80, borderRadius: 40, marginBottom: 8 }}
             />
           ) : (
             <View style={{
-              width: 96, height: 96, borderRadius: 48,
-              backgroundColor: "#7C4DFF", alignItems: "center", justifyContent: "center", marginBottom: 12,
+              width: 80, height: 80, borderRadius: 40,
+              backgroundColor: "#7C4DFF", alignItems: "center", justifyContent: "center", marginBottom: 8,
             }}>
-              <Text style={{ color: "#fff", fontWeight: "700", fontSize: 36 }}>
+              <Text style={{ color: "#fff", fontWeight: "700", fontSize: 30 }}>
                 {user?.name?.charAt(0) || "U"}
               </Text>
             </View>
           )}
-          <Text style={{ color: colors.textSecondary, fontSize: 13 }}>Зураг солихын тулд дарна уу</Text>
+          <Text style={{ color: colors.textSecondary, fontSize: 12 }}>Зураг солих</Text>
         </TouchableOpacity>
 
         {/* Name */}
@@ -154,42 +158,58 @@ export default function ProfileScreen({ navigation }: Props) {
           />
         </View>
 
-        {/* Currency */}
+        {/* Currency — 4×2 grid (8 валют) */}
         <View style={{ marginBottom: 16 }}>
           <Text style={{ color: colors.textSecondary, fontSize: 13, marginBottom: 8 }}>Валют</Text>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
             {[
-              { code: "MNT", label: "₮ MNT", name: "Төгрөг" },
-              { code: "USD", label: "$ USD", name: "Доллар" },
-              { code: "EUR", label: "€ EUR", name: "Евро" },
-              { code: "KRW", label: "₩ KRW", name: "Вон" },
-              { code: "CNY", label: "¥ CNY", name: "Юань" },
-            ].map((c) => (
-              <TouchableOpacity
-                key={c.code}
-                style={{
-                  paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: currency === c.code ? "#00C853" : colors.border,
-                  backgroundColor: currency === c.code ? "rgba(0,200,83,0.1)" : colors.card,
-                  minWidth: 90, alignItems: "center",
-                }}
-                onPress={() => setCurrency(c.code)}
-              >
-                <Text style={{
-                  fontWeight: "600", fontSize: 14,
-                  color: currency === c.code ? "#00C853" : colors.text,
-                }}>
-                  {c.label}
-                </Text>
-                <Text style={{
-                  fontSize: 11, marginTop: 2,
-                  color: currency === c.code ? "#00C853" : colors.textMuted,
-                }}>
-                  {c.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
+              { code: "MNT", symbol: "₮", name: "Төгрөг" },
+              { code: "USD", symbol: "$", name: "Доллар" },
+              { code: "EUR", symbol: "€", name: "Евро" },
+              { code: "KRW", symbol: "₩", name: "Вон" },
+              { code: "CNY", symbol: "¥", name: "Юань" },
+              { code: "JPY", symbol: "¥", name: "Иен" },
+              { code: "RUB", symbol: "₽", name: "Рубль" },
+              { code: "GBP", symbol: "£", name: "Фунт" },
+            ].map((c) => {
+              const active = currency === c.code;
+              return (
+                <TouchableOpacity
+                  key={c.code}
+                  style={{
+                    width: "23.5%",
+                    paddingVertical: 10,
+                    paddingHorizontal: 4,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: active ? "#00C853" : colors.border,
+                    backgroundColor: active ? "rgba(0,200,83,0.1)" : colors.card,
+                    alignItems: "center",
+                  }}
+                  onPress={() => setCurrency(c.code)}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "700",
+                      fontSize: 13,
+                      color: active ? "#00C853" : colors.text,
+                    }}
+                  >
+                    {c.symbol} {c.code}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      marginTop: 2,
+                      color: active ? "#00C853" : colors.textMuted,
+                    }}
+                    numberOfLines={1}
+                  >
+                    {c.name}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
 
@@ -270,11 +290,30 @@ export default function ProfileScreen({ navigation }: Props) {
           </View>
         </View>
 
-        {/* Save Button */}
+      </ScrollView>
+
+      {/* Fixed Save Button — Гарах товч шиг доош fix байх */}
+      <View
+        style={{
+          paddingHorizontal: 20,
+          paddingTop: 12,
+          paddingBottom: 24,
+          backgroundColor: colors.bg,
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
+        }}
+      >
         <TouchableOpacity
           style={{
-            backgroundColor: "#00C853", paddingVertical: 16, borderRadius: 16,
-            alignItems: "center", marginBottom: 40,
+            backgroundColor: "#00C853",
+            paddingVertical: 14,
+            borderRadius: 14,
+            alignItems: "center",
+            shadowColor: "#00C853",
+            shadowOpacity: 0.25,
+            shadowOffset: { width: 0, height: 4 },
+            shadowRadius: 8,
+            elevation: 4,
           }}
           onPress={handleSave}
           disabled={loading}
@@ -282,10 +321,10 @@ export default function ProfileScreen({ navigation }: Props) {
           {loading ? (
             <ActivityIndicator color="#0D0D0D" />
           ) : (
-            <Text style={{ color: "#0D0D0D", fontWeight: "700", fontSize: 17 }}>Хадгалах</Text>
+            <Text style={{ color: "#0D0D0D", fontWeight: "700", fontSize: 16 }}>Хадгалах</Text>
           )}
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </View>
   );
 }

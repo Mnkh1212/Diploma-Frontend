@@ -15,15 +15,21 @@ const symbols: Record<string, string> = {
   EUR: "€",
   KRW: "₩",
   CNY: "¥",
+  JPY: "¥",
+  RUB: "₽",
+  GBP: "£",
 };
 
-// 1 MNT = ? target currency (fallback rates)
+// 1 MNT = ? target currency (fallback rates). Жинхэнэ rate-ийг ER-API-аас татна.
 const fallbackRates: Record<string, number> = {
   MNT: 1,
   USD: 1 / 3450,
   EUR: 1 / 3750,
   KRW: 1 / 2.5,
   CNY: 1 / 480,
+  JPY: 1 / 22,
+  RUB: 1 / 38,
+  GBP: 1 / 4400,
 };
 
 const CurrencyContext = createContext<CurrencyContextType>({} as CurrencyContextType);
@@ -50,6 +56,9 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
           EUR: data.rates.EUR,
           KRW: data.rates.KRW,
           CNY: data.rates.CNY,
+          JPY: data.rates.JPY,
+          RUB: data.rates.RUB,
+          GBP: data.rates.GBP,
         });
       }
     } catch {
@@ -66,7 +75,8 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
 
     const sym = symbols[currency] || "₮";
 
-    if (currency === "MNT" || currency === "KRW") {
+    // MNT / KRW / JPY — decimal-гүй (тэр валютууд нь decimal place-гүй ашиглагддаг)
+    if (currency === "MNT" || currency === "KRW" || currency === "JPY") {
       return `${converted.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}${sym}`;
     }
     return `${converted.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}${sym}`;
