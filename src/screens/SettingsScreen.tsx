@@ -28,8 +28,6 @@ export default function SettingsScreen() {
     ]);
   };
 
-  const comingSoon = () => Alert.alert("Тун удахгүй", "Энэ функц хөгжүүлэлтийн шатанд байна");
-
   const gridItems: GridItem[][] = [
     [
       {
@@ -42,7 +40,7 @@ export default function SettingsScreen() {
         icon: "grid-outline",
         label: "Харагдац",
         sublabel: "Виджет, Загвар",
-        onPress: comingSoon,
+        onPress: () => navigation.navigate("Appearance"),
       },
     ],
     [

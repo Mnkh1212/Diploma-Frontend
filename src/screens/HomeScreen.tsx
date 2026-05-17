@@ -40,7 +40,7 @@ const accountIconMap: Record<string, keyof typeof Ionicons.glyphMap> = {
 };
 
 function SavingsRing({ percent, amount }: { percent: number; amount: number }) {
-  const { colors } = useTheme();
+  const { colors, accent } = useTheme();
   const { formatAmount } = useCurrency();
   const size = 100;
   const strokeWidth = 10;
@@ -64,7 +64,7 @@ function SavingsRing({ percent, amount }: { percent: number; amount: number }) {
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="#00C853"
+          stroke={accent}
           strokeWidth={strokeWidth}
           fill="transparent"
           strokeDasharray={circumference}
@@ -74,7 +74,7 @@ function SavingsRing({ percent, amount }: { percent: number; amount: number }) {
         />
       </Svg>
       <View className="absolute items-center">
-        <Text className="text-accent-green font-bold text-base">
+        <Text style={{ color: accent, fontWeight: "700", fontSize: 15 }}>
           {formatAmount(Math.abs(amount))}
         </Text>
         <Text className="text-xs" style={{ color: colors.textSecondary }}>Хэмнэлт</Text>
@@ -85,7 +85,7 @@ function SavingsRing({ percent, amount }: { percent: number; amount: number }) {
 
 export default function HomeScreen({ navigation }: Props) {
   const { user } = useAuth();
-  const { isDark, colors, toggleTheme } = useTheme();
+  const { isDark, colors, toggleTheme, accent, widgets } = useTheme();
   const { formatAmount } = useCurrency();
   const { accounts, selectedAccountId, selectedAccount, setSelectedAccountId, refreshAccounts } = useAccount();
   const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
@@ -170,7 +170,7 @@ export default function HomeScreen({ navigation }: Props) {
       <ScrollView
         className="flex-1 px-5 pt-14"
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#00C853" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={accent} />
         }
       >
         {/* Header */}
@@ -274,10 +274,11 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </View>
 
-        {/* Savings Card */}
-        {(() => {
+        {/* Savings Card — гүйлгээ ороогүй үед нуугдана, эхний орлого/зарлага бүртгэгдсэн үед л гарна */}
+        {widgets.savings && (() => {
           const income = dashboard?.total_income || 0;
           const expenses = dashboard?.total_expenses || 0;
+          if (income <= 0 && expenses <= 0) return null;
           const monthlySaved = income - expenses;
           const savingsRate = income > 0 ? Math.round((monthlySaved / income) * 100) : 0;
           const isPositive = monthlySaved >= 0;
@@ -293,7 +294,7 @@ export default function HomeScreen({ navigation }: Props) {
                     : `Таны зарлага өмнөх сараас ${Math.abs(savingsRate)}%-иар нэмэгдсэн.`}
                 </Text>
                 <TouchableOpacity onPress={() => navigation.navigate("Expenses")}>
-                  <Text className="text-accent-green font-medium text-sm mt-3">Дэлгэрэнгүй</Text>
+                  <Text style={{ color: accent, fontWeight: "500", fontSize: 13, marginTop: 12 }}>Дэлгэрэнгүй</Text>
                 </TouchableOpacity>
               </View>
               <SavingsRing
@@ -305,7 +306,7 @@ export default function HomeScreen({ navigation }: Props) {
         })()}
 
         {/* Account Switcher */}
-        {accounts.length > 0 && (
+        {widgets.accounts && accounts.length > 0 && (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
             {accounts.map((account, index) => {
               const active = selectedAccountId === account.id;
@@ -317,9 +318,9 @@ export default function HomeScreen({ navigation }: Props) {
                   className="rounded-2xl p-4 mr-3"
                   style={{
                     width: 160,
-                    backgroundColor: active ? "#00C853" : colors.card,
+                    backgroundColor: active ? accent : colors.card,
                     borderWidth: 1,
-                    borderColor: active ? "#00C853" : "transparent",
+                    borderColor: active ? accent : "transparent",
                   }}
                 >
                   <View
@@ -352,12 +353,13 @@ export default function HomeScreen({ navigation }: Props) {
         )}
 
         {/* Quick Actions — icon-colored, label-той */}
+        {widgets.quickActions && (
         <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 24 }}>
           {[
             {
               icon: "add-circle" as keyof typeof Ionicons.glyphMap,
               label: "Нэмэх",
-              color: "#00C853",
+              color: accent,
               onPress: () => navigation.navigate("AddTransaction"),
             },
             {
@@ -415,6 +417,7 @@ export default function HomeScreen({ navigation }: Props) {
             </TouchableOpacity>
           ))}
         </View>
+        )}
 
         {/* Transaction History Header */}
         <View className="flex-row justify-between items-center mb-3">
