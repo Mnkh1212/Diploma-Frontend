@@ -351,29 +351,69 @@ export default function HomeScreen({ navigation }: Props) {
           </ScrollView>
         )}
 
-        {/* Quick Actions */}
-        <View className="flex-row items-center justify-between mb-6">
-          {([
-            { icon: "swap-horizontal-outline" as keyof typeof Ionicons.glyphMap, onPress: () => navigation.navigate("AddTransaction") },
-            { icon: "wallet-outline" as keyof typeof Ionicons.glyphMap, onPress: () => navigation.navigate("Accounts") },
-            { icon: "time-outline" as keyof typeof Ionicons.glyphMap, onPress: () => navigation.navigate("ScheduledPayments") },
-            { icon: "cash-outline" as keyof typeof Ionicons.glyphMap, onPress: () => navigation.navigate("Expenses") },
-          ] as QuickAction[]).map((action, index) => (
+        {/* Quick Actions — icon-colored, label-той */}
+        <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 24 }}>
+          {[
+            {
+              icon: "add-circle" as keyof typeof Ionicons.glyphMap,
+              label: "Нэмэх",
+              color: "#00C853",
+              onPress: () => navigation.navigate("AddTransaction"),
+            },
+            {
+              icon: "card" as keyof typeof Ionicons.glyphMap,
+              label: "Данс",
+              color: "#7C4DFF",
+              onPress: () => navigation.navigate("Accounts"),
+            },
+            {
+              icon: "calendar" as keyof typeof Ionicons.glyphMap,
+              label: "Төлбөр",
+              color: "#FF9F43",
+              onPress: () => navigation.navigate("ScheduledPayments"),
+            },
+            {
+              icon: "trending-down" as keyof typeof Ionicons.glyphMap,
+              label: "Зарлага",
+              color: "#FF6B35",
+              onPress: () => navigation.navigate("Expenses"),
+            },
+            {
+              icon: "wallet" as keyof typeof Ionicons.glyphMap,
+              label: "Гүйлгээ",
+              color: "#448AFF",
+              onPress: () => navigation.navigate("Transactions"),
+            },
+          ].map((action, index) => (
             <TouchableOpacity
               key={index}
-              className="w-12 h-12 rounded-full items-center justify-center"
-              style={{ backgroundColor: colors.card }}
+              style={{ alignItems: "center", flex: 1 }}
               onPress={action.onPress}
+              activeOpacity={0.7}
             >
-              <Ionicons name={action.icon} size={22} color={colors.text} />
+              <View
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 16,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: action.color + "20",
+                  borderWidth: 1,
+                  borderColor: action.color + "33",
+                  marginBottom: 6,
+                }}
+              >
+                <Ionicons name={action.icon} size={22} color={action.color} />
+              </View>
+              <Text
+                style={{ color: colors.textSecondary, fontSize: 11, fontWeight: "500" }}
+                numberOfLines={1}
+              >
+                {action.label}
+              </Text>
             </TouchableOpacity>
           ))}
-          <TouchableOpacity
-            className="w-12 h-12 rounded-full border border-accent-yellow items-center justify-center"
-            onPress={() => navigation.navigate("AddTransaction")}
-          >
-            <Ionicons name="add" size={24} color="#FFD600" />
-          </TouchableOpacity>
         </View>
 
         {/* Transaction History Header */}
