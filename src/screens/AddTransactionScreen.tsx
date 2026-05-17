@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -28,6 +28,19 @@ export default function AddTransactionScreen() {
   const [customCategory, setCustomCategory] = useState<string>("");
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  // Backend нь ижил нэртэй category-уудыг олон удаа буцаах боломжтой (өмнөх
+  // тестүүдээс үлдсэн dynamic duplicate). UI-д давтахаас сэргийлж нэрээр
+  // dedup хийнэ — эхний occurrence-ийг үлдээнэ.
+  const dedupedCategories = useMemo(() => {
+    const seen = new Set<string>();
+    return categories.filter((c) => {
+      const key = (c.name || "").trim().toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [categories]);
 
   useEffect(() => {
     fetchData();
@@ -139,7 +152,7 @@ export default function AddTransactionScreen() {
             <Text style={{ color: accent, fontSize: 36, fontWeight: "800" }}>₮</Text>
             <TextInput
               placeholder="0"
-              placeholderTextColor={colors.textMuted}
+              placeholderTextColor={colors.textSecondary}
               value={amount}
               onChangeText={setAmount}
               keyboardType="decimal-pad"
@@ -147,8 +160,8 @@ export default function AddTransactionScreen() {
                 color: colors.text,
                 fontSize: 36,
                 fontWeight: "800",
-                marginLeft: 4,
-                minWidth: 40,
+                marginLeft: 6,
+                minWidth: 50,
                 padding: 0,
               }}
             />
@@ -213,7 +226,7 @@ export default function AddTransactionScreen() {
           <Text className="text-xs ml-2" style={{ color: colors.textMuted }}>(сонголтгүй бол "Бусад")</Text>
         </View>
         <View className="flex-row flex-wrap mb-3" style={{ gap: 8 }}>
-          {categories.map((cat) => {
+          {dedupedCategories.map((cat) => {
             const active = selectedCategory?.id === cat.id;
             return (
               <TouchableOpacity
