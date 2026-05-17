@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator, BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
@@ -30,11 +30,13 @@ import NotificationsScreen from "../screens/NotificationsScreen";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
+// Floating center "+" товч — shadow + glow-той хүчтэй CTA.
 function CustomTabButton({ onPress }: BottomTabBarButtonProps) {
   return (
     <TouchableOpacity
       onPress={onPress}
       style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+      activeOpacity={0.85}
     >
       <View
         style={{
@@ -44,12 +46,58 @@ function CustomTabButton({ onPress }: BottomTabBarButtonProps) {
           backgroundColor: "#00C853",
           alignItems: "center",
           justifyContent: "center",
-          marginTop: -24,
+          marginTop: -22,
+          shadowColor: "#00C853",
+          shadowOpacity: 0.45,
+          shadowOffset: { width: 0, height: 6 },
+          shadowRadius: 14,
+          elevation: 10,
+          borderWidth: 4,
+          borderColor: "#0D0D0D00",
         }}
       >
         <Ionicons name="add" size={28} color="#0D0D0D" />
       </View>
     </TouchableOpacity>
+  );
+}
+
+// Active indicator dot (active tab-ийн доор гарч ирэх жижиг ногоон цэг)
+function ActiveDot({ focused }: { focused: boolean }) {
+  if (!focused) return null;
+  return (
+    <View
+      style={{
+        position: "absolute",
+        bottom: -10,
+        width: 4,
+        height: 4,
+        borderRadius: 2,
+        backgroundColor: "#00C853",
+      }}
+    />
+  );
+}
+
+// Tab icon — focused үед filled, үгүй үед outline. Active үед доор дотдот.
+function TabIcon({
+  outline,
+  filled,
+  focused,
+  color,
+  size = 22,
+}: {
+  outline: keyof typeof Ionicons.glyphMap;
+  filled: keyof typeof Ionicons.glyphMap;
+  focused: boolean;
+  color: string;
+  size?: number;
+}) {
+  return (
+    <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <Ionicons name={focused ? filled : outline} size={size} color={color} />
+      <ActiveDot focused={focused} />
+    </View>
   );
 }
 
@@ -62,16 +110,23 @@ function BottomTabs() {
         tabBarStyle: {
           backgroundColor: colors.bg,
           borderTopColor: colors.border,
-          borderTopWidth: 1,
-          height: 85,
-          paddingBottom: 25,
-          paddingTop: 10,
+          borderTopWidth: 0.5,
+          height: 86,
+          paddingBottom: 26,
+          paddingTop: 12,
+          // Жижиг shadow — separation мэдрэмж нэмнэ
+          shadowColor: "#000",
+          shadowOpacity: 0.1,
+          shadowOffset: { width: 0, height: -2 },
+          shadowRadius: 6,
+          elevation: 8,
         },
         tabBarActiveTintColor: "#00C853",
         tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: "500",
+          fontSize: 10,
+          fontWeight: "600",
+          marginTop: 4,
         },
       }}
     >
@@ -80,8 +135,8 @@ function BottomTabs() {
         component={HomeScreen}
         options={{
           tabBarLabel: "Нүүр",
-          tabBarIcon: ({ color }: { color: string }) => (
-            <Ionicons name="home-outline" size={22} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon outline="home-outline" filled="home" focused={focused} color={color} />
           ),
         }}
       />
@@ -90,8 +145,13 @@ function BottomTabs() {
         component={StatisticsScreen}
         options={{
           tabBarLabel: "Шинжилгээ",
-          tabBarIcon: ({ color }: { color: string }) => (
-            <Ionicons name="trending-up-outline" size={22} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              outline="bar-chart-outline"
+              filled="bar-chart"
+              focused={focused}
+              color={color}
+            />
           ),
         }}
       />
@@ -100,9 +160,7 @@ function BottomTabs() {
         component={AddTransactionScreen}
         options={{
           tabBarLabel: "",
-          tabBarIcon: () => (
-            <Ionicons name="add" size={28} color="#0D0D0D" />
-          ),
+          tabBarIcon: () => <Ionicons name="add" size={28} color="#0D0D0D" />,
           tabBarButton: (props) => <CustomTabButton {...props} />,
         }}
       />
@@ -111,8 +169,13 @@ function BottomTabs() {
         component={AdvisorScreen}
         options={{
           tabBarLabel: "Зөвлөмж",
-          tabBarIcon: ({ color }: { color: string }) => (
-            <Text style={{ fontSize: 16, fontWeight: "700", color }}>Ai</Text>
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              outline="sparkles-outline"
+              filled="sparkles"
+              focused={focused}
+              color={color}
+            />
           ),
         }}
       />
@@ -121,8 +184,13 @@ function BottomTabs() {
         component={SettingsScreen}
         options={{
           tabBarLabel: "Тохиргоо",
-          tabBarIcon: ({ color }: { color: string }) => (
-            <Ionicons name="grid-outline" size={22} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon
+              outline="apps-outline"
+              filled="apps"
+              focused={focused}
+              color={color}
+            />
           ),
         }}
       />
