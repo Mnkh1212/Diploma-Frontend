@@ -47,13 +47,13 @@ export default function SettingsScreen() {
       {
         icon: "settings-outline",
         label: "Тохиргоо",
-        sublabel: "Дансны тохиргоо, мэдэгдэл",
+        sublabel: "Дансууд, мэдэгдэл",
         onPress: () => navigation.navigate("Accounts"),
       },
       {
         icon: "lock-closed-outline",
         label: "Нууцлал",
-        sublabel: "Нууц үг удирдах, нууцлалын тохиргоо",
+        sublabel: "Нууц үг, баталгаажуулалт",
         onPress: () => navigation.navigate("Privacy"),
       },
     ],
@@ -121,8 +121,11 @@ export default function SettingsScreen() {
               <TouchableOpacity
                 key={colIndex}
                 style={{
-                  flex: 1, backgroundColor: colors.card, borderRadius: 16, padding: 16,
-                  minHeight: 140, justifyContent: "space-between",
+                  flex: 1,
+                  backgroundColor: colors.card,
+                  borderRadius: 16,
+                  padding: 16,
+                  height: 130,
                 }}
                 onPress={item.onPress}
                 activeOpacity={0.7}
@@ -144,11 +147,17 @@ export default function SettingsScreen() {
                     <Ionicons name={item.icon} size={20} color={colors.text} />
                   )}
                 </View>
-                <View>
-                  <Text style={{ color: colors.text, fontWeight: "700", fontSize: 15, marginBottom: 4 }}>
+                <View style={{ marginTop: "auto" }}>
+                  <Text
+                    numberOfLines={1}
+                    style={{ color: colors.text, fontWeight: "700", fontSize: 15, marginBottom: 2 }}
+                  >
                     {item.label}
                   </Text>
-                  <Text style={{ color: colors.textSecondary, fontSize: 12, lineHeight: 16 }}>
+                  <Text
+                    numberOfLines={1}
+                    style={{ color: colors.textSecondary, fontSize: 12 }}
+                  >
                     {item.sublabel}
                   </Text>
                 </View>

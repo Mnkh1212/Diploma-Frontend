@@ -108,6 +108,8 @@ function BottomTabs() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
+        // Tab хооронд жижиг shift анимаци — iOS/Android аль алинд жигд.
+        animation: "shift",
         tabBarStyle: {
           backgroundColor: colors.bg,
           borderTopColor: colors.border,
@@ -214,10 +216,15 @@ export default function AppNavigator(): React.JSX.Element {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        animation: "slide_from_right",
-        animationDuration: 280,
+        // iOS-стиль гулсалттай шилжилт: native-stack v7-ийн "ios_from_right" нь
+        // түрхэлж урагшилдаг premium feel-тэй. Хэвтээ swipe-аар буцаах хөдөлгөөн
+        // нь параллакстай.
+        animation: "ios_from_right",
+        animationDuration: 320,
         gestureEnabled: true,
         gestureDirection: "horizontal",
+        // Modal background-ийг бүдгэрүүлэхээс зайлсхийнэ — шилжилт цэвэр гарна.
+        contentStyle: { backgroundColor: "transparent" },
       }}
     >
       {!token ? (
@@ -243,7 +250,13 @@ export default function AppNavigator(): React.JSX.Element {
           <Stack.Screen
             name="AddTransaction"
             component={AddTransactionScreen}
-            options={{ presentation: "modal" }}
+            options={{
+              presentation: "modal",
+              // Доороос дээш гулсаж гарах modal анимаци — Apple Wallet-стайл
+              animation: "slide_from_bottom",
+              animationDuration: 360,
+              gestureDirection: "vertical",
+            }}
           />
         </>
       )}

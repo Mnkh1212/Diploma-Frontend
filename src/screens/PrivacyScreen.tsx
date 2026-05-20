@@ -25,6 +25,11 @@ export default function PrivacyScreen({ navigation }: Props) {
   const { user, setUser } = useAuth();
   const { isDark, colors } = useTheme();
 
+  // Email — бүртгэлтэй email-ийг харуулж, "солих" expandable section
+  const [showEmailSection, setShowEmailSection] = useState(false);
+  const [email, setEmail] = useState(user?.email || "");
+  const [emailLoading, setEmailLoading] = useState(false);
+
   // Phone — Бүртгэгдсэн дугаарыг харуулж, "солих" expandable section-аар
   // солих (password-той ижил pattern).
   const [showPhoneSection, setShowPhoneSection] = useState(false);
@@ -88,6 +93,32 @@ export default function PrivacyScreen({ navigation }: Props) {
     setPhone(digits);
   };
 
+  const handleSaveEmail = async () => {
+    const trimmed = email.trim().toLowerCase();
+    // Энгийн email шалгалт — RFC бүтэн валидаци биш, өдөр тутмын хэрэглээнд хангалттай
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+    if (!valid) {
+      Alert.alert("Алдаа", "Зөв email хаяг оруулна уу");
+      return;
+    }
+    if (trimmed === (user?.email || "").toLowerCase()) {
+      Alert.alert("Анхааруулга", "Email өөрчлөгдөөгүй байна");
+      return;
+    }
+    setEmailLoading(true);
+    try {
+      const { data } = await updateProfile({ email: trimmed });
+      setUser(data);
+      Alert.alert("Амжилттай", "Email хаяг шинэчлэгдлээ");
+      setShowEmailSection(false);
+    } catch (error: any) {
+      const msg = error?.response?.data?.error || "Email хадгалж чадсангүй";
+      Alert.alert("Алдаа", msg);
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
   const handleSavePhone = async () => {
     if (phone.length !== 8) {
       Alert.alert("Алдаа", "Утасны дугаар 8 оронтой байх ёстой");
@@ -146,6 +177,73 @@ export default function PrivacyScreen({ navigation }: Props) {
           </TouchableOpacity>
           <Text style={{ color: colors.text, fontWeight: "700", fontSize: 20 }}>Нууцлал</Text>
         </View>
+
+        {/* Email — readable display + collapsible edit section */}
+        <TouchableOpacity
+          style={{
+            flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+            backgroundColor: colors.card, borderRadius: 12, padding: 16, marginBottom: 12,
+          }}
+          onPress={() => setShowEmailSection(!showEmailSection)}
+          activeOpacity={0.7}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+            <Ionicons name="mail-outline" size={20} color="#00C853" style={{ marginRight: 12 }} />
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: colors.text, fontWeight: "600", fontSize: 15 }}>
+                Email хаяг
+              </Text>
+              <Text
+                numberOfLines={1}
+                style={{ color: colors.textSecondary, fontSize: 13, marginTop: 2 }}
+              >
+                {user?.email || "Бүртгэгдээгүй"}
+              </Text>
+            </View>
+          </View>
+          <Ionicons name={showEmailSection ? "chevron-up" : "chevron-down"} size={20} color={colors.textSecondary} />
+        </TouchableOpacity>
+
+        {showEmailSection && (
+          <View style={{
+            backgroundColor: colors.card, borderRadius: 12, padding: 16, marginBottom: 16,
+          }}>
+            <Text style={{ color: colors.textSecondary, fontSize: 12, marginBottom: 8 }}>
+              Шинэ email хаяг
+            </Text>
+            <TextInput
+              style={{
+                backgroundColor: colors.bg, color: colors.text, borderRadius: 10,
+                paddingHorizontal: 14, paddingVertical: 12, fontSize: 14,
+                borderWidth: 1, borderColor: colors.border, marginBottom: 12,
+              }}
+              placeholder="name@example.com"
+              placeholderTextColor={colors.textMuted}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoFocus
+            />
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#00C853", paddingVertical: 12, borderRadius: 10,
+                alignItems: "center",
+              }}
+              onPress={handleSaveEmail}
+              disabled={emailLoading}
+            >
+              {emailLoading ? (
+                <ActivityIndicator color="#0D0D0D" />
+              ) : (
+                <Text style={{ color: "#0D0D0D", fontWeight: "700", fontSize: 14 }}>
+                  Email хадгалах
+                </Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Phone — readable display + collapsible edit section */}
         <TouchableOpacity

@@ -51,13 +51,15 @@ const darkColors = {
 };
 
 const lightColors = {
-  bg: "#F5F5F5",
+  // Light theme нь хэт цагаан байсан тул бага зэрэг хүйтэн саарал-цэнхэр өнгийг
+  // үндэс болгож, текст нь контрастаа алдалгүй уншигдахуйц байх ёстой.
+  bg: "#F2F4F7",
   card: "#FFFFFF",
-  surface: "#F0F0F0",
-  border: "#E0E0E0",
-  text: "#1A1A1A",
-  textSecondary: "#6B7280",
-  textMuted: "#9CA3AF",
+  surface: "#EBEEF2",
+  border: "#D8DEE6",
+  text: "#0F172A",
+  textSecondary: "#475569",
+  textMuted: "#64748B",
 };
 
 const ThemeContext = createContext<ThemeContextType>({} as ThemeContextType);

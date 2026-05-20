@@ -99,36 +99,38 @@ export default function AddTransactionScreen() {
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <StatusBar style={isDark ? "light" : "dark"} />
 
-      {/* Header */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 56, paddingBottom: 12 }}>
-        <View className="flex-row items-center justify-between mb-5">
+      {/* Header — нягтруулсан */}
+      <View style={{ paddingHorizontal: 20, paddingTop: 52, paddingBottom: 8 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
           <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Ionicons name="close" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text className="font-bold text-lg" style={{ color: colors.text }}>Гүйлгээ нэмэх</Text>
+          <Text style={{ color: colors.text, fontWeight: "700", fontSize: 17 }}>Гүйлгээ нэмэх</Text>
           <View style={{ width: 24 }} />
         </View>
 
-        {/* Type Toggle (segmented) */}
-        <View className="flex-row p-1 rounded-2xl" style={{ backgroundColor: colors.card }}>
+        {/* Type Toggle */}
+        <View style={{ flexDirection: "row", padding: 4, borderRadius: 14, backgroundColor: colors.card }}>
           {(["expense", "income"] as const).map((t) => {
             const active = type === t;
             const tint = t === "expense" ? "#FF4444" : "#00C853";
             return (
               <TouchableOpacity
                 key={t}
-                className="flex-1 py-3 rounded-xl items-center"
-                style={{ backgroundColor: active ? tint : "transparent" }}
+                style={{
+                  flex: 1,
+                  paddingVertical: 9,
+                  borderRadius: 10,
+                  alignItems: "center",
+                  backgroundColor: active ? tint : "transparent",
+                }}
                 onPress={() => {
                   setType(t);
                   setSelectedCategory(null);
                   setCustomCategory("");
                 }}
               >
-                <Text
-                  className="font-semibold text-sm"
-                  style={{ color: active ? "#FFFFFF" : colors.textSecondary }}
-                >
+                <Text style={{ color: active ? "#FFFFFF" : colors.textSecondary, fontWeight: "600", fontSize: 13 }}>
                   {t === "expense" ? "Зарлага" : "Орлого"}
                 </Text>
               </TouchableOpacity>
@@ -138,18 +140,27 @@ export default function AddTransactionScreen() {
       </View>
 
       <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 12 }}
         keyboardDismissMode="on-drag"
+        keyboardShouldPersistTaps="handled"
       >
         {/* Amount Card */}
         <View
-          className="rounded-2xl items-center justify-center mb-5"
-          style={{ backgroundColor: colors.card, paddingVertical: 18, borderWidth: 1, borderColor: colors.border }}
+          style={{
+            backgroundColor: colors.card,
+            paddingVertical: 12,
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: colors.border,
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 12,
+          }}
         >
-          <Text className="text-xs mb-1" style={{ color: colors.textSecondary, letterSpacing: 1 }}>ДҮН</Text>
-          <View className="flex-row items-baseline">
-            <Text style={{ color: accent, fontSize: 36, fontWeight: "800" }}>₮</Text>
+          <Text style={{ color: colors.textSecondary, fontSize: 10, letterSpacing: 1, marginBottom: 2 }}>ДҮН</Text>
+          <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+            <Text style={{ color: accent, fontSize: 30, fontWeight: "800" }}>₮</Text>
             <TextInput
               placeholder="0"
               placeholderTextColor={colors.textSecondary}
@@ -158,7 +169,7 @@ export default function AddTransactionScreen() {
               keyboardType="decimal-pad"
               style={{
                 color: colors.text,
-                fontSize: 36,
+                fontSize: 30,
                 fontWeight: "800",
                 marginLeft: 6,
                 minWidth: 50,
@@ -169,15 +180,18 @@ export default function AddTransactionScreen() {
         </View>
 
         {/* Description */}
-        <Text className="text-xs mb-2 ml-1" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>ТАЙЛБАР</Text>
+        <Text style={{ color: colors.textSecondary, fontSize: 10, letterSpacing: 0.5, marginBottom: 6, marginLeft: 4 }}>ТАЙЛБАР</Text>
         <TextInput
-          className="rounded-2xl px-4 mb-5 text-base"
           style={{
             backgroundColor: colors.card,
             color: colors.text,
             borderWidth: 1,
             borderColor: colors.border,
-            paddingVertical: 14,
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+            borderRadius: 14,
+            fontSize: 14,
+            marginBottom: 12,
           }}
           placeholder="Юунд зарцуулсан бэ?"
           placeholderTextColor={colors.textMuted}
@@ -186,18 +200,21 @@ export default function AddTransactionScreen() {
         />
 
         {/* Account Selection */}
-        <Text className="text-xs mb-2 ml-1" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>ДАНС</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5">
+        <Text style={{ color: colors.textSecondary, fontSize: 10, letterSpacing: 0.5, marginBottom: 6, marginLeft: 4 }}>ДАНС</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
           {accounts.map((account) => {
             const active = selectedAccount?.id === account.id;
             return (
               <TouchableOpacity
                 key={account.id}
                 onPress={() => setSelectedAccount(account)}
-                className="flex-row items-center rounded-2xl mr-2"
                 style={{
-                  paddingHorizontal: 16,
-                  paddingVertical: 12,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  borderRadius: 12,
+                  marginRight: 8,
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
                   backgroundColor: active ? accent + "15" : colors.card,
                   borderWidth: 1,
                   borderColor: active ? accent : colors.border,
@@ -205,14 +222,11 @@ export default function AddTransactionScreen() {
               >
                 <Ionicons
                   name="wallet-outline"
-                  size={16}
+                  size={14}
                   color={active ? accent : colors.textSecondary}
-                  style={{ marginRight: 6 }}
+                  style={{ marginRight: 5 }}
                 />
-                <Text
-                  className="text-sm"
-                  style={{ color: active ? accent : colors.text, fontWeight: active ? "600" : "400" }}
-                >
+                <Text style={{ color: active ? accent : colors.text, fontWeight: active ? "600" : "400", fontSize: 13 }}>
                   {account.name}
                 </Text>
               </TouchableOpacity>
@@ -221,11 +235,11 @@ export default function AddTransactionScreen() {
         </ScrollView>
 
         {/* Category Selection */}
-        <View className="flex-row items-baseline mb-2 ml-1">
-          <Text className="text-xs" style={{ color: colors.textSecondary, letterSpacing: 0.5 }}>АНГИЛАЛ</Text>
-          <Text className="text-xs ml-2" style={{ color: colors.textMuted }}>(сонголтгүй бол "Бусад")</Text>
+        <View style={{ flexDirection: "row", alignItems: "baseline", marginBottom: 6, marginLeft: 4 }}>
+          <Text style={{ color: colors.textSecondary, fontSize: 10, letterSpacing: 0.5 }}>АНГИЛАЛ</Text>
+          <Text style={{ color: colors.textMuted, fontSize: 10, marginLeft: 6 }}>(сонголтгүй бол "Бусад")</Text>
         </View>
-        <View className="flex-row flex-wrap mb-3" style={{ gap: 8 }}>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
           {dedupedCategories.map((cat) => {
             const active = selectedCategory?.id === cat.id;
             return (
@@ -235,10 +249,12 @@ export default function AddTransactionScreen() {
                   setSelectedCategory(cat);
                   setCustomCategory("");
                 }}
-                className="flex-row items-center rounded-2xl"
                 style={{
-                  paddingHorizontal: 12,
-                  paddingVertical: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  borderRadius: 12,
+                  paddingHorizontal: 10,
+                  paddingVertical: 7,
                   backgroundColor: active ? (cat.color || accent) + "20" : colors.card,
                   borderWidth: 1,
                   borderColor: active ? (cat.color || accent) : colors.border,
@@ -246,12 +262,16 @@ export default function AddTransactionScreen() {
               >
                 <Ionicons
                   name={(cat.icon as keyof typeof Ionicons.glyphMap) || "pricetag-outline"}
-                  size={15}
+                  size={13}
                   color={cat.color || colors.textSecondary}
                 />
                 <Text
-                  className="text-sm ml-2"
-                  style={{ color: colors.text, fontWeight: active ? "600" : "400" }}
+                  style={{
+                    color: colors.text,
+                    fontWeight: active ? "600" : "400",
+                    fontSize: 12.5,
+                    marginLeft: 6,
+                  }}
                 >
                   {cat.name}
                 </Text>
@@ -262,23 +282,25 @@ export default function AddTransactionScreen() {
 
         {/* Custom category text input */}
         <View
-          className="flex-row items-center rounded-2xl mb-6"
           style={{
+            flexDirection: "row",
+            alignItems: "center",
+            borderRadius: 12,
             backgroundColor: colors.card,
             borderWidth: 1,
             borderColor: customCategory.trim() ? accent : colors.border,
-            paddingHorizontal: 14,
-            paddingVertical: 12,
+            paddingHorizontal: 12,
+            paddingVertical: 9,
+            marginBottom: 12,
           }}
         >
           <Ionicons
             name="add-circle-outline"
-            size={20}
+            size={18}
             color={customCategory.trim() ? accent : colors.textMuted}
           />
           <TextInput
-            className="flex-1 text-base ml-2"
-            style={{ color: colors.text, padding: 0 }}
+            style={{ flex: 1, color: colors.text, padding: 0, marginLeft: 8, fontSize: 14 }}
             placeholder="Эсвэл шинэ ангилал бичих..."
             placeholderTextColor={colors.textMuted}
             value={customCategory}
@@ -292,15 +314,28 @@ export default function AddTransactionScreen() {
             returnKeyType="done"
           />
         </View>
+      </ScrollView>
 
-        {/* Submit */}
+      {/* Sticky Submit Footer — scroll хийхгүй шууд дарж болохоор */}
+      <View
+        style={{
+          paddingHorizontal: 20,
+          paddingTop: 8,
+          paddingBottom: 20,
+          backgroundColor: colors.bg,
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
+        }}
+      >
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={loading}
-          className="rounded-2xl items-center justify-center"
           style={{
             backgroundColor: accent,
-            paddingVertical: 16,
+            paddingVertical: 14,
+            borderRadius: 14,
+            alignItems: "center",
+            justifyContent: "center",
             shadowColor: accent,
             shadowOpacity: 0.25,
             shadowOffset: { width: 0, height: 4 },
@@ -312,20 +347,20 @@ export default function AddTransactionScreen() {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <View className="flex-row items-center">
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Ionicons
                 name={type === "expense" ? "remove-circle" : "add-circle"}
                 size={20}
                 color="#FFFFFF"
                 style={{ marginRight: 8 }}
               />
-              <Text className="text-white font-bold text-base">
+              <Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 15 }}>
                 {type === "expense" ? "Зарлага нэмэх" : "Орлого нэмэх"}
               </Text>
             </View>
           )}
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </View>
   );
 }

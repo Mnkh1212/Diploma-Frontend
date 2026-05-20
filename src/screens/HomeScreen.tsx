@@ -6,7 +6,10 @@ import {
   TouchableOpacity,
   RefreshControl,
   Image,
+  Dimensions,
 } from "react-native";
+
+const SCREEN_WIDTH = Dimensions.get("window").width;
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import Svg, { Circle, Defs, LinearGradient, Stop, Rect } from "react-native-svg";
@@ -48,6 +51,10 @@ function SavingsRing({ percent, amount }: { percent: number; amount: number }) {
   const circumference = 2 * Math.PI * radius;
   const progress = Math.min(Math.max(percent, 0), 100);
   const strokeDashoffset = circumference - (progress / 100) * circumference;
+  // Эерэг = хэмнэлт (accent), сөрөг = хэтрэлт (улаан)
+  const isDeficit = amount < 0;
+  const ringColor = isDeficit ? "#FF4444" : accent;
+  const label = isDeficit ? "Хэтрэлт" : "Хэмнэлт";
 
   return (
     <View className="items-center justify-center" style={{ width: size, height: size }}>
@@ -64,7 +71,7 @@ function SavingsRing({ percent, amount }: { percent: number; amount: number }) {
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke={accent}
+          stroke={ringColor}
           strokeWidth={strokeWidth}
           fill="transparent"
           strokeDasharray={circumference}
@@ -74,10 +81,10 @@ function SavingsRing({ percent, amount }: { percent: number; amount: number }) {
         />
       </Svg>
       <View className="absolute items-center">
-        <Text style={{ color: accent, fontWeight: "700", fontSize: 15 }}>
+        <Text style={{ color: ringColor, fontWeight: "700", fontSize: 15 }}>
           {formatAmount(Math.abs(amount))}
         </Text>
-        <Text className="text-xs" style={{ color: colors.textSecondary }}>Хэмнэлт</Text>
+        <Text className="text-xs" style={{ color: colors.textSecondary }}>{label}</Text>
       </View>
     </View>
   );
@@ -305,52 +312,106 @@ export default function HomeScreen({ navigation }: Props) {
           );
         })()}
 
-        {/* Account Switcher */}
-        {widgets.accounts && accounts.length > 0 && (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
-            {accounts.map((account, index) => {
-              const active = selectedAccountId === account.id;
-              return (
-                <TouchableOpacity
-                  key={account.id || index}
-                  onPress={() => handleSelectAccount(account.id)}
-                  onLongPress={() => navigation.navigate("Accounts")}
-                  className="rounded-2xl p-4 mr-3"
+        {/* Account Switcher — accounts.length-ээс хамаарч картын хэмжээ тохиргоо
+            хийгдэнэ. 1-4 хүртэл бол дэлгэцэнд яг таарч хуваагдана; 5+ бол
+            хэвтээ scroll-той жижигхэн card болж буурна. Үргэлж px-5 padding-той. */}
+        {widgets.accounts && accounts.length > 0 && (() => {
+          const n = accounts.length;
+          const GAP = 10;
+          const HORIZONTAL_PADDING = 40; // px-5 = 20 * 2
+          const availableWidth = SCREEN_WIDTH - HORIZONTAL_PADDING;
+          const fitsInRow = n <= 4;
+          const cardWidth = fitsInRow
+            ? (availableWidth - GAP * (n - 1)) / n
+            : 130;
+          // 3-4 account үед content бага зэрэг шахагдсан байх ёстой — padding
+          // жижигрүүлж, icon-ийг бага зэрэг бууруулна
+          const compact = n >= 3;
+          const cardPadding = compact ? 12 : 16;
+          const iconSize = compact ? 18 : 20;
+          const iconBox = compact ? 34 : 40;
+          const balanceFontSize = n >= 4 ? 14 : compact ? 15 : 16;
+
+          const renderCard = (account: typeof accounts[number], index: number) => {
+            const active = selectedAccountId === account.id;
+            return (
+              <TouchableOpacity
+                key={account.id || index}
+                onPress={() => handleSelectAccount(account.id)}
+                onLongPress={() => navigation.navigate("Accounts")}
+                style={{
+                  width: cardWidth,
+                  marginRight: index === n - 1 ? 0 : GAP,
+                  padding: cardPadding,
+                  borderRadius: 16,
+                  backgroundColor: active ? accent : colors.card,
+                  borderWidth: 1,
+                  borderColor: active ? accent : "transparent",
+                }}
+              >
+                <View
                   style={{
-                    width: 160,
-                    backgroundColor: active ? accent : colors.card,
-                    borderWidth: 1,
-                    borderColor: active ? accent : "transparent",
+                    width: iconBox,
+                    height: iconBox,
+                    borderRadius: 10,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: active ? "rgba(0,0,0,0.1)" : colors.surface,
+                    marginBottom: compact ? 8 : 12,
                   }}
                 >
-                  <View
-                    className="w-10 h-10 rounded-lg items-center justify-center mb-3"
-                    style={{ backgroundColor: active ? "rgba(0,0,0,0.1)" : colors.surface }}
-                  >
-                    <Ionicons
-                      name={(account.icon as keyof typeof Ionicons.glyphMap) || accountIconMap[account.type] || "wallet-outline"}
-                      size={20}
-                      color={active ? "#0D0D0D" : colors.text}
-                    />
-                  </View>
-                  <Text
-                    className="font-bold text-base"
-                    style={{ color: active ? "#0D0D0D" : colors.text }}
-                  >
-                    {formatAmount(account.balance)}
-                  </Text>
-                  <Text
-                    className="text-xs mt-1 uppercase"
-                    style={{ color: active ? "#0D0D0D" : colors.textSecondary }}
-                    numberOfLines={1}
-                  >
-                    {account.name}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        )}
+                  <Ionicons
+                    name={(account.icon as keyof typeof Ionicons.glyphMap) || accountIconMap[account.type] || "wallet-outline"}
+                    size={iconSize}
+                    color={active ? "#0D0D0D" : colors.text}
+                  />
+                </View>
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.75}
+                  style={{
+                    color: active ? "#0D0D0D" : colors.text,
+                    fontWeight: "700",
+                    fontSize: balanceFontSize,
+                  }}
+                >
+                  {formatAmount(account.balance)}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    color: active ? "#0D0D0D" : colors.textSecondary,
+                    fontSize: 10,
+                    marginTop: 4,
+                    letterSpacing: 0.4,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {account.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          };
+
+          if (fitsInRow) {
+            return (
+              <View style={{ flexDirection: "row", marginBottom: 24 }}>
+                {accounts.map(renderCard)}
+              </View>
+            );
+          }
+          return (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingRight: 20 }}
+              style={{ marginBottom: 24 }}
+            >
+              {accounts.map(renderCard)}
+            </ScrollView>
+          );
+        })()}
 
         {/* Quick Actions — icon-colored, label-той */}
         {widgets.quickActions && (
